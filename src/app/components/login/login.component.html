@@ -1,35 +1,99 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulario de Login</title>
-</head>
-<body>
-  <main>
-    <div class="formulario">
-      <form>
-        <h1>¡Bienvenido!</h1>
-
-        <!-- Email -->
-        <div>
-          <h3>Email</h3>
-          <input type="email" name="email" id="email" required>
-        </div>
-
-        <!-- Password -->
-        <div>
-          <h3>Ingrese su contraseña</h3>
-          <input type="password" name="password" id="password" required>
-        </div>
-
-        <button type="submit">ENVIAR</button>
-
-        <div>
-          <span>¿No tienes una cuenta? <a href="/registro">Regístrate</a></span>
-        </div>
-      </form>
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="4" fill="transparent"/>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="20" fill="currentColor">
+            IRI+
+          </text>
+        </svg>
+      </div>
+      <h1 class="auth-title">Login</h1>
+      <p class="auth-subtitle">Enter your credentials to access</p>
     </div>
-  </main>
-</body>
-</html>
+
+    <form class="auth-form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            class="form-input"
+            placeholder="you@example.com"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            class="form-input"
+            placeholder="••••••••"
+            required
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            aria-label="Show password"
+          >
+            <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [(ngModel)]="rememberMe"
+            name="rememberMe"
+            class="checkbox-input"
+          />
+          <span class="checkbox-text">Remember me</span>
+        </label>
+        <button type="button" class="link-button" (click)="goToForgotPassword()">
+          Forgot your password?
+        </button>
+      </div>
+
+      <button type="submit" class="submit-button">
+        Login
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p class="footer-text">
+        Don't have an account?
+        <button type="button" class="link-button-primary" (click)="goToRegister()">
+          Register here
+        </button>
+      </p>
+    </div>
+  </div>
+</div>
