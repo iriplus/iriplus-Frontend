@@ -1,0 +1,42 @@
+main {
+    font-family: 'Helvetica', sans-serif;
+    background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 60%);
+    margin: 0;
+    
+  }
+
+  .formulario{
+
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 25rem;
+    width: 50%;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      
+        display: flex; /* Utiliza flexbox */
+        flex-direction: column; /* Alinea los elementos en columna */
+        justify-content: center; /* Centra verticalmente */
+        align-items: center; /* Centra horizontalmente */
+  }
+  
+
+  .titulo{
+  font-size: 2.5rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 35px;
+  
+  }
+  
+  .form-control{
+  
+  margin-bottom: 10px;
+  }
+
+  .separator{
+    border-top: 1px solid #d1d7dc;
+    margin: 1.6rem 0;
+}
