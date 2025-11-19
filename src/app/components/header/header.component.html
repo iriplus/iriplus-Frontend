@@ -1,0 +1,47 @@
+<main class=" overflow-hidden">
+  <nav class="navbar navbar-expand-lg bg-transparent">
+    <div class="container">
+      <!--Logo -->
+      <a class="navbar-brand fs-4" href="/">IRI+</a>
+      <!--Toggle btn-->
+      <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!--SideBar -->
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <!--SideBar Header-->
+        <div class="offcanvas-header border-0">
+          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">IRI+</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"
+            aria-label="Close"></button>
+        </div>
+        <!--SideBar body-->
+        <div class="offcanvas-body d-flex flex-column flex-lg-row p-4 p-lg-0">
+          <ul class="navbar-nav justify-content-center align-items-center fs-5 flex-grow-1 pe-3">
+            <li class="nav-item mx-2">
+              <a class="nav-link" routerLink="/">Home</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link" routerLink="/">Page2</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link" routerLink="/">Page3</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link" routerLink="/">Page4</a>
+            </li>
+          </ul>
+          <!--Login / Sign up or User info-->
+            <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center gap-3">
+                <div>
+                    <a routerLink="/login" class="text-black">Inicia Sesión</a>
+                    <a routerLink="/register" class="text-white text-decoration-none px-3 py-1 rounded-4" style="background-color:#321da5">Registrate</a>
+                </div>
+           </div>
+        </div>
+        </div>
+    </div>
+  </nav>
+</main>

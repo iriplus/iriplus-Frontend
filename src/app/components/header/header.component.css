@@ -1,0 +1,48 @@
+  main{
+    background: linear-gradient(90deg, rgb(236, 245, 245) 5%, rgba(32, 42, 34) 100%);
+    background-blend-mode: multiply;
+    background-position:center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    }
+
+  .navbar-nav .nav-link {
+      color: rgb(0, 0, 0);
+    }
+
+  .navbar-brand { 
+     color: #000000; 
+  }
+
+  .nav-links a {
+    margin-right: 5%;
+  }
+  .text-black {
+    margin-right: 7px; 
+  }
+  
+  
+  .text-white {
+    margin-left: 7px; 
+  }
+
+  .logdata{
+    display: flex;
+    margin-top: 7%;
+  }
+
+  .logdata p{
+    margin-top: 3%;
+  }
+
+  .dropdown-item i {
+    margin-right: 5px; 
+  }
+  
+  .dropdown-toggle {
+    background-color: rgb(0, 0, 0) !important;
+}
+
+.dropdown-toggle:hover {
+    background-color: rgb(0, 0, 0) !important;
+}
