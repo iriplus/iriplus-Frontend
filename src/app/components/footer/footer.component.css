@@ -5,7 +5,7 @@ footer {
 
 footer .container {
     display: flex;
-    flex-direction: column; /* Móvil: columna */
+    flex-direction: column; 
     align-items: center;
     max-width: 1280px;
     margin: auto;
@@ -15,7 +15,7 @@ footer .container {
 
 footer .container .item-1 {
     width: 100%;
-    text-align: center; /* Centrado en móvil */
+    text-align: center; 
 }
 
 footer .container .item-1 h2 {
@@ -35,7 +35,7 @@ footer .container .item-1 ul li {
     margin-bottom: 15px;
     display: flex;
     align-items: center;
-    justify-content: center; /* Centrado en móvil */
+    justify-content: center; 
     flex-wrap: wrap;
 }
 
