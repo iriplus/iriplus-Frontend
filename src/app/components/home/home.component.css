@@ -1,0 +1,48 @@
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-section);
+}
+
+/* Primary buttons container */
+.hero-actions {
+  margin-top: 6vh;
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-btn {
+  background-color: var(--color-sage);
+  color: var(--color-slate);
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-lg);
+  font-size: 1.2rem;
+  transition: all 0.25s ease;
+}
+.action-btn:hover {
+  background-color: var(--color-terracotta);
+  color: var(--color-ivory);
+  transform: translateY(-3px);
+}
+
+/* Table */
+.exams-section {
+  width: 90%;
+  max-width: 1200px;
+  margin-top: 4rem;
+  background-color: var(--color-slate);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+}
+
+.section-title {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-family: var(--font-title);
+  color: var(--color-ivory);
+}
