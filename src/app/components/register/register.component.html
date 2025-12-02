@@ -1,196 +1,177 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <div class="auth-header">
-      <div class="logo-container">
-       <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="4" fill="transparent"/>
-          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="20" fill="currentColor">
-            IRI+
-          </text>
+<div class="auth-header">
+  <img src="assets/logo.png" alt="Logo" class="auth-logo" />
+  <h1 class="auth-title">Create Account</h1>
+  <p class="auth-subtitle">Fill out the form to register</p>
+</div>
+
+<form class="auth-form" (ngSubmit)="onSubmit()">
+
+  <!-- Name + Surname -->
+  <div class="form-group">
+    <label class="form-label">Name and Surname</label>
+    <div class="name-surname-row">
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
         </svg>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          [(ngModel)]="name"
+          class="form-input"
+          placeholder="First Name"
+          required
+        />
       </div>
-      <h1 class="auth-title">Create Account</h1>
-      <p class="auth-subtitle">Fill out the form to register</p>
-    </div>
 
-    <form class="auth-form" (ngSubmit)="onSubmit()">
-      <div class="form-group name-surname-group">
-  <label class="form-label">Name and Surname</label>
-  <div class="name-surname-row">
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <input
+          type="text"
+          id="surname"
+          name="surname"
+          [(ngModel)]="surname"
+          class="form-input"
+          placeholder="Last Name"
+          required
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Email -->
+  <div class="form-group">
+    <label for="email" class="form-label">Email Address</label>
     <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
+      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+        <polyline points="22,6 12,13 2,6"></polyline>
       </svg>
       <input
-        type="text"
-        id="name"
-        name="name"
-        [(ngModel)]="name"
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="email"
         class="form-input"
-        placeholder="First Name"
-        required
-      />
-    </div>
-
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
-      <input
-        type="text"
-        id="surname"
-        name="surname"
-        [(ngModel)]="surname"
-        class="form-input"
-        placeholder="Last Name"
+        placeholder="you@example.com"
         required
       />
     </div>
   </div>
-</div>
 
-      <div class="form-group">
-        <label for="email" class="form-label">Email Address</label>
-        <div class="input-wrapper">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-            <polyline points="22,6 12,13 2,6"></polyline>
-          </svg>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            [(ngModel)]="email"
-            class="form-input"
-            placeholder="you@example.com"
-            required
-          />
-        </div>
-      </div>
-
-      <div class="form-group">
-  <label for="dni" class="form-label">DNI</label>
-  <div class="input-wrapper">
-    <svg
-      class="input-icon"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
-      <line x1="7" y1="8" x2="17" y2="8"></line>
-      <line x1="7" y1="12" x2="17" y2="12"></line>
-      <line x1="7" y1="16" x2="13" y2="16"></line>
-    </svg>
-    <input
-      type="text"
-      id="dni"
-      name="dni"
-      [(ngModel)]="dni"
-      class="form-input"
-      placeholder="Enter your DNI"
-      required
-    />
+  <!-- DNI -->
+  <div class="form-group">
+    <label for="dni" class="form-label">DNI</label>
+    <div class="input-wrapper">
+      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+        <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+        <line x1="7" y1="8" x2="17" y2="8"></line>
+        <line x1="7" y1="12" x2="17" y2="12"></line>
+        <line x1="7" y1="16" x2="13" y2="16"></line>
+      </svg>
+      <input
+        type="text"
+        id="dni"
+        name="dni"
+        [(ngModel)]="dni"
+        class="form-input"
+        placeholder="Enter your DNI"
+        required
+      />
+    </div>
   </div>
-</div>
 
-      <div class="form-group">
-        <label for="password" class="form-label">Password</label>
-        <div class="input-wrapper">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="password"
-            name="password"
-            [(ngModel)]="password"
-            class="form-input"
-            placeholder="At least 8 characters"
-            required
-          />
-          <button
-            type="button"
-            class="password-toggle"
-            (click)="togglePasswordVisibility()"
-            aria-label="Show password"
-          >
-            <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-              <line x1="1" y1="1" x2="23" y2="23"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <div class="input-wrapper">
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          <input
-            [type]="showConfirmPassword ? 'text' : 'password'"
-            id="confirmPassword"
-            name="confirmPassword"
-            [(ngModel)]="confirmPassword"
-            class="form-input"
-            placeholder="Repeat your password"
-            required
-          />
-          <button
-            type="button"
-            class="password-toggle"
-            (click)="toggleConfirmPasswordVisibility()"
-            aria-label="Show password"
-          >
-            <svg *ngIf="!showConfirmPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            <svg *ngIf="showConfirmPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-              <line x1="1" y1="1" x2="23" y2="23"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="checkbox-label">
-          <input
-            type="checkbox"
-            [(ngModel)]="acceptTerms"
-            name="acceptTerms"
-            class="checkbox-input"
-          />
-          <span class="checkbox-text">
-            I accept the <a href="#" class="link-inline">terms and conditions</a>
-          </span>
-        </label>
-      </div>
-
-      <button type="submit" class="submit-button">
-        Create Account
+  <!-- Password -->
+  <div class="form-group">
+    <label for="password" class="form-label">Password</label>
+    <div class="input-wrapper">
+      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      <input
+        [type]="showPassword ? 'text' : 'password'"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        class="form-input"
+        placeholder="At least 8 characters"
+        required
+      />
+      <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+        <svg *ngIf="!showPassword" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <svg *ngIf="showPassword" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
       </button>
-    </form>
-
-    <div class="auth-footer">
-      <p class="footer-text">
-        Already have an account?
-        <button type="button" class="link-button-primary" (click)="goToLogin()">
-          Log in here
-        </button>
-      </p>
     </div>
   </div>
+
+  <!-- Confirm Password -->
+  <div class="form-group">
+    <label for="confirmPassword" class="form-label">Confirm Password</label>
+    <div class="input-wrapper">
+      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      <input
+        [type]="showConfirmPassword ? 'text' : 'password'"
+        id="confirmPassword"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        class="form-input"
+        placeholder="Repeat your password"
+        required
+      />
+      <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()">
+        <svg *ngIf="!showConfirmPassword" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <svg *ngIf="showConfirmPassword" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Terms -->
+  <div class="form-group">
+    <label class="checkbox-label">
+      <input
+        type="checkbox"
+        [(ngModel)]="acceptTerms"
+        name="acceptTerms"
+        class="checkbox-input"
+        required
+      />
+      <span class="checkbox-text">
+        I accept the <a href="#" class="link-inline">terms and conditions</a>
+      </span>
+    </label>
+  </div>
+
+  <button type="submit" class="submit-button">
+    Create Account
+  </button>
+</form>
+
+<div class="auth-footer">
+  <p class="footer-text">
+    Already have an account?
+    <button type="button" class="link-button-primary" (click)="goToLogin()">
+      Log in here
+    </button>
+  </p>
 </div>
