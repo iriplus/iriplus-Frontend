@@ -1,0 +1,127 @@
+.public-topbar {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #FCFAF4;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #9EB28F;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  color: #1E2A22;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #9EB28F;
+  color: #9EB28F;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 4rem;
+  background: linear-gradient(135deg, #27532F, #1E2A22);
+  color: #FCFAF4;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.hero-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.hero-image img {
+  width: 100%;
+  border-radius: 1rem;
+}
+
+.section {
+  padding: 4rem 6rem;
+  background: #FCFAF4;
+  color: #1E2A22;
+}
+
+.section h2 {
+  margin-bottom: 1rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.feature-card {
+  background: #F8F5E7;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+.image-section {
+  padding: 0;
+}
+
+.image-section img {
+  width: 100%;
+  height: 60vh;
+  object-fit: cover;
+}
+
+.cta {
+  padding: 4rem;
+  background: #27532F;
+  color: #FCFAF4;
+  text-align: center;
+}
+
+.cta button {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-image {
+    margin-top: 2rem;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 3rem 2rem;
+  }
+}
