@@ -25,7 +25,7 @@
 }
 
 .btn-outline {
-  background: transparent;
+  background: #141e13c7; /*transparent;*/
   border: 1px solid #9EB28F;
   color: #9EB28F;
   padding: 0.6rem 1.2rem;

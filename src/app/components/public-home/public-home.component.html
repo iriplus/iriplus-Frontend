@@ -7,14 +7,13 @@
   <div class="hero-content">
     <h1>Instituto Rosarino de Idiomas</h1>
     <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua.
+      Un entorno online donde los alumnos pueden practicar, rendir evaluaciones y seguir su progreso, y donde docentes y coordinadoras gestionan cursos, exámenes y el acompañamiento académico.
     </p>
     <div class="hero-actions">
-      <button class="btn-primary" routerLink="/register">
+      <button class="btn-primary" (click)="navigate('register')">
         Comenzar ahora
       </button>
-      <button class="btn-outline" routerLink="/login" (click)="navigate()">
+      <button class="btn-outline" (click)="navigate('login')">
         Ya tengo cuenta
       </button>
     </div>
@@ -29,25 +28,24 @@
 <section class="section">
   <h2>Sobre la Institución</h2>
   <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vehicula,
-    nunc at volutpat placerat, sapien massa facilisis metus.
+    Desde 1990, el Instituto Rosarino de Idiomas brinda enseñanza de idiomas a niños, adolescentes y adultos, promoviendo el aprendizaje como una herramienta clave para el desarrollo personal, social y profesional.
   </p>
 </section>
 
 <section class="section features">
   <div class="feature-card">
     <h3>Clases personalizadas</h3>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <p>La plataforma acompaña cursos regulares, talleres y clases particulares, permitiendo adaptar actividades y evaluaciones según el nivel y los objetivos de cada grupo.</p>
   </div>
 
   <div class="feature-card">
     <h3>Exámenes dinámicos</h3>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <p>Los alumnos practican con exámenes autogenerados, mientras que las profesoras crean evaluaciones y las coordinadoras las validan para su aplicación presencial.</p>
   </div>
 
   <div class="feature-card">
     <h3>Seguimiento de progreso</h3>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <p>Accedé a reportes y registros del desempeño académico para monitorear avances, resultados y participación.</p>
   </div>
 </section>
 
@@ -58,8 +56,8 @@
 
 <section class="cta">
   <h2>Sumate hoy</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-  <button class="btn-primary" routerLink="/register">
+  <p>Formá parte y accedé a una experiencia educativa organizada, moderna y orientada al seguimiento académico.</p>
+  <button class="btn-primary" (click)="navigate('register')">
     Crear cuenta
   </button>
 </section>

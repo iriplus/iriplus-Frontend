@@ -7,7 +7,7 @@
 
 /* Left panel */
 .auth-left {
-  flex: 3;
+  flex: 3; /*0*/
 }
 
 /* Right panel */
