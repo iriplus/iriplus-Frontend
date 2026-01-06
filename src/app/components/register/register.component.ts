@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { environment } from "../../../environments/environment";
 
 @Component({
   selector: 'app-register',
@@ -25,7 +26,7 @@ export class RegisterComponent {
   showConfirmPassword = false;
   acceptTerms = false;
 
-  private apiUrl = 'http://localhost:4200/api/user/student';
+  private readonly REGISTER_URL = `${environment.backendUrl}/user/student`;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -56,10 +57,10 @@ export class RegisterComponent {
       dni: this.dni,
     };
 
-    this.http.post(this.apiUrl, userData).subscribe({
+    this.http.post(this.REGISTER_URL, userData).subscribe({
       next: (res) => {
         console.log('User registered:', res);
-        alert('Account created successfully!');
+        alert('Verification mail sent succesfully. Please check your inbox.');
         this.router.navigate(['/login']);
       },
       error: (err) => {
