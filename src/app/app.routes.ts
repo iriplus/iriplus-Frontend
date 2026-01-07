@@ -13,7 +13,6 @@ export const routes: Routes = [
   {
     path: '',
     component: AuthLayout,
-    canActivate: [authGuard],
     children: [
       { path: '', component: PublicHome },
       { path: 'login', component: LoginComponent },
@@ -21,6 +20,7 @@ export const routes: Routes = [
       { path: 'forgot-password', component: ForgotPasswordComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
     ],
+    canActivate: [authGuard],
   },
   {
     path: 'home',
@@ -30,7 +30,6 @@ export const routes: Routes = [
       { path: '', component: HomeComponent },
     ],
   },
-
   { path: '**', redirectTo: '' },
 ];
 

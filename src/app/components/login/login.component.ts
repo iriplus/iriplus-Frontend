@@ -29,8 +29,7 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
-    private authService: AuthService
+    private http: HttpClient
   ) {}
 
   togglePasswordVisibility(): void {

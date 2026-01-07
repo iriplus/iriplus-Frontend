@@ -5,19 +5,38 @@ import { map, catchError, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly ME_URL = `${environment.backendUrl}/me`;
-  private readonly LOGOUT_URL = `${environment.backendUrl}/logout`;
+  private authenticated: boolean | null = null;
 
   constructor(private http: HttpClient) {}
 
-  isAuthenticated() {
+  private readonly ME_URL = `${environment.backendUrl}/me`;
+  private readonly LOGOUT_URL = `${environment.backendUrl}/logout`;
+
+
+
+  checkAuth() {
+    if (this.authenticated !== null) {
+      return of(this.authenticated);
+    }
+    
     return this.http.get(this.ME_URL, { withCredentials: true }).pipe(
-      map(() => true),
-      catchError(() => of(false))
+      map(() => {
+        this.authenticated = true;
+        return true;
+      }),
+      catchError(() => {
+        this.authenticated = false;
+        return of(false);
+      })
     );
   }
 
+  setAuthenticated(value: boolean) {
+    this.authenticated = value;
+  }
+
   logout() {
+    this.authenticated = false;
     return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true });
   }
 }
