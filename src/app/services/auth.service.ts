@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { map, catchError, of } from 'rxjs';
-import { LoginResponse } from '../components/login/login.component';
+import { Login, LoginResponse } from '../interfaces/login.interface';
+import { User } from '../interfaces/user.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -17,11 +18,11 @@ export class AuthService {
     private http: HttpClient,
   ) {}
 
-  login(email: string, password: string) {
-    return this.http.post<LoginResponse>(this.LOGIN_URL, {email, password}, {withCredentials: true});
+  login(credentials: Login) {
+    return this.http.post<LoginResponse>(this.LOGIN_URL, credentials, {withCredentials: true});
   }
 
-  register(userData: any) {
+  register(userData: User) {
     return this.http.post(this.REGISTER_URL, userData);
   }
 

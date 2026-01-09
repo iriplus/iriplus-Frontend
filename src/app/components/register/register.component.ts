@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from "../../../environments/environment";
 import { AuthService } from '../../services/auth.service';
+import { ClassService } from '../../services/class.service';
+import { ClassResponse } from '../../interfaces/class.interface';
 
 @Component({
   selector: 'app-register',
@@ -18,6 +19,12 @@ import { AuthService } from '../../services/auth.service';
 })
 
 export class RegisterComponent {
+  constructor(
+    private router: Router, 
+    private authService: AuthService,
+    private classService: ClassService,
+  ) {}
+
   name = '';
   surname = '';
   email = '';
@@ -26,15 +33,10 @@ export class RegisterComponent {
   dni = '';
   showPassword = false;
   showConfirmPassword = false;
+  classId = 0;
   acceptTerms = false;
 
   private readonly REGISTER_URL = `${environment.backendUrl}/user/student`;
-
-  constructor(
-    private router: Router, 
-    private http: HttpClient,
-    private authService: AuthService,
-  ) {}
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -44,7 +46,7 @@ export class RegisterComponent {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  register(): void {
+  validateParams(): void {
     if (!this.acceptTerms) {
       alert('You must accept the terms and conditions.');
       return;
@@ -55,12 +57,26 @@ export class RegisterComponent {
       return;
     }
 
+    this.classService.exists(this.classId).subscribe({
+      next: exists => {
+        if (!exists) {
+          alert('Invalid class code.');
+          return;
+        } 
+
+        this.register(); 
+      }
+    });
+  }
+
+  register(): void {
     const userData = {
       name: this.name,
       surname: this.surname,
       email: this.email,
       passwd: this.password,
       dni: this.dni,
+      student_class_id: this.classId,
     };
 
     this.authService.register(userData).subscribe({

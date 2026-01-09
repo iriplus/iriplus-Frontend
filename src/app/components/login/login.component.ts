@@ -3,10 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { AuthService } from "../../services/auth.service";
-
-export interface LoginResponse {
-  access_token: string;
-}
+import { Login } from "../../interfaces/login.interface";
 
 @Component({
   selector: "app-login",
@@ -38,7 +35,12 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = "";
 
-    this.authService.login(this.email, this.password).subscribe({
+    const credentials: Login = {
+      email: this.email,
+      password: this.password,
+    };
+
+    this.authService.login(credentials).subscribe({
       next: () => {
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
         this.authService.setAuthenticated(true);

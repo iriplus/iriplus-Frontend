@@ -146,6 +146,28 @@
     </div>
   </div>
 
+  <!-- Class Code -->
+  <div class="form-group">
+    <label for="classCode" class="form-label">Class Code</label>
+    <div class="input-wrapper">
+      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+        <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+        <line x1="7" y1="8" x2="17" y2="8"></line>
+        <line x1="7" y1="12" x2="17" y2="12"></line>
+        <line x1="7" y1="16" x2="13" y2="16"></line>
+      </svg>
+      <input
+        type="text"
+        id="classCode"
+        name="classCode"
+        [(ngModel)]="classId"
+        class="form-input"
+        placeholder="Enter your Class Code"
+        required
+      />
+    </div>
+  </div>
+
   <!-- Terms -->
   <div class="form-group">
     <label class="checkbox-label">
@@ -162,7 +184,7 @@
     </label>
   </div>
 
-  <button type="submit" class="submit-button" (click)="register()">
+  <button type="submit" class="submit-button" (click)="validateParams()">
     Create Account
   </button>
 </form>
