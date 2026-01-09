@@ -1,6 +1,6 @@
 /* General auth layout */
 .auth-layout {
-  display: flex;
+  display: flex; /*revisar*/
   min-height: 100vh;
   background-color: var(--color-background);
 }

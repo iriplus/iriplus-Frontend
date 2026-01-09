@@ -131,3 +131,40 @@
 .custom-toggler {
   filter: invert(90%);
 }
+
+.dropdown-trigger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-width: 45px;
+  min-height: 45px;
+  padding: 0.45rem 1.2rem;
+
+  background-color: var(--color-sage);
+  color: var(--color-slate);
+
+  border-radius: var(--radius-md);
+  border: none;
+
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.dropdown-trigger:hover {
+  background-color: var(--color-terracotta);
+  color: var(--color-ivory);
+  transform: translateY(-2px);
+}
+
+/* Quitar flechita default */
+.dropdown-toggle::after {
+  display: none;
+}
+
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}

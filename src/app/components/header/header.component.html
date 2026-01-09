@@ -35,12 +35,16 @@
             <li class="nav-item"><a class="nav-link" routerLink="/">Page3</a></li>
             <li class="nav-item"><a class="nav-link" routerLink="/">Page4</a></li>
           </ul>
-          <!--Login / Sign up or User info-->
-          <div class="auth-buttons">
-            <a routerLink="/register" class="btn-signup">Sign Up</a>
-            <a routerLink="/login" class="btn-login">Log In</a>
-            <button class="btn-login" (click)="logout()">Log Out</button>
-          </div>
+          <!--Login / Sign up or User info-->         
+          <div class="dropdown">
+            <button class="dropdown-toggle dropdown-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person"></i>
+            </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-person-gear"></i><span>Mis datos</span></a></li>
+                <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-person-x"></i>Cerrar Sesión</a></li>
+              </ul>
+            </div>
         </div>
       </div>
     </div>
