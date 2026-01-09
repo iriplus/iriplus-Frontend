@@ -1,12 +1,10 @@
 import { Component } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { HttpClient } from "@angular/common/http";
 import { AuthService } from "../../services/auth.service";
-import { environment } from "../../../environments/environment";
 
-interface LoginResponse {
+export interface LoginResponse {
   access_token: string;
 }
 
@@ -17,6 +15,7 @@ interface LoginResponse {
   standalone: true,
   imports: [CommonModule, FormsModule],
 })
+
 export class LoginComponent {
   email = "";
   password = "";
@@ -25,29 +24,30 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = "";
 
-  private readonly LOGIN_URL = `${environment.backendUrl}/login`; 
-
   constructor(
     private router: Router,
-    private http: HttpClient
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  onSubmit(): void {
-  this.errorMessage = '';
-  this.isLoading = true;
+  login(): void {
+    this.isLoading = true;
+    this.errorMessage = "";
 
-  this.http.post<LoginResponse>(this.LOGIN_URL, {email: this.email, password: this.password}, {withCredentials: true})
-  .subscribe({next: () => {
-        this.router.navigate(['/home']);
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
+        this.authService.setAuthenticated(true);
+        this.router.navigateByUrl(returnUrl);
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err?.error?.message || 'Invalid email or password';
-      },
+      }
     });
   }
 

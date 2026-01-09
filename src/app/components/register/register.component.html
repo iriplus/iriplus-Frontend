@@ -4,7 +4,7 @@
   <p class="auth-subtitle">Fill out the form to register</p>
 </div>
 
-<form class="auth-form" (ngSubmit)="onSubmit()">
+<form class="auth-form">
 
   <!-- Name + Surname -->
   <div class="form-group">
@@ -162,7 +162,7 @@
     </label>
   </div>
 
-  <button type="submit" class="submit-button">
+  <button type="submit" class="submit-button" (click)="register()">
     Create Account
   </button>
 </form>

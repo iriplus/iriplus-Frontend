@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from "../../../environments/environment";
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,7 @@ import { environment } from "../../../environments/environment";
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
+
 export class RegisterComponent {
   name = '';
   surname = '';
@@ -28,7 +30,11 @@ export class RegisterComponent {
 
   private readonly REGISTER_URL = `${environment.backendUrl}/user/student`;
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router, 
+    private http: HttpClient,
+    private authService: AuthService,
+  ) {}
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -38,7 +44,7 @@ export class RegisterComponent {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  onSubmit(): void {
+  register(): void {
     if (!this.acceptTerms) {
       alert('You must accept the terms and conditions.');
       return;
@@ -57,7 +63,7 @@ export class RegisterComponent {
       dni: this.dni,
     };
 
-    this.http.post(this.REGISTER_URL, userData).subscribe({
+    this.authService.register(userData).subscribe({
       next: (res) => {
         console.log('User registered:', res);
         alert('Verification mail sent succesfully. Please check your inbox.');

@@ -12,11 +12,16 @@ export const authGuard: CanActivateFn = () => {
   );
 };
 
-export const privateGuard: CanActivateFn = () => {
+export const privateGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const auth = inject(AuthService);
 
   return auth.checkAuth().pipe(
-    map(isAuth => isAuth ? true : router.parseUrl('/'))
+    map(isAuth => {
+      if (isAuth) return true;
+      return router.createUrlTree(['/login'], {
+        queryParams: { returnUrl: state.url }
+      });
+    })
   );
 };
