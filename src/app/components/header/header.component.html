@@ -30,7 +30,7 @@
         <!--SideBar Body-->
         <div class="offcanvas-body nav-body">
           <ul class="navbar-nav nav-links">
-            <li class="nav-item"><a class="nav-link" routerLink="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" routerLink="/my-profile">Home</a></li>
             <li class="nav-item"><a class="nav-link" routerLink="/">Page2</a></li>
             <li class="nav-item"><a class="nav-link" routerLink="/">Page3</a></li>
             <li class="nav-item"><a class="nav-link" routerLink="/">Page4</a></li>
@@ -41,8 +41,8 @@
               <i class="bi bi-person"></i>
             </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-person-gear"></i><span>Mis datos</span></a></li>
-                <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-person-x"></i>Cerrar Sesión</a></li>
+                <li><a class="dropdown-item" (click)="navigate('my-profile')"><i class="bi bi-person-gear"></i><span>My Profile</span></a></li>
+                <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-person-x"></i>Log Out</a></li>
               </ul>
             </div>
         </div>

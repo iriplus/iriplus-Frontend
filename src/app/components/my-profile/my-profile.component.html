@@ -1,0 +1,221 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="avatar-container">
+        <div class="avatar">
+          <svg class="avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+      </div>
+      <h1 class="profile-title">Mi Perfil</h1>
+      <p class="profile-subtitle">Consulta y modifica tus datos personales</p>
+    </div>
+
+
+    <form class="profile-form" (ngSubmit)="onSubmit()">
+      <!-- Nombre y Apellido -->
+      <div class="name-group">
+        <div class="form-group half-width">
+          <label for="firstName" class="form-label">Nombre</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              [(ngModel)]="firstName"
+              class="form-input"
+              placeholder="Juan"
+              [disabled]="!isEditing"
+            />
+          </div>
+        </div>
+
+
+        <div class="form-group half-width">
+          <label for="lastName" class="form-label">Apellido</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              [(ngModel)]="lastName"
+              class="form-input"
+              placeholder="Pérez"
+              [disabled]="!isEditing"
+            />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            class="form-input"
+            placeholder="juan.perez@example.com"
+            [disabled]="!isEditing"
+          />
+        </div>
+      </div>
+
+
+      <!-- Teléfono -->
+      <div class="form-group">
+        <label for="phone" class="form-label">Teléfono</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            [(ngModel)]="phone"
+            class="form-input"
+            placeholder="+54 11 1234-5678"
+            [disabled]="!isEditing"
+          />
+        </div>
+      </div>
+
+
+      <!-- Fecha de Nacimiento -->
+      <div class="form-group">
+        <label for="birthDate" class="form-label">Fecha de Nacimiento</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <input
+            type="date"
+            id="birthDate"
+            name="birthDate"
+            [(ngModel)]="birthDate"
+            class="form-input"
+            [disabled]="!isEditing"
+          />
+        </div>
+      </div>
+
+
+      <!-- Botones de acción -->
+      <div class="action-buttons">
+        <button
+          *ngIf="!isEditing"
+          type="button"
+          class="edit-button"
+          (click)="enableEdit()"
+        >
+          <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Editar Perfil
+        </button>
+
+
+        <div *ngIf="isEditing" class="edit-actions">
+          <button type="submit" class="save-button">
+            <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Guardar Cambios
+          </button>
+          <button type="button" class="cancel-button" (click)="cancelEdit()">
+            <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+
+
+    <!-- Sección de Cambiar Contraseña -->
+    <div class="section-divider"></div>
+
+
+    <div class="password-section">
+      <h2 class="section-title">Cambiar Contraseña</h2>
+      <button type="button" class="secondary-button" (click)="changePassword()">
+        <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Cambiar Contraseña
+      </button>
+    </div>
+
+
+    <!-- Sección de Peligro - Eliminar Cuenta -->
+    <div class="section-divider"></div>
+
+
+    <div class="danger-section">
+      <h2 class="section-title danger">Zona de Peligro</h2>
+      <p class="danger-text">
+        Una vez que elimines tu cuenta, no hay vuelta atrás. Por favor, está seguro.
+      </p>
+      <button type="button" class="danger-button" (click)="confirmDeleteAccount()">
+        <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+        Eliminar Cuenta
+      </button>
+    </div>
+
+
+    <!-- Modal de confirmación para eliminar cuenta -->
+    <div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeDeleteModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <h3 class="modal-title">¿Estás seguro?</h3>
+        </div>
+        <p class="modal-text">
+          Esta acción no se puede deshacer. Se eliminarán permanentemente todos tus datos y no podrás recuperar tu cuenta.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="modal-cancel-button" (click)="closeDeleteModal()">
+            Cancelar
+          </button>
+          <button type="button" class="modal-delete-button" (click)="deleteAccount()">
+            Sí, eliminar mi cuenta
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

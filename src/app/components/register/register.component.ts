@@ -33,7 +33,7 @@ export class RegisterComponent {
   dni = '';
   showPassword = false;
   showConfirmPassword = false;
-  classId = 0;
+  classId: number | null = null;
   acceptTerms = false;
 
   private readonly REGISTER_URL = `${environment.backendUrl}/user/student`;
@@ -57,17 +57,22 @@ export class RegisterComponent {
       return;
     }
 
-    this.classService.exists(this.classId).subscribe({
-      next: exists => {
-        if (!exists) {
-          alert('Invalid class code.');
-          return;
-        } 
-
-        this.register(); 
-      }
-    });
+     if (this.classId === null) {
+    alert('Please enter your class code.');
+    return;
   }
+
+   this.classService.exists(this.classId).subscribe({
+    next: exists => {
+      if (!exists) {
+        alert('Invalid class code.');
+        return;
+      }
+
+      this.register();
+    }
+  });
+}
 
   register(): void {
     const userData = {

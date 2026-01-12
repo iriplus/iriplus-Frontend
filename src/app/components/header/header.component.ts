@@ -28,6 +28,9 @@ export class HeaderComponent {
     private authService: AuthService,
   ) {}
 
+navigate(path: 'my-profile'): void {
+  this.router.navigate(['/home', path]); // ✅ Ahora navega a /home/my-profile
+}
   logout(): void {
     this.authService.logout().subscribe({
       next: () => {

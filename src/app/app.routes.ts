@@ -8,6 +8,7 @@ import { MainLayout } from './layouts/main-layout/main-layout';
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { PublicHome } from './components/public-home/public-home.component';
 import { authGuard, privateGuard } from './guards/auth.guard';
+import { MyProfileComponent } from './components/my-profile/my-profile.component';
 
 export const routes: Routes = [
   {
@@ -28,6 +29,7 @@ export const routes: Routes = [
     canActivate: [privateGuard],
     children: [
       { path: '', component: HomeComponent },
+      { path: 'my-profile', component: MyProfileComponent}
     ],
   },
   { path: '**', redirectTo: '' },
