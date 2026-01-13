@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -15,12 +16,29 @@ export class ResetPasswordComponent {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   passwordStrength: 'weak' | 'medium' | 'strong' = 'weak';
+  email: string = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
-    // Verify that the user has completed the previous steps
-    // Here you could validate tokens or stored verification states
+    if (!this.authService.getIsResettingPassword()) {
+      this.router.navigate(['/forgot-password']);
+    }
+
+    this.route.queryParams.subscribe(params => {
+      const email = params['email'];
+
+      if (!email) {
+        this.router.navigate(['/forgot-password']);
+        return;
+      }
+
+      this.email = email;
+    });
   }
 
   togglePasswordVisibility(): void {
@@ -90,14 +108,17 @@ export class ResetPasswordComponent {
       return;
     }
 
-    // Call your backend service here to reset the password
-    console.log('Resetting password...');
-
-    // Simulate success and redirect to login
-    setTimeout(() => {
-      alert('Password successfully reset');
-      this.router.navigate(['/login']);
-    }, 500);
+    console.log(this.email, this.password);
+    this.authService.resetPassword(this.email, this.password).subscribe({
+      next: () => {
+        alert('Password successfully reset');
+        this.authService.setIsResettingPassword(false);
+        this.router.navigate(['/login']);
+      },
+      error: err => {
+        alert(err.error?.msg || 'Error resetting password');
+      }
+    });
   }
 
   goToLogin(): void {

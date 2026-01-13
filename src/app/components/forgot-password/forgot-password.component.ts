@@ -46,6 +46,7 @@ export class ForgotPasswordComponent {
 
     this.authService.verifyResetCode(this.email, fullCode).subscribe({
       next: () => {
+        this.authService.setIsResettingPassword(true);
         this.router.navigate(['/reset-password'], { queryParams: { email: this.email } });
       },
       error: err => {
