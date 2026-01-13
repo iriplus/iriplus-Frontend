@@ -13,6 +13,7 @@ export class AuthService {
   private readonly LOGOUT_URL = `${environment.backendUrl}/logout`;
   private readonly LOGIN_URL = `${environment.backendUrl}/login`;
   private readonly REGISTER_URL = `${environment.backendUrl}/user/student`;
+  private readonly FORGOT_PASSWORD_URL = `${environment.backendUrl}/forgot-password`;
 
   constructor(
     private http: HttpClient,
@@ -49,5 +50,13 @@ export class AuthService {
 
   logout() {
     return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true });
+  }
+
+  sendResetCode(email: string) {
+    return this.http.post<{msg: string}>(`${this.FORGOT_PASSWORD_URL}/send`, { email });
+  }
+
+  verifyResetCode(email: string, code: string) {
+    return this.http.post<{msg: string}>(`${this.FORGOT_PASSWORD_URL}/verify`, { email, code });
   }
 }

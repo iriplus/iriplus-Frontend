@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, QueryList, ViewChildren } from '@angu
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -17,40 +18,47 @@ export class ForgotPasswordComponent {
   
   @ViewChildren('input0, input1, input2, input3, input4, input5') codeInputs!: QueryList<ElementRef>;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {}
 
   onSubmitEmail(): void {
-    if (this.email) {
-      console.log('Sending verification code to:', this.email);
-      // Backend call to send the verification code goes here
-      
-      this.step = 2;
+    if (!this.email) return;
 
-      // Focus the first code input after a brief delay
-      setTimeout(() => {
-        const inputs = this.codeInputs.toArray();
-        if (inputs.length > 0) {
-          inputs[0].nativeElement.focus();
-        }
-      }, 100);
-    }
+    this.authService.sendResetCode(this.email).subscribe({
+      next: () => {
+        this.step = 2;
+        setTimeout(() => {
+          const inputs = this.codeInputs.toArray();
+          if (inputs.length > 0) inputs[0].nativeElement.focus();
+        }, 100);
+      },
+      error: err => {
+        alert(err.error?.msg || 'Error sending code');
+      }
+    });
   }
 
   onSubmitCode(): void {
     const fullCode = this.code.join('');
-    if (fullCode.length === 6) {
-      console.log('Verifying code:', fullCode, 'for email:', this.email);
-      // Backend call to verify the code goes here
-      
-      alert('Verification successful');
-    }
+    if (fullCode.length !== 6) return;
+
+    this.authService.verifyResetCode(this.email, fullCode).subscribe({
+      next: () => {
+        this.router.navigate(['/reset-password'], { queryParams: { email: this.email } });
+      },
+      error: err => {
+        alert(err.error?.msg || 'Invalid or expired code');
+      }
+    });
   }
 
   resendCode(): void {
-    console.log('Resending code to:', this.email);
-    // Backend call to resend the code goes here
-    
-    alert('A new code has been sent to ' + this.email);
+    this.authService.sendResetCode(this.email).subscribe({
+      next: () => alert('A new code has been sent'),
+      error: err => alert(err.error?.msg || 'Error resending code')
+    });
   }
 
   onCodeInput(event: Event, index: number): void {
