@@ -1,10 +1,14 @@
 {
   "name": "iriplus-frontend",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "start:prod": "node dist/iriplus-Frontend/server/server.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:iriplus-Frontend": "node dist/iriplus-Frontend/server/server.mjs"
