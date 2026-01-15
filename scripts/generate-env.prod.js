@@ -14,7 +14,7 @@ if (!backendUrl) {
 const dir = 'src/environments';
 fs.mkdirSync(dir, { recursive: true });
 
-const filePath = path.join(dir, 'environment.prod.ts');
+const filePath = path.join(dir, 'environment.ts');
 
 const content = `
 export const environment = {
@@ -25,4 +25,4 @@ export const environment = {
 
 fs.writeFileSync(filePath, content.trim());
 
-console.log('environment.prod.ts generated at', filePath);
+console.log('environment.ts generated at', filePath);
