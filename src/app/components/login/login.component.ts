@@ -21,11 +21,17 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = "";
 
+  private returnUrl = '/home';
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService
   ) {}
+
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
+  }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -42,9 +48,8 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
         this.authService.setAuthenticated(true);
-        this.router.navigateByUrl(returnUrl);
+        this.router.navigateByUrl(this.returnUrl);
       },
       error: (err) => {
         this.isLoading = false;

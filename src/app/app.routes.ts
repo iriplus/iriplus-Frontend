@@ -16,19 +16,18 @@ export const routes: Routes = [
     component: AuthLayout,
     children: [
       { path: '', component: PublicHome },
-      { path: 'login', component: LoginComponent },
+      { path: 'login', component: LoginComponent, canActivate: [authGuard] },
       { path: 'register', component: RegisterComponent },
       { path: 'forgot-password', component: ForgotPasswordComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
     ],
-    canActivate: [authGuard],
   },
   {
-    path: 'home',
+    path: '',
     component: MainLayout,
     canActivate: [privateGuard],
     children: [
-      { path: '', component: HomeComponent },
+      { path: 'home', component: HomeComponent },
       { path: 'my-profile', component: MyProfileComponent}
     ],
   },
