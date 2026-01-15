@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Class } from '../interfaces/class.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -19,15 +20,9 @@ export class ClassService {
     })
   }
 
-  exists(id: number): Observable<boolean> {
-    return this.http.get(`${this.CLASS_URL}/${id}`, this.httpOptions).pipe(
-      map(() => true),
-      catchError(err => {
-        if (err.status === 404) {
-          return of(false);
-        }
-        return throwError(() => err)
-      })
-    );
+  getClass(class_code: string): Observable<Class> {
+    return this.http.get<Class>(`${this.CLASS_URL}/code/${class_code}`, this.httpOptions).pipe(
+      catchError(err => throwError(() => err))
+      );
   }
 }

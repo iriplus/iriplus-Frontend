@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { environment } from "../../../environments/environment";
 import { AuthService } from '../../services/auth.service';
 import { ClassService } from '../../services/class.service';
-import { ClassResponse } from '../../interfaces/class.interface';
+import { Class } from '../../interfaces/class.interface';
 
 @Component({
   selector: 'app-register',
@@ -33,8 +33,9 @@ export class RegisterComponent {
   dni = '';
   showPassword = false;
   showConfirmPassword = false;
-  classId: number | null = null;
+  class_code: string | null = null;
   acceptTerms = false;
+  classData: Class | null = null;
 
   private readonly REGISTER_URL = `${environment.backendUrl}/user/student`;
 
@@ -57,31 +58,40 @@ export class RegisterComponent {
       return;
     }
 
-     if (this.classId === null) {
+     if (!this.class_code) {
     alert('Please enter your class code.');
     return;
   }
 
-   this.classService.exists(this.classId).subscribe({
-    next: exists => {
-      if (!exists) {
-        alert('Invalid class code.');
-        return;
-      }
-
+   this.classService.getClass(this.class_code).subscribe({
+    next: cls => {
+      this.classData = cls;
       this.register();
+    },
+    error: err => {
+      if (err.status === 404) {
+        alert('Invalid class code. Please check and try again.');
+      } else {
+        console.error('Error fetching class data:', err);
+        alert('An error occurred while validating the class code. Please try again later.');
+      }
     }
   });
 }
 
   register(): void {
+    if (!this.classData) {
+      alert('Class data is not available. Cannot proceed with registration.');
+      return;
+    }
+    
     const userData = {
       name: this.name,
       surname: this.surname,
       email: this.email,
       passwd: this.password,
       dni: this.dni,
-      student_class_id: this.classId,
+      student_class_id: this.classData.id,
     };
 
     this.authService.register(userData).subscribe({

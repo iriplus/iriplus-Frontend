@@ -5,8 +5,3 @@ export interface Class {
     suggested_level: string;
     max_capacity: number;
 }
-
-export interface ClassResponse {
-    message: string;
-    data: Class[];
-}
