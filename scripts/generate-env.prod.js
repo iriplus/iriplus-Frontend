@@ -1,11 +1,28 @@
-const fs = require('fs');
-require('dotenv').config();
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
 
-const env = {
+dotenv.config();
+
+const backendUrl = process.env.BACKEND_URL_PROD;
+
+if (!backendUrl) {
+  console.error('ERROR: BACKEND_URL is not defined');
+  process.exit(1);
+}
+
+const dir = 'src/environments';
+fs.mkdirSync(dir, { recursive: true });
+
+const filePath = path.join(dir, 'environment.prod.ts');
+
+const content = `
+export const environment = {
   production: true,
-  backendUrl: process.env.BACKEND_URL_PROD,
+  backendUrl: '${backendUrl}'
 };
+`;
 
-const content = `export const environment = ${JSON.stringify(env, null, 2)};`;
+fs.writeFileSync(filePath, content.trim());
 
-fs.writeFileSync('src/environments/environment.prod.ts', content);
+console.log('environment.prod.ts generated at', filePath);
