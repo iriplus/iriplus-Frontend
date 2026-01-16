@@ -41,6 +41,28 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = "";
 
+    if (!this.email || !this.password) {
+      this.errorMessage = "Please enter both email and password.";
+      this.isLoading = false;
+      return;
+    } else if (!this.email.includes('@')) {
+        this.errorMessage = "Please enter a valid email address.";
+        this.isLoading = false;
+        return;
+    } else if (this.email.length > 255) {
+        this.errorMessage = "Email cannot exceed 255 characters.";
+        this.isLoading = false;
+        return;
+    } else if (this.password.length < 8) {
+        this.errorMessage = "Password must be at least 8 characters long.";
+        this.isLoading = false;
+        return;
+    } else if (this.password.length > 255) {
+        this.errorMessage = "Password cannot exceed 255 characters.";
+        this.isLoading = false;
+        return;
+    }
+
     const credentials: Login = {
       email: this.email,
       password: this.password,
@@ -54,7 +76,8 @@ export class LoginComponent {
       },
       error: () => {
         this.isLoading = false;
-        this.errorMessage = 'Invalid email or password';
+        this.errorMessage = 'Wrong email or password';
+        return;
       }
     });
   }

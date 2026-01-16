@@ -30,7 +30,8 @@ export class AuthService {
     return this.http.post<LoginResponse>(this.LOGIN_URL, credentials, {withCredentials: true});
   }
 
-  register(userData: RegisterStudent) {
+  register(userData: User) {
+    console.log(userData);
     return this.http.post(this.REGISTER_URL, userData);
   }
 
@@ -42,7 +43,7 @@ export class AuthService {
     return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
       map((user) => {
         this.authenticated = true;
-        this.userType = user.type;
+        this.userType = user.user_type;
         return true;
       }),
       catchError(() => {

@@ -95,10 +95,10 @@
         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
       </svg>
       <input
-        [type]="showPassword ? 'text' : 'password'"
+        [type]="showPasswd ? 'text' : 'password'"
         id="password"
         name="password"
-        [(ngModel)]="password"
+        [(ngModel)]="passwd"
         class="form-input"
         placeholder="At least 8 characters"
         required
@@ -115,7 +115,7 @@
         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
       </svg>
       <input
-        [type]="showConfirmPassword ? 'text' : 'password'"
+        [type]="showConfirmPasswd ? 'text' : 'password'"
         id="confirmPassword"
         name="confirmPassword"
         [(ngModel)]="confirmPassword"
@@ -164,8 +164,9 @@
     </label>
   </div>
 
-  <button type="submit" class="submit-button" (click)="validateParams()">
-    Create Account
+  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" (click)="validateParams()">
+    <span *ngIf="isLoading" class="app-spinner"></span>
+    <span *ngIf="!isLoading">Create Account</span>
   </button>
 </form>
 

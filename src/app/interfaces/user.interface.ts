@@ -1,13 +1,14 @@
-export type UserType = 'Coordinator' | 'Teacher' | 'Student';
+export type UserType = 'COORDINATOR' | 'TEACHER' | 'STUDENT';
 
 export interface User {
   name: string;
   surname: string;
   email: string;
+  passwd: string;
   dni: string;
-  type: UserType;
+  user_type: UserType;
 }
 
 export interface Student extends User {
-    classId: number;
+    student_class_id: number;
 }
