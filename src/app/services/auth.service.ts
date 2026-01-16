@@ -4,10 +4,13 @@ import { environment } from '../../environments/environment';
 import { map, catchError, of } from 'rxjs';
 import { Login, LoginResponse } from '../interfaces/login.interface';
 import { User } from '../interfaces/user.interface';
+import { RegisterStudent } from '../interfaces/register.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private authenticated: boolean | null = null;
+  private userType: string | null = null;
+
 
   private resetPasswordUntil: number | null = null;
   private readonly RESET_PASSWORD_TTL_MS = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -27,7 +30,7 @@ export class AuthService {
     return this.http.post<LoginResponse>(this.LOGIN_URL, credentials, {withCredentials: true});
   }
 
-  register(userData: User) {
+  register(userData: RegisterStudent) {
     return this.http.post(this.REGISTER_URL, userData);
   }
 
@@ -36,13 +39,16 @@ export class AuthService {
       return of(this.authenticated);
     }
     
-    return this.http.get(this.ME_URL, { withCredentials: true }).pipe(
-      map(() => {
+    return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
+      map((user) => {
         this.authenticated = true;
+        this.userType = user.type;
+        console.log('USER TYPE:', this.userType);
         return true;
       }),
       catchError(() => {
         this.authenticated = false;
+        this.userType = null;
         return of(false);
       })
     );
@@ -70,6 +76,11 @@ export class AuthService {
 
     return true;
   }
+
+  getUserType(): string | null {
+  return this.userType;
+}
+
 
   logout() {
     return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true });
