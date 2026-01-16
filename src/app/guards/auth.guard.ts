@@ -25,3 +25,24 @@ export const privateGuard: CanActivateFn = (route, state) => {
     })
   );
 };
+
+export const coordinatorGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
+  const auth = inject(AuthService);
+
+  return auth.checkAuth().pipe(
+    map(isAuth => {
+      if (!isAuth) {
+        return router.createUrlTree(['/login'], {
+          queryParams: { returnUrl: state.url }
+        });
+      }
+
+      if (auth.getUserType() !== 'Coordinator') {
+        return router.createUrlTree(['/home']);
+      }
+
+      return true;
+    })
+  );
+};

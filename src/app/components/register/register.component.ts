@@ -6,6 +6,7 @@ import { environment } from "../../../environments/environment";
 import { AuthService } from '../../services/auth.service';
 import { ClassService } from '../../services/class.service';
 import { Class } from '../../interfaces/class.interface';
+import { RegisterStudent } from '../../interfaces/register.interface';
 
 @Component({
   selector: 'app-register',
@@ -85,7 +86,7 @@ export class RegisterComponent {
       return;
     }
     
-    const userData = {
+    const userData: RegisterStudent = {
       name: this.name,
       surname: this.surname,
       email: this.email,
