@@ -43,7 +43,6 @@ export class AuthService {
       map((user) => {
         this.authenticated = true;
         this.userType = user.type;
-        console.log('USER TYPE:', this.userType);
         return true;
       }),
       catchError(() => {
@@ -95,7 +94,6 @@ export class AuthService {
   }
 
   resetPassword(email: string, newPassword: string) {
-    console.log('AuthService.resetPassword called with', email, newPassword);
     return this.http.post(this.RESET_PASSWORD_URL, { email, newPassword });
   }
 }

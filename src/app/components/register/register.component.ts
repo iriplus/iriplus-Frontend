@@ -73,7 +73,6 @@ export class RegisterComponent {
       if (err.status === 404) {
         alert('Invalid class code. Please check and try again.');
       } else {
-        console.error('Error fetching class data:', err);
         alert('An error occurred while validating the class code. Please try again later.');
       }
     }
@@ -97,12 +96,10 @@ export class RegisterComponent {
 
     this.authService.register(userData).subscribe({
       next: (res) => {
-        console.log('User registered:', res);
         alert('Verification mail sent succesfully. Please check your inbox.');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Registration failed:', err);
         alert('Error creating account. Please try again.');
       },
     });
