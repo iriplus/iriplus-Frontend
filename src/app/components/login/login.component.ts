@@ -48,12 +48,13 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: () => {
+        this.isLoading = false;
         this.authService.setAuthenticated(true);
         this.router.navigateByUrl(this.returnUrl);
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.message || 'Invalid email or password';
+        this.errorMessage = 'Invalid email or password';
       }
     });
   }

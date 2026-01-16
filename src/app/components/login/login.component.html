@@ -25,23 +25,23 @@
   </div>
 
   <div class="form-group">
-  <label for="password" class="form-label">Password</label>
-  <div class="input-wrapper">
-    <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-    </svg>
-    <input
-      [type]="showPassword ? 'text' : 'password'"
-      id="password"
-      name="password"
-      [(ngModel)]="password"
-      class="form-input"
-      placeholder="••••••••"
-      required
-    />
+    <label for="password" class="form-label">Password</label>
+    <div class="input-wrapper">
+      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      <input
+        [type]="showPassword ? 'text' : 'password'"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        class="form-input"
+        placeholder="••••••••"
+        required
+      />
+    </div>
   </div>
-</div>
 
   <div class="form-options">
     <label class="checkbox-label">
@@ -49,13 +49,16 @@
       <span class="checkbox-text">Remember me</span>
     </label>
 
-    <button type="button" class="link-button" (click)="goToForgotPassword()">
-      Forgot password?
-    </button>
+    <button type="button" class="link-button" (click)="goToForgotPassword()">Forgot password?</button>
   </div>
 
-  <button type="submit" class="submit-button" (click)="login()">
-    Login
+  <div *ngIf="errorMessage" class="app-error">
+    {{ errorMessage }}
+  </div>
+
+  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" (click)="login()">
+    <span *ngIf="isLoading" class="app-spinner"></span>
+    <span *ngIf="!isLoading">Login</span>
   </button>
 </form>
 

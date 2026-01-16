@@ -42,3 +42,60 @@ button {
   border-bottom: 1px solid var(--color-olive);
   text-align: left;
 }
+
+.app-error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: #fff0f0;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  font-size: 14px;
+  text-align: center;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Pequeña animación suave al aparecer */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Spinner */
+.app-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.6); 
+  border-top: 3px solid var(--color-sage);      
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* Centrado del spinner dentro de botones */
+.btn-with-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Estado de carga para cualquier botón */
+.btn-loading {
+  opacity: 0.7;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* Animación */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
