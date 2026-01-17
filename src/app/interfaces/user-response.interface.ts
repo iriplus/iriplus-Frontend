@@ -1,14 +1,11 @@
 export type UserType = 'COORDINATOR' | 'TEACHER' | 'STUDENT';
 
-export interface User {
+export interface UserResponse {
+  id: number;
   name: string;
   surname: string;
   email: string;
-  passwd: string;
   dni: string;
   type: UserType;
-}
-
-export interface Student extends User {
-    student_class_id: number;
+  is_verified: boolean;
 }

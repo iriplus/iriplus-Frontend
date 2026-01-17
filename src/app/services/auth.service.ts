@@ -43,7 +43,10 @@ export class AuthService {
     return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
       map((user) => {
         this.authenticated = true;
-        this.userType = user.user_type;
+        this.userType = user.type;
+        console.log('AUTHENTICATED:', this.authenticated);
+        console.log('USER TYPE:', user.type);
+        console.log('USER TYPE:', this.userType);
         return true;
       }),
       catchError(() => {

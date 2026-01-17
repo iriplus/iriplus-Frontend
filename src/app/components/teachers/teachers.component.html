@@ -1,0 +1,126 @@
+<div class="teachers-container">
+  <div class="teachers-card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <h1>Teacher Management</h1>
+      <p>Manage system teachers</p>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="actions-bar">
+      <!-- Search -->
+      <div class="search-container">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by name, email or ID..."
+        />
+        <!--[(ngModel)]="searchTerm"
+        (input)="filterTeachers()"
+        />-->
+        <button class="clear-search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Add Button -->
+      <button class="btn-add">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>New Teacher</span>
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table class="teachers-table">
+
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>ID</th>
+            <th>Verified</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let teacher of teachers">
+            <td>
+              <div class="avatar">
+                <div class="avatar-placeholder">
+                  {{ teacher.name.charAt(0) }}{{ teacher.surname.charAt(0) }}
+                </div>
+              </div>
+            </td>
+
+            <td>{{ teacher.name }}</td>
+            <td>{{ teacher.surname }}</td>
+
+            <td>
+              <span class="email-cell">{{ teacher.email }}</span>
+            </td>
+
+            <td>{{ teacher.dni }}</td>
+
+            <td>
+              <span
+                class="badge"
+                [ngClass]="teacher.is_verified ? 'badge-verified' : 'badge-pending'">
+                {{ teacher.is_verified ? 'Verified' : 'Pending' }}
+              </span>
+            </td>
+
+            <td>
+              <div class="actions-cell">
+                <button class="btn-action btn-edit">
+                  Edit
+                </button>
+
+                <button class="btn-action btn-delete" (click)="deleteTeacher(teacher.id)">
+                  Delete
+                </button>
+                
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="teachers.length === 0">
+            <td colspan="7" class="empty-state">
+              <div class="empty-content">
+                <p>No teachers found</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</div>

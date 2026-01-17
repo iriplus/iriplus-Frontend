@@ -206,7 +206,7 @@ export class RegisterComponent {
       email: this.email,
       passwd: this.passwd,
       dni: this.dni,
-      user_type: 'STUDENT',
+      type: 'STUDENT',
       student_class_id: this.classData.id
     };
 

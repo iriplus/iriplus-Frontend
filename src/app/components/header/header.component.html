@@ -30,10 +30,11 @@
         <!--SideBar Body-->
         <div class="offcanvas-body nav-body">
           <ul class="navbar-nav nav-links">
-            <li class="nav-item"><a class="nav-link" routerLink="/home">Home</a></li>
-            <li class="nav-item"><a class="nav-link" routerLink="/home">Page2</a></li>
-            <li class="nav-item"><a class="nav-link" routerLink="/home">Page3</a></li>
-            <li class="nav-item"><a class="nav-link" routerLink="/home">Page4</a></li>
+            <li class="nav-item"><a class="nav-link" (click)="goTo('/home')">Home</a></li>
+            <li class="nav-item"><a class="nav-link" (click)="goTo('/home')">Page2</a></li>
+            <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/teachers')">Teachers</a></li>
+            <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/classes')">Classes</a></li>
+            <li class="nav-item"><a class="nav-link" (click)="goTo('/home')">Page3</a></li>
           </ul>
           <!--Login / Sign up or User info-->         
           <div class="dropdown">
@@ -41,7 +42,7 @@
               <i class="bi bi-person"></i>
             </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" (click)="navigate('my-profile')"><i class="bi bi-person-gear"></i><span>My Profile</span></a></li>
+                <li><a class="dropdown-item" (click)="goTo('my-profile')"><i class="bi bi-person-gear"></i><span>My Profile</span></a></li>
                 <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-person-x"></i>Log Out</a></li>
               </ul>
             </div>

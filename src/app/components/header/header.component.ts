@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Router } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
@@ -11,7 +12,7 @@ interface LoginResponse {
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [CommonModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -28,9 +29,10 @@ export class HeaderComponent {
     private authService: AuthService,
   ) {}
 
-navigate(path: 'my-profile'): void {
-  this.router.navigate(['/', path]); // ✅ Ahora navega a /home/my-profile
-}
+  goTo(path: string): void {
+    this.router.navigate([path]);
+  }
+
   logout(): void {
     this.authService.logout().subscribe({
       next: () => {
@@ -39,4 +41,9 @@ navigate(path: 'my-profile'): void {
       }
     });
   }
+
+  get isCoordinator(): boolean {
+  return this.authService.getUserType() === 'Coordinator';
+}
+
 }
