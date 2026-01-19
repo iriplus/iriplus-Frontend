@@ -683,3 +683,6 @@ tbody > p {
     text-align: center;
   }
 }
+h5.modal-title {
+    color: black;
+}

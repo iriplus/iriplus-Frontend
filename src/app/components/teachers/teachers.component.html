@@ -29,11 +29,10 @@
           type="text"
           class="search-input"
           placeholder="Search by name, email or ID..."
-        />
-        <!--[(ngModel)]="searchTerm"
-        (input)="filterTeachers()"
-        />-->
-        <button class="clear-search">
+          [(ngModel)]="searchTerm"
+          (input)="filterTeachers()"
+          />
+        <button class="clear-search" (click)="clearSearch()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -43,7 +42,7 @@
       </div>
 
       <!-- Add Button -->
-      <button class="btn-add">
+      <button class="btn-add" data-bs-toggle="modal" data-bs-target="#newTeacherModal">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -70,7 +69,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let teacher of teachers">
+          <tr *ngFor="let teacher of filteredTeachers">
             <td>
               <div class="avatar">
                 <div class="avatar-placeholder">
@@ -98,10 +97,9 @@
 
             <td>
               <div class="actions-cell">
-                <button class="btn-action btn-edit">
+                <button class="btn-action btn-edit" class="btn-action btn-edit" (click)="editTeacher(teacher)">
                   Edit
                 </button>
-
                 <button class="btn-action btn-delete" (click)="deleteTeacher(teacher.id)">
                   Delete
                 </button>
@@ -110,7 +108,7 @@
             </td>
           </tr>
 
-          <tr *ngIf="teachers.length === 0">
+          <tr *ngIf="filteredTeachers.length === 0">
             <td colspan="7" class="empty-state">
               <div class="empty-content">
                 <p>No teachers found</p>
@@ -122,5 +120,24 @@
       </table>
     </div>
 
+  </div>
+</div>
+<div class="modal fade" id="newTeacherModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Teacher</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <app-teacher-form
+          [teacher]="selectedTeacher"
+          (teacherCreated)="onTeacherCreated()">
+        </app-teacher-form>
+      </div>
+
+    </div>
   </div>
 </div>
