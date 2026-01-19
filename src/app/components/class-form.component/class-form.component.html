@@ -1,0 +1,50 @@
+<div class="modal-backdrop">
+  <div class="modal">
+
+    <h2>{{ isEdit ? 'Editar Clase' : 'Nueva Clase' }}</h2>
+
+    <form (ngSubmit)="submit()">
+
+      <input
+        type="text"
+        placeholder="Código"
+        [(ngModel)]="form.class_code"
+        name="class_code"
+        [disabled]="isEdit"
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Descripción"
+        [(ngModel)]="form.description"
+        name="description"
+        required
+      />
+
+      <input
+        type="text"
+        placeholder="Nivel sugerido"
+        [(ngModel)]="form.suggested_level"
+        name="suggested_level"
+        required
+      />
+
+      <input
+        type="number"
+        placeholder="Capacidad máxima"
+        [(ngModel)]="form.max_capacity"
+        name="max_capacity"
+        required
+      />
+
+      <div class="actions">
+        <button type="submit">
+          {{ isEdit ? 'Guardar cambios' : 'Crear' }}
+        </button>
+        <button type="button" (click)="close()">Cancelar</button>
+      </div>
+
+    </form>
+  </div>
+</div>

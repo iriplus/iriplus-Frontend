@@ -4,4 +4,6 @@ export interface Class {
     description: string;
     suggested_level: string;
     max_capacity: number;
+    students: number;
+    teachers: number;
 }

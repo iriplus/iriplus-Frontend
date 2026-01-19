@@ -25,4 +25,28 @@ export class ClassService {
       catchError(err => throwError(() => err))
       );
   }
+
+  getClasses(): Observable<Class[]> {
+    return this.http.get<Class[]>(this.CLASS_URL, this.httpOptions).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  createClass(payload: Partial<Class>): Observable<Class> {
+    return this.http.post<Class>(this.CLASS_URL, payload, this.httpOptions).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  updateClass(classId: number, payload: Partial<Class>): Observable<Class> {
+    return this.http.put<Class>(`${this.CLASS_URL}/${classId}`,payload,this.httpOptions).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  deleteClass(classId: number): Observable<void> {
+    return this.http.delete<void>(`${this.CLASS_URL}/${classId}`,this.httpOptions).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
 }
