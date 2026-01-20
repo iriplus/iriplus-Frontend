@@ -46,7 +46,6 @@ export class UserService {
     );
   }
 
-
   deleteUser(userId: number): Observable<void> {
     return this.http.delete<void>(`${this.USER_URL}/${userId}`).pipe(
       catchError(err => throwError(() => err))

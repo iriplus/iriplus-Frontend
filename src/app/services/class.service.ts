@@ -32,14 +32,14 @@ export class ClassService {
     );
   }
 
-  createClass(payload: Partial<Class>): Observable<Class> {
-    return this.http.post<Class>(this.CLASS_URL, payload, this.httpOptions).pipe(
+  createClass(Class: Partial<Class>): Observable<Class> {
+    return this.http.post<Class>(this.CLASS_URL, Class, this.httpOptions).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
-  updateClass(classId: number, payload: Partial<Class>): Observable<Class> {
-    return this.http.put<Class>(`${this.CLASS_URL}/${classId}`,payload,this.httpOptions).pipe(
+  updateClass(classId: number, Class: Partial<Class>): Observable<Class> {
+    return this.http.put<Class>(`${this.CLASS_URL}/${classId}`,Class,this.httpOptions).pipe(
       catchError(err => throwError(() => err))
     );
   }

@@ -10,8 +10,8 @@
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
         </svg>
       </div>
-      <h1>Gestión de Clases</h1>
-      <p>Administra las clases del sistema</p>
+      <h1>Class Management</h1>
+      <p>Manage the system’s classes</p>
     </div>
 
     <!-- Toolbar -->
@@ -25,19 +25,19 @@
         <input
           type="text"
           class="search-input"
-          placeholder="Buscar por código, descripción o nivel..."
+          placeholder="Search by code, description, or level..."
           [(ngModel)]="searchText"
           (input)="filterClasses()"
         >
       </div>
 
-      <button class="btn-add" (click)="openCreate()">
+      <button class="btn-add" data-bs-toggle="modal" data-bs-target="#newClassModal">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 5v14"/>
           <path d="M5 12h14"/>
         </svg>
-        Nueva Clase
+        New Class
       </button>
     </div>
 
@@ -46,19 +46,19 @@
       <table class="classes-table">
         <thead>
           <tr>
-            <th>Código</th>
-            <th>Descripción</th>
-            <th>Nivel Sugerido</th>
-            <th>Capacidad</th>
-            <th>Profesores</th>
-            <th>Estudiantes</th>
-            <th>Acciones</th>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Suggested Level</th>
+            <th>Capacity</th>
+            <th>Teachers</th>
+            <th>Students</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
 
-  <tr *ngFor="let c of classes">
+  <tr *ngFor="let c of filteredClasses">
     <td><span class="class-code">{{ c.class_code }}</span></td>
     <td><span class="class-description">{{ c.description }}</span></td>
 
@@ -94,23 +94,22 @@
 
     <td>
       <div class="action-buttons">
-        <button class="btn-action btn-edit" title="Editar" (click)="openEdit(c)">✏️</button>
-        <button class="btn-action btn-delete" title="Eliminar" (click)="deleteClass(c)">🗑️</button>
+        <button class="btn-action btn-edit" title="Edit" (click)="openEdit(c)">✏️</button>
+        <button class="btn-action btn-delete" title="Delete" (click)="deleteClass(c.id)">🗑️</button>
       </div>
     </td>
   </tr>
 
-  <!-- Estado vacío -->
-  <tr *ngIf="!loading && classes.length === 0">
+  <!-- Empty state -->
+  <tr *ngIf="!isLoading && classes.length === 0">
     <td colspan="7" class="no-results">
       <div class="empty-state">
-        <p>No se encontraron clases</p>
+        <p>No classes found</p>
       </div>
     </td>
   </tr>
 
 </tbody>
-
 
       </table>
     </div>
@@ -118,11 +117,11 @@
     <!-- Stats -->
     <div class="stats-bar">
       <div class="stat-item">
-        <span class="stat-label">Total de clases:</span>
+        <span class="stat-label">Total classes:</span>
         <span class="stat-value">{{ classes.length }}</span>
       </div>
       <div class="stat-item">
-        <span class="stat-label">Mostrando:</span>
+        <span class="stat-label">Showing:</span>
         <span class="stat-value">{{ classes.length }}</span>
       </div>
     </div>
@@ -130,10 +129,28 @@
   </div>
 </div>
 
-<app-class-form
-  *ngIf="showForm"
-  [isEdit]="!!editingClass"
-  [classData]="editingClass"
-  (save)="saveClass($event)"
-  (cancel)="showForm = false">
-</app-class-form>
+<div class="modal fade" id="newClassModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">{{ selectedClass ? 'Edit Class' : 'New Class' }}</h5>
+          <button type="button" class="btn-close-custom" data-bs-dismiss="modal">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" 
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+      </div>
+
+      <div class="modal-body">
+        <app-class-form
+          [classData]="selectedClass"
+          (classSaved)="onClassSaved()">
+        </app-class-form>
+      </div>
+
+    </div>
+  </div>
+</div>

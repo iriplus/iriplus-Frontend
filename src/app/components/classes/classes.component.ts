@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Class } from '../../interfaces/class.interface';
 import { ClassService } from '../../services/class.service';
+import { Class } from '../../interfaces/class.interface';
 import { ClassFormComponent } from '../class-form.component/class-form.component';
 
 @Component({
@@ -10,74 +10,96 @@ import { ClassFormComponent } from '../class-form.component/class-form.component
   standalone: true,
   imports: [CommonModule, FormsModule, ClassFormComponent],
   templateUrl: './classes.component.html',
-  styleUrl: './classes.component.css'
+  styleUrls: ['./classes.component.css']
 })
 export class ClassesComponent implements OnInit {
 
+  selectedClass: Class | null = null;
   classes: Class[] = [];
-  loading = false;
-  showForm = false;
-  editingClass: Class | null = null;
-
+  isLoading = true;
+  errorMessage = '';
+  searchText = '';
+  filteredClasses: Class[] = [];
 
   constructor(private classService: ClassService) {}
 
   ngOnInit(): void {
     this.loadClasses();
+
+    const modalEl = document.getElementById('newClassModal');
+    if (modalEl) {
+      modalEl.addEventListener('hidden.bs.modal', () => {
+        this.selectedClass = null;
+      });
+    }
   }
 
   loadClasses(): void {
-    this.loading = true;
     this.classService.getClasses().subscribe({
-      next: (data) => {
+      next: (data: Class[]) => {
         this.classes = data;
-        this.loading = false;
+        this.filteredClasses = data;
+        this.isLoading = false;
       },
       error: () => {
-        this.loading = false;
+        this.errorMessage = 'Error loading classes';
+        this.isLoading = false;
       }
     });
   }
 
-  openCreate(): void {
-  this.editingClass = null;
-  this.showForm = true;
-}
+  onClassSaved(): void {
+    this.selectedClass = null;
+    this.loadClasses();
 
-openEdit(c: Class): void {
-  this.editingClass = c;
-  this.showForm = true;
-}
-
-saveClass(payload: Partial<Class>): void {
-  if (this.editingClass) {
-    this.classService.updateClass(this.editingClass.id, payload)
-      .subscribe(() => this.loadClasses());
-  } else {
-    this.classService.createClass(payload)
-      .subscribe(() => this.loadClasses());
+    const modalEl = document.getElementById('newClassModal');
+    if (modalEl) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.hide();
+    }
   }
 
-  this.showForm = false;
-}
+  openEdit(classData: Class): void {
+    this.selectedClass = classData;
 
-deleteClass(c: Class): void {
-  if (!confirm(`¿Eliminar la clase ${c.class_code}?`)) return;
+    const modalEl = document.getElementById('newClassModal');
+    if (modalEl) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+    }
+  }
 
-  this.classService.deleteClass(c.id).subscribe(() => {
-    this.loadClasses();
-  });
-}
-searchText = '';
-allClasses: Class[] = [];
+  deleteClass(id: number): void {
+    const confirmed = confirm('Are you sure you want to delete this class?');
+    if (!confirmed) return;
 
-filterClasses(): void {
-  const value = this.searchText.toLowerCase();
+    this.classService.deleteClass(id).subscribe({
+      next: () => {
+        this.classes = this.classes.filter(c => c.id !== id);
+        this.filterClasses();
+      },
+      error: () => {
+        this.errorMessage = 'The class could not be removed';
+      }
+    });
+  }
 
-  this.classes = this.allClasses.filter(c =>
-    c.class_code.toLowerCase().includes(value) ||
-    c.description.toLowerCase().includes(value) ||
-    c.suggested_level.toLowerCase().includes(value)
-  );
-}
+  filterClasses(): void {
+    const term = this.searchText.toLowerCase().trim();
+    if (!term) {
+      this.filteredClasses = this.classes;
+      return;
+    }
+
+    this.filteredClasses = this.classes.filter(c =>
+      c.class_code.toLowerCase().includes(term) ||
+      c.description.toLowerCase().includes(term) ||
+      c.suggested_level.toLowerCase().includes(term)
+    );
+  }
+
+  clearSearch(): void {
+    this.searchText = '';
+    this.filteredClasses = this.classes;
+  }
 }
