@@ -25,6 +25,7 @@
           required
         />
       </div>
+      <div *ngIf="nameError" class="field-error">{{ nameError }}</div>
 
       <div class="input-wrapper">
         <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
@@ -41,6 +42,7 @@
           required
         />
       </div>
+      <div *ngIf="surnameError" class="field-error">{{ surnameError }}</div>
     </div>
   </div>
 
@@ -62,6 +64,7 @@
         required
       />
     </div>
+    <div *ngIf="emailError" class="field-error">{{ emailError }}</div>
   </div>
 
   <!-- DNI -->
@@ -84,6 +87,7 @@
         required
       />
     </div>
+    <div *ngIf="dniError" class="field-error">{{ dniError }}</div>
   </div>
 
   <!-- Password -->
@@ -104,6 +108,7 @@
         required
       />
     </div>
+    <div *ngIf="passwordError" class="field-error">{{ passwordError }}</div>
   </div>
 
   <!-- Confirm Password -->
@@ -124,6 +129,7 @@
         required
       />
     </div>
+    <div *ngIf="confirmPasswordError" class="field-error">{{ confirmPasswordError }}</div>
   </div>
 
   <!-- Class Code -->
@@ -146,6 +152,7 @@
         required
       />
     </div>
+    <div *ngIf="classCodeError" class="field-error">{{ classCodeError }}</div>
   </div>
 
   <!-- Terms -->
@@ -162,9 +169,11 @@
         I accept the <a href="#" class="link-inline">terms and conditions</a>
       </span>
     </label>
+    <div *ngIf="termsError" class="field-error">{{ termsError }}</div>
   </div>
 
-  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" (click)="validateParams()">
+  <div *ngIf="errorMessage" class="app-error">{{ errorMessage }}</div>
+  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" [disabled]="isLoading || !isFormValid"(click)="validateParams()">
     <span *ngIf="isLoading" class="app-spinner"></span>
     <span *ngIf="!isLoading">Create Account</span>
   </button>

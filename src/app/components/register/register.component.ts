@@ -34,15 +34,26 @@ export class RegisterComponent {
   passwd = '';
   confirmPassword = '';
   dni = '';
-  showPasswd = false;
-  showConfirmPasswd = false;
   class_code: string | null = null;
-  acceptTerms = false;
 
   classData: Class | null = null;
   existingUser: User | null = null;
 
+  showPasswd = false;
+  showConfirmPasswd = false;
+  acceptTerms = false;
+
   isLoading = false;
+
+  nameError = "";
+  surnameError = "";
+  emailError = "";
+  dniError = "";
+  passwordError = "";
+  confirmPasswordError = "";
+  classCodeError = "";
+  termsError = "";
+  errorMessage = "";
 
   togglePasswordVisibility(): void {
     this.showPasswd = !this.showPasswd;
@@ -52,52 +63,59 @@ export class RegisterComponent {
     this.showConfirmPasswd = !this.showConfirmPasswd;
   }
 
+  get isFormValid(): boolean {
+    return !!this.name &&
+      !!this.surname &&
+      !!this.email &&
+      !!this.dni &&
+      !!this.passwd &&
+      !!this.confirmPassword &&
+      !!this.class_code &&
+      !!this.acceptTerms;
+  }
+
   validateParams(): void {
     this.isLoading = true;
-    // Validates Name
-    if (!this.name) {
-      alert('Please enter your name.');
+
+    this.errorMessage = "";
+    this.nameError = "";
+    this.surnameError = "";
+    this.emailError = "";
+    this.dniError = "";
+    this.passwordError = "";
+    this.confirmPasswordError = "";
+    this.classCodeError = "";
+    this.termsError = "";
+
+    if (!this.name.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)) {
+      this.nameError = "*Name contains invalid characters.";
       this.isLoading = false;
-      return;
-    } else if (!this.name.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)){
-        alert('Name can only contain letters, spaces, apostrophes, and hyphens.');
-        this.isLoading = false;
-        return;
-    } else if (this.name.length > 255) {
-        alert('Name cannot exceed 255 characters.');
-        this.isLoading = false;
-        return;
+    } 
+    
+    if (this.name.length > 255) {
+      this.nameError = "*Name cannot exceed 255 characters.";
+      this.isLoading = false;
     }
 
-    // Validates Surname
-    if (!this.surname) {
-      alert('Please enter your surname.');
+    if (!this.surname.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)) {
+      this.surnameError = "*Surname can only contain letters, spaces, apostrophes, and hyphens.";
       this.isLoading = false;
-      return;
-    } else if (!this.surname.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)){
-        alert('Surname can only contain letters, spaces, apostrophes, and hyphens.');
-        this.isLoading = false;
-        return;
-    } else if (this.surname.length > 255) {
-        alert('Surname cannot exceed 255 characters.');
-        this.isLoading = false;
-        return;
     }
     
-    // Validates Email
-    if (!this.email) {
-      alert('Please enter your email address.');
+    if (this.surname.length > 255) {
+      this.surnameError = "*Surname cannot exceed 255 characters.";
       this.isLoading = false;
-      return;
-    } else if (!this.email.includes('@')) {
-        alert('Please enter a valid email address.');
-        this.isLoading = false;
-        return;
-    } else if (this.email.length > 255) {
-        alert('Email cannot exceed 255 characters.');
-        this.isLoading = false;
-        return;
-    } else {
+    }
+
+    if (!this.email.includes('@')) {
+      this.emailError = "*Please enter a valid email address.";
+      this.isLoading = false;
+    }
+    if (this.email.length > 255) {
+      this.emailError = "*Email cannot exceed 255 characters.";
+    }
+
+    if (this.emailError) {
       this.userService.getUserByEmail(this.email).subscribe({
         next: user => {
           this.existingUser = user;
@@ -110,16 +128,12 @@ export class RegisterComponent {
       });
     }
 
-    // Validates DNI
-    if (!this.dni) {
-      alert('Please enter your DNI.');
+    if (this.dni.length > 10) {
+      this.dniError = "*DNI cannot exceed 10 characters.";
       this.isLoading = false;
-      return;
-    } else if (this.dni.length > 10) {
-        alert('DNI cannot exceed 10 characters.');
-        this.isLoading = false;
-        return;
-    } else {    
+    } 
+    
+    if (this.dniError) {    
       this.userService.getUserByDNI(this.dni).subscribe({
         next: user => {
           this.existingUser = user;
@@ -132,69 +146,74 @@ export class RegisterComponent {
       });
     }
 
-    // Validates Password
-    if (!this.passwd || !this.confirmPassword) {
-      alert('Please enter and confirm your password.');
-      this.isLoading = false;
-      return;
-    }
-
     if (this.passwd.length < 8) {
-      alert('Password must be at least 8 characters long.');
+      this.passwordError = "*Password must be at least 8 characters long.";
       this.isLoading = false;
-      return;
-    } else if (this.passwd.length > 255) {
-        alert('Password cannot exceed 255 characters.');
-        this.isLoading = false;
-        return;
+    } 
+
+    if (this.passwd.length > 255) {
+      this.passwordError = "*Password cannot exceed 255 characters.";
+      this.isLoading = false;
     }
 
     if (this.passwd !== this.confirmPassword) {
-      alert('Passwords do not match.');
+      this.confirmPasswordError = "*Passwords do not match.";
       this.isLoading = false;
-      return;
     }
 
     // Validates Class Code
     if (!this.class_code) {
-      alert('Please enter your class code.');
+      this.classCodeError = "*Class code is required.";
       this.isLoading = false;
-      return;
     } else if (this.class_code.length !== 8) {
-        alert('Class code must be exactly 8 characters long.');
+        this.classCodeError='*Class code must be exactly 8 characters long.';
         this.isLoading = false;
+    } 
+
+    if (!this.acceptTerms) {
+      this.termsError = "*You must accept the terms and conditions.";
+      this.isLoading = false;
+    }
+
+    if (
+      this.nameError || this.surnameError || this.emailError ||
+      this.dniError || this.passwordError || this.confirmPasswordError ||
+      this.classCodeError || this.termsError
+    ) {return;}
+
+    this.userService.getUserByEmail(this.email).subscribe({
+      next: user => {
+        if (user) {
+          this.emailError = "*An account with this email already exists.";
+          this.isLoading = false;
         return;
-    } else {
-      this.classService.getClass(this.class_code.toUpperCase()).subscribe({
-        next: cls => {
-          this.classData = cls;
-          // Validates Terms and Conditions
-          if (!this.acceptTerms) {
-            alert('You must accept the terms and conditions.');
-            this.isLoading = false;
-          return;
-    }
-      this.register();
-
-        },
-        error: err => {
-    if (err.status === 404) {
-      alert('Invalid class code. Please check and try again.');
-    } else {
-      alert('An error occurred while validating the class code.');
-    }
-    this.isLoading = false;
-  }
-      });
-    }
-
-    
-
+        }
+        this.userService.getUserByDNI(this.dni).subscribe({
+          next: userDni => {
+            if (userDni) {
+              this.dniError = "*An account with this DNI already exists.";
+              this.isLoading = false;
+            return;
+            }
+            this.classService.getClass(this.class_code!.toUpperCase()).subscribe({
+              next: cls => {
+                this.classData = cls;
+                this.register();
+              },
+              error: () => {
+                this.isLoading = false;
+                this.errorMessage = "*Invalid class code. Please check and try again."
+              }
+            });
+          }
+        });
+      }
+    });
   }
 
   register(): void {
     if (!this.classData) {
-      alert('Class data is missing. Cannot proceed with registration.');
+      this.errorMessage='Class data is missing. Cannot proceed with registration.';
       this.isLoading = false;
       return;
     }
@@ -216,7 +235,7 @@ export class RegisterComponent {
         this.router.navigate(['/login']);
       },
       error: () => {
-        alert('Error creating account. Please try again.');
+        this.errorMessage='Error creating account. Please try again.';
         this.isLoading = false;
         return;
       },
