@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
+import { error } from 'console';
 
 
 @Component({
@@ -15,19 +17,109 @@ export class ForgotPasswordComponent {
   email = '';
   step = 1; // Controls the current step: 1 = enter email, 2 = enter code
   code: string[] = ['', '', '', '', '', '']; // Array that holds the 6-digit verification code
+
+  isLoading = false;
+
+  emailError = "";
+  codeError = "";
+  errorMessage = "";
   
   @ViewChildren('input0, input1, input2, input3, input4, input5') codeInputs!: QueryList<ElementRef>;
 
   constructor(
     private router: Router,
     private authService: AuthService,
+    private userService: UserService
   ) {}
 
+  get isEmailValid(): boolean {
+    return !!this.email;
+  }
+
+  get isCodeValid(): boolean {
+    return this.code.join('').length === 6;
+  }
+
   onSubmitEmail(): void {
-    if (!this.email) return;
+    this.errorMessage = "";
+    this.emailError = "";
+
+    if (!this.email) {
+      this.emailError = "*Email is required.";
+      return;
+    }
+
+    if (!this.email.includes('@')) {
+      this.emailError = "*Please enter a valid email address.";
+      this.isLoading = false;
+    }
+
+    if (this.email.length > 255) {
+      this.emailError = "*Email cannot exceed 255 characters.";
+    }
+
+    if (!this.emailError) {
+      this.isLoading = true;
+      this.userService.getUserByEmail(this.email).subscribe({
+        next: () => {
+          this.authService.sendResetCode(this.email).subscribe({
+            next: () => {
+              alert('A verification code has been sent to your email.');
+              this.isLoading = false;
+              this.step = 2;
+              setTimeout(() => {
+                const inputs = this.codeInputs.toArray();
+                if (inputs.length > 0) inputs[0].nativeElement.focus();
+              }, 100);
+            },
+            error: err => {
+              this.isLoading = false;
+              this.errorMessage = err.error?.msg || 'Error sending code';
+            }
+          });
+        },
+        error: () => {
+          this.emailError = "*No account found with this email.";
+          this.isLoading = false;
+        }
+      });
+    };
+  }
+
+  onSubmitCode(): void {
+    this.errorMessage = "";
+    this.codeError = "";
+
+    const fullCode = this.code.join('');
+
+    if (fullCode.length !== 6) {
+      this.codeError = "*Please enter the 6-digit code.";
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.authService.verifyResetCode(this.email, fullCode).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.authService.setIsResettingPassword(true);
+        this.router.navigate(['/reset-password'], { queryParams: { email: this.email } });
+      },
+      error: err => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.msg || 'Invalid or expired code';
+      }
+    });
+  }
+
+  resendCode(): void {
+    this.errorMessage = "";
+    this.isLoading = true;
 
     this.authService.sendResetCode(this.email).subscribe({
       next: () => {
+        alert('A new verification code has been sent to your email.');
+        this.isLoading = false;
         this.step = 2;
         setTimeout(() => {
           const inputs = this.codeInputs.toArray();
@@ -35,30 +127,9 @@ export class ForgotPasswordComponent {
         }, 100);
       },
       error: err => {
-        alert(err.error?.msg || 'Error sending code');
+        this.isLoading = false;
+        this.errorMessage = err.error?.msg || 'Error sending new code';
       }
-    });
-  }
-
-  onSubmitCode(): void {
-    const fullCode = this.code.join('');
-    if (fullCode.length !== 6) return;
-
-    this.authService.verifyResetCode(this.email, fullCode).subscribe({
-      next: () => {
-        this.authService.setIsResettingPassword(true);
-        this.router.navigate(['/reset-password'], { queryParams: { email: this.email } });
-      },
-      error: err => {
-        alert(err.error?.msg || 'Invalid or expired code');
-      }
-    });
-  }
-
-  resendCode(): void {
-    this.authService.sendResetCode(this.email).subscribe({
-      next: () => alert('A new code has been sent'),
-      error: err => alert(err.error?.msg || 'Error resending code')
     });
   }
 

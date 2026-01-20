@@ -161,7 +161,6 @@ export class RegisterComponent {
       this.isLoading = false;
     }
 
-    // Validates Class Code
     if (!this.class_code) {
       this.classCodeError = "*Class code is required.";
       this.isLoading = false;
@@ -186,14 +185,14 @@ export class RegisterComponent {
         if (user) {
           this.emailError = "*An account with this email already exists.";
           this.isLoading = false;
-        return;
+          return;
         }
         this.userService.getUserByDNI(this.dni).subscribe({
           next: userDni => {
             if (userDni) {
               this.dniError = "*An account with this DNI already exists.";
               this.isLoading = false;
-            return;
+              return;
             }
             this.classService.getClass(this.class_code!.toUpperCase()).subscribe({
               next: cls => {
@@ -237,7 +236,6 @@ export class RegisterComponent {
       error: () => {
         this.errorMessage='Error creating account. Please try again.';
         this.isLoading = false;
-        return;
       },
     });
   }

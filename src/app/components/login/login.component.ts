@@ -93,7 +93,6 @@ export class LoginComponent {
       error: () => {
         this.isLoading = false;
         this.errorMessage = 'Wrong email or password';
-        return;
       }
     });
   }
