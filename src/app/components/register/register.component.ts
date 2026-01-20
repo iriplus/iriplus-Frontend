@@ -187,6 +187,8 @@ export class RegisterComponent {
           this.isLoading = false;
           return;
         }
+      },
+      error: () => {
         this.userService.getUserByDNI(this.dni).subscribe({
           next: userDni => {
             if (userDni) {
@@ -194,6 +196,8 @@ export class RegisterComponent {
               this.isLoading = false;
               return;
             }
+          },
+          error: () => {
             this.classService.getClass(this.class_code!.toUpperCase()).subscribe({
               next: cls => {
                 this.classData = cls;
@@ -201,11 +205,10 @@ export class RegisterComponent {
               },
               error: () => {
                 this.isLoading = false;
-                this.errorMessage = "*Invalid class code. Please check and try again."
+                this.classCodeError = "*Invalid class code. Please check and try again."
               }
             });
-          }
-        });
+        }});
       }
     });
   }
