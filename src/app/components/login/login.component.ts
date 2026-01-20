@@ -70,9 +70,10 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: () => {
-        this.isLoading = false;
-        this.authService.setAuthenticated(true);
-        this.router.navigateByUrl(this.returnUrl);
+        this.authService.loadMe().subscribe(() => {
+      this.isLoading = false;
+      this.router.navigateByUrl(this.returnUrl);
+    });
       },
       error: () => {
         this.isLoading = false;

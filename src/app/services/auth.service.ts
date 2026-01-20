@@ -84,6 +84,22 @@ export class AuthService {
   return this.userType;
 }
 
+  loadMe() {
+  return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
+    map(user => {
+      this.authenticated = true;
+      this.userType = user.type;
+      return user;
+    }),
+    catchError(() => {
+      this.authenticated = false;
+      this.userType = null;
+      return of(null);
+    })
+  );
+}
+
+
 
   logout() {
     return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true });

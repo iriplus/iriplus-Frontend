@@ -168,29 +168,28 @@ export class RegisterComponent {
       this.classService.getClass(this.class_code.toUpperCase()).subscribe({
         next: cls => {
           this.classData = cls;
+          // Validates Terms and Conditions
+          if (!this.acceptTerms) {
+            alert('You must accept the terms and conditions.');
+            this.isLoading = false;
+          return;
+    }
+      this.register();
+
         },
         error: err => {
-          if (err.status === 404) {
-            alert('Invalid class code. Please check and try again.');
-            this.isLoading = false;
-            return;
-          } else {
-              alert('An error occurred while validating the class code. Please try again later.');
-              this.isLoading = false;
-              return;
-          }
-        }
+    if (err.status === 404) {
+      alert('Invalid class code. Please check and try again.');
+    } else {
+      alert('An error occurred while validating the class code.');
+    }
+    this.isLoading = false;
+  }
       });
     }
 
-    // Validates Terms and Conditions
-    if (!this.acceptTerms) {
-      alert('You must accept the terms and conditions.');
-      this.isLoading = false;
-      return;
-    }
+    
 
-    this.register();
   }
 
   register(): void {
