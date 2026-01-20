@@ -13,16 +13,26 @@ import { AuthService } from '../../services/auth.service';
 export class ResetPasswordComponent {
   password: string = '';
   confirmPassword: string = '';
+    email: string = '';
+
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   passwordStrength: 'weak' | 'medium' | 'strong' = 'weak';
-  email: string = '';
+
+  isLoading = false;
+  passwordError = "";
+  confirmPasswordError = "";
+  errorMessage = "";
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private route: ActivatedRoute,
   ) {}
+
+  get isFormValid(): boolean {
+    return !!this.password || !!this.confirmPassword
+  }
 
   ngOnInit() {
     if (!this.authService.getIsResettingPassword()) {
@@ -98,25 +108,48 @@ export class ResetPasswordComponent {
   }
 
   onSubmit(): void {
+    this.isLoading = true;
+
+    this.errorMessage = "";
+    this.passwordError = "";
+    this.confirmPasswordError = "";
+
+    if (!this.password) {
+      this.passwordError = "*Password is required.";
+      this.isLoading = false;
+    }
+
+    if (!this.confirmPassword) {
+      this.confirmPasswordError = "*Please confirm your password.";
+      this.isLoading = false;
+    }
+
     if (this.password !== this.confirmPassword) {
-      alert('Passwords do not match');
-      return;
+      this.passwordError = "*Passwords do not match.";
+      this.confirmPasswordError = "*Passwords do not match.";
+      this.isLoading = false;
     }
 
     if (this.password.length < 8) {
-      alert('Password must be at least 8 characters long');
+      this.passwordError = "*Password must be at least 8 characters long.";
+      this.isLoading = false;
+    }
+
+    if (this.passwordError || this.confirmPasswordError) {
+      this.isLoading = false;
       return;
     }
 
-    console.log(this.email, this.password);
     this.authService.resetPassword(this.email, this.password).subscribe({
       next: () => {
-        alert('Password successfully reset');
+        this.isLoading = false;
+        alert('Password has been reset successfully. You can now log in with your new password.');
         this.authService.setIsResettingPassword(false);
         this.router.navigate(['/login']);
       },
       error: err => {
-        alert(err.error?.msg || 'Error resetting password');
+        this.isLoading = false;
+        this.errorMessage = err.error?.msg || 'Error resetting password. Please try again';
       }
     });
   }

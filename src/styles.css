@@ -112,3 +112,11 @@ button:disabled {
     transform: rotate(360deg);
   }
 }
+
+.form-input.input-error {
+  border-color: #fc8181;
+}
+
+.form-input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.15);
+}
