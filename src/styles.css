@@ -29,6 +29,11 @@ button {
   border: none;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -53,6 +58,14 @@ button {
   font-size: 14px;
   text-align: center;
   animation: fadeIn 0.2s ease-in-out;
+}
+
+.field-error {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #F87171;
+  display: block;
+  width: 100%;
 }
 
 /* Pequeña animación suave al aparecer */

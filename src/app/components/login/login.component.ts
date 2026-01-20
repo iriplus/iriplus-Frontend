@@ -15,11 +15,17 @@ import { Login } from "../../interfaces/login.interface";
 
 export class LoginComponent {
   email = "";
+
   password = "";
   showPassword = false;
+
   rememberMe = false;
+
   isLoading = false;
+  
   errorMessage = "";
+  emailError = "";
+  passwordError = "";
 
   private returnUrl = '/home';
 
@@ -37,29 +43,38 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
+  get isFormValid(): boolean {
+    return !!this.email && !!this.password;
+  }
+
   login(): void {
     this.isLoading = true;
-    this.errorMessage = "";
 
-    if (!this.email || !this.password) {
-      this.errorMessage = "Please enter both email and password.";
-      this.isLoading = false;
-      return;
-    } else if (!this.email.includes('@')) {
-        this.errorMessage = "Please enter a valid email address.";
+    this.errorMessage = "";
+    this.emailError = "";
+    this.passwordError = "";
+
+    if (!this.email.includes('@')) {
+        this.emailError = "*Please enter a valid email address.";
         this.isLoading = false;
-        return;
-    } else if (this.email.length > 255) {
-        this.errorMessage = "Email cannot exceed 255 characters.";
+    } 
+    
+    if (this.email.length > 255) {
+        this.emailError = "*Email cannot exceed 255 characters.";
         this.isLoading = false;
-        return;
-    } else if (this.password.length < 8) {
-        this.errorMessage = "Password must be at least 8 characters long.";
+    }
+    
+    if (this.password.length < 8) {
+        this.passwordError = "*Password must be at least 8 characters long.";
         this.isLoading = false;
-        return;
-    } else if (this.password.length > 255) {
-        this.errorMessage = "Password cannot exceed 255 characters.";
+    } 
+    
+    if (this.password.length > 255) {
+        this.passwordError = "*Password cannot exceed 255 characters.";
         this.isLoading = false;
+    }
+
+    if (this.emailError || this.passwordError) {
         return;
     }
 

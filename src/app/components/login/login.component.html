@@ -22,6 +22,9 @@
         required
       />
     </div>
+    <div *ngIf="emailError" class="field-error">
+      {{ emailError }}
+    </div>
   </div>
 
   <div class="form-group">
@@ -41,6 +44,9 @@
         required
       />
     </div>
+    <div *ngIf="passwordError" class="field-error">
+      {{ passwordError }}
+    </div>
   </div>
 
   <div class="form-options">
@@ -56,7 +62,7 @@
     {{ errorMessage }}
   </div>
 
-  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" (click)="login()">
+  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" [disabled]="isLoading || !isFormValid" (click)="login()">
     <span *ngIf="isLoading" class="app-spinner"></span>
     <span *ngIf="!isLoading">Login</span>
   </button>
