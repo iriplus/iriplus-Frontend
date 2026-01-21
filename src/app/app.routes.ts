@@ -15,27 +15,25 @@ import { ClassesComponent } from './components/classes/classes.component';
 export const routes: Routes = [
   {
     path: '',
-    component: AuthLayout,
+    component: MainLayout,
     children: [
       { path: '', component: PublicHome },
+      { path: 'home', component: HomeComponent, canActivate: [privateGuard] },
+      { path: 'my-profile', component: MyProfileComponent, canActivate: [privateGuard] },
+      { path: 'teachers', component: TeachersComponent, canActivate: [coordinatorGuard] },
+      { path: 'classes', component: ClassesComponent, canActivate: [coordinatorGuard] },
+    ],
+  },
+  {
+    path: '',
+    component: AuthLayout,
+    children: [
       { path: 'login', component: LoginComponent, canActivate: [authGuard] },
       { path: 'register', component: RegisterComponent },
       { path: 'forgot-password', component: ForgotPasswordComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
     ],
   },
-  {
-    path: '',
-    component: MainLayout,
-    canActivate: [privateGuard],
-    children: [
-      { path: 'home', component: HomeComponent },
-      { path: 'my-profile', component: MyProfileComponent},
-      { path: 'teachers', component: TeachersComponent, canActivate: [coordinatorGuard]},
-      { path: 'classes', component: ClassesComponent, canActivate: [coordinatorGuard]}
-    ],
-  },
-  
   { path: '**', redirectTo: '' },
 ];
 

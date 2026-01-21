@@ -1,3 +1,4 @@
 .main-layout-content {
-  min-height: calc(100vh - 160px); /* Aproximate: total height - header - footer */
+  min-height: calc(100vh - 160px);
+  display: block;
 }

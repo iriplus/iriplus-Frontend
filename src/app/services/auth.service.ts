@@ -61,6 +61,10 @@ export class AuthService {
     this.authenticated = value;
   }
 
+  isAuthenticated(): boolean {
+    return this.authenticated === true;
+  }
+
   setIsResettingPassword(value: boolean) {
     if (value) {
       this.resetPasswordUntil = Date.now() + this.RESET_PASSWORD_TTL_MS;

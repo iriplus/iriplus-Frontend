@@ -1,18 +1,14 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Router } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { AuthService } from '../../services/auth.service';
 
-interface LoginResponse {
-  access_token: string;
-}
-
 @Component({
   selector: 'app-header',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -43,7 +39,11 @@ export class HeaderComponent {
   }
 
   get isCoordinator(): boolean {
-  return this.authService.getUserType() === 'Coordinator';
-}
+    return this.authService.getUserType() === 'Coordinator';
+  }
+
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
 
 }

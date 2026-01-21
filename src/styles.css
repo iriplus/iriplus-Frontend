@@ -1,31 +1,71 @@
+/* =========================================================
+   Variables globales
+   ========================================================= */
 :root {
-  --color-background: #1E2A22; /*#27532f*/
-  --color-beige: #E0CD95;
+  /* Colores */
+  --color-background: #1E2A22;
+  --color-slate: #27532f;
   --color-sage: #9EB28F;
-  --color-terracotta: #C97C5D;
+  --color-beige: #E0CD95;
   --color-ivory: #F8F5E7;
-  --color-slate: #27532f ;/*#1E2A22;*/
   --color-white-cream: #FCFAF4;
   --color-olive: #A3A191;
+  --color-terracotta: #C97C5D;
 
-  --radius-md: 8px;
-  --radius-lg: 14px;
-  --spacing-section: 3rem;
+  /* Tipografía */
   --font-title: "Segoe UI", sans-serif;
   --font-body: "Segoe UI", sans-serif;
+
+  /* Radios */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Espaciados */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4.5rem;
 }
 
+/* =========================================================
+   Reset base
+   ========================================================= */
 html, body {
-  background-color: var(--color-background);
-  color: var(--color-ivory);
-  font-family: var(--font-body);
   margin: 0;
   padding: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-ivory);
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Tipografía
+   ========================================================= */
+h1, h2, h3, h4 {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: inherit;
+  margin-top: 0;
+}
+
+p {
+  margin-top: 0;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Botones (reutilizables)
+   ========================================================= */
 button {
-  cursor: pointer;
   font-family: inherit;
+  cursor: pointer;
   border: none;
 }
 
@@ -34,24 +74,128 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Primario */
+.btn-primary {
+  background-color: var(--color-sage);
+  color: var(--color-slate);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-beige);
+  transform: translateY(-1px);
+}
+
+/* Outline */
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--color-sage);
+  color: var(--color-sage);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-outline:hover {
+  background-color: rgba(158, 178, 143, 0.15);
+}
+
+/* Ghost / Link */
+.btn-ghost {
+  background: none;
+  color: var(--color-ivory);
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
+}
+
+/* Tamaños */
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* =========================================================
+   Secciones genéricas
+   ========================================================= */
+.section {
+  padding: var(--spacing-xl) calc(var(--spacing-xl) + 1.5rem);
+  background-color: var(--color-ivory);
+  color: var(--color-slate);
+}
+
+.section-soft {
+  background-color: var(--color-white-cream);
+}
+
+.section-narrow {
+  max-width: 720px;
+}
+
+.section-title-center {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* =========================================================
+   Cards
+   ========================================================= */
+.card {
+  background-color: var(--color-white-cream);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================================
+   Hero base (reutilizable)
+   ========================================================= */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+}
+
+.hero-content {
+  max-width: 560px;
+}
+
+.hero-actions {
+  margin-top: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* =========================================================
+   Tablas
+   ========================================================= */
 .table {
   width: 100%;
   border-collapse: collapse;
 }
+
 .table thead {
   background-color: var(--color-slate);
   color: var(--color-ivory);
 }
-.table th, .table td {
+
+.table th,
+.table td {
   padding: 12px 16px;
   border-bottom: 1px solid var(--color-olive);
   text-align: left;
 }
 
+/* =========================================================
+   Estados de error
+   ========================================================= */
 .app-error {
   margin-top: 12px;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background-color: #fff0f0;
   color: #b91c1c;
   border: 1px solid #fecaca;
@@ -65,10 +209,46 @@ button:disabled {
   font-size: 13px;
   color: #F87171;
   display: block;
-  width: 100%;
 }
 
-/* Pequeña animación suave al aparecer */
+/* =========================================================
+   Inputs (error)
+   ========================================================= */
+.form-input.input-error {
+  border-color: #fc8181;
+}
+
+.form-input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.15);
+}
+
+/* =========================================================
+   Spinner
+   ========================================================= */
+.app-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-top: 3px solid var(--color-sage);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.btn-with-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* =========================================================
+   Animaciones
+   ========================================================= */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -80,43 +260,17 @@ button:disabled {
   }
 }
 
-/* Spinner */
-.app-spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.6); 
-  border-top: 3px solid var(--color-sage);      
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  display: inline-block;
-}
-
-/* Centrado del spinner dentro de botones */
-.btn-with-spinner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-/* Estado de carga para cualquier botón */
-.btn-loading {
-  opacity: 0.7;
-  pointer-events: none;
-  cursor: not-allowed;
-}
-
-/* Animación */
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.form-input.input-error {
-  border-color: #fc8181;
-}
-
-.form-input.input-error:focus {
-  box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.15);
+/* =========================================================
+   Responsive global
+   ========================================================= */
+@media (max-width: 900px) {
+  .section {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
 }
