@@ -155,6 +155,8 @@ export class ResetPasswordComponent {
   }
 
   goToLogin(): void {
+    this.isLoading = false;
+    this.authService.setIsResettingPassword(false);
     this.router.navigate(['/login']);
   }
 }
