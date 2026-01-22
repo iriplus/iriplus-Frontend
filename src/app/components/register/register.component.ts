@@ -74,151 +74,78 @@ export class RegisterComponent {
       !!this.acceptTerms;
   }
 
-  validateParams(): void {
-    this.isLoading = true;
+validateParams(): void {
+  this.errorMessage = "";
+  this.nameError = "";
+  this.surnameError = "";
+  this.emailError = "";
+  this.dniError = "";
+  this.passwordError = "";
+  this.confirmPasswordError = "";
+  this.classCodeError = "";
+  this.termsError = "";
 
-    this.errorMessage = "";
-    this.nameError = "";
-    this.surnameError = "";
-    this.emailError = "";
-    this.dniError = "";
-    this.passwordError = "";
-    this.confirmPasswordError = "";
-    this.classCodeError = "";
-    this.termsError = "";
-
-    if (!this.name.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)) {
-      this.nameError = "*Name contains invalid characters.";
-      this.isLoading = false;
-    } 
-    
-    if (this.name.length > 255) {
-      this.nameError = "*Name cannot exceed 255 characters.";
-      this.isLoading = false;
-    }
-
-    if (!this.surname.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)) {
-      this.surnameError = "*Surname can only contain letters, spaces, apostrophes, and hyphens.";
-      this.isLoading = false;
-    }
-    
-    if (this.surname.length > 255) {
-      this.surnameError = "*Surname cannot exceed 255 characters.";
-      this.isLoading = false;
-    }
-
-    if (!this.email.includes('@')) {
-      this.emailError = "*Please enter a valid email address.";
-      this.isLoading = false;
-    }
-    if (this.email.length > 255) {
-      this.emailError = "*Email cannot exceed 255 characters.";
-    }
-
-    if (this.emailError) {
-      this.userService.getUserByEmail(this.email).subscribe({
-        next: user => {
-          this.existingUser = user;
-          if (this.existingUser) {
-            alert('An account with this email already exists. Please use a different email.');
-            this.isLoading = false;
-            return;
-          }
-        },
-      });
-    }
-
-    if (this.dni.length > 10) {
-      this.dniError = "*DNI cannot exceed 10 characters.";
-      this.isLoading = false;
-    } 
-    
-    if (this.dniError) {    
-      this.userService.getUserByDNI(this.dni).subscribe({
-        next: user => {
-          this.existingUser = user;
-          if (this.existingUser) {
-            alert('An account with this DNI already exists. Please use a different DNI.');
-            this.isLoading = false;
-            return;
-          }
-        },
-      });
-    }
-
-    if (this.passwd.length < 8) {
-      this.passwordError = "*Password must be at least 8 characters long.";
-      this.isLoading = false;
-    } 
-
-    if (this.passwd.length > 255) {
-      this.passwordError = "*Password cannot exceed 255 characters.";
-      this.isLoading = false;
-    }
-
-    if (this.passwd !== this.confirmPassword) {
-      this.confirmPasswordError = "*Passwords do not match.";
-      this.isLoading = false;
-    }
-
-    if (!this.class_code) {
-      this.classCodeError = "*Class code is required.";
-      this.isLoading = false;
-    } else if (this.class_code.length !== 8) {
-        this.classCodeError='*Class code must be exactly 8 characters long.';
-        this.isLoading = false;
-    } 
-
-    if (!this.acceptTerms) {
-      this.termsError = "*You must accept the terms and conditions.";
-      this.isLoading = false;
-    }
-
-    if (
-      this.nameError || this.surnameError || this.emailError ||
-      this.dniError || this.passwordError || this.confirmPasswordError ||
-      this.classCodeError || this.termsError
-    ) {return;}
-
-    this.userService.getUserByEmail(this.email).subscribe({
-      next: user => {
-        if (user) {
-          this.emailError = "*An account with this email already exists.";
-          this.isLoading = false;
-          return;
-        }
-      },
-      error: () => {
-        this.userService.getUserByDNI(this.dni).subscribe({
-          next: userDni => {
-            if (userDni) {
-              this.dniError = "*An account with this DNI already exists.";
-              this.isLoading = false;
-              return;
-            }
-          },
-          error: () => {
-            this.classService.getClass(this.class_code!.toUpperCase()).subscribe({
-              next: cls => {
-                this.classData = cls;
-                this.register();
-              },
-              error: () => {
-                this.isLoading = false;
-                this.classCodeError = "*Invalid class code. Please check and try again."
-              }
-            });
-        }});
-      }
-    });
+  if (!this.name.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)) {
+    this.nameError = "*Name contains invalid characters.";
   }
 
+  if (this.name.length > 255) {
+    this.nameError = "*Name cannot exceed 255 characters.";
+  }
+
+  if (!this.surname.match(/^[a-zA-ZÀ-ÿ\s'-]+$/)) {
+    this.surnameError = "*Surname contains invalid characters.";
+  }
+
+  if (this.surname.length > 255) {
+    this.surnameError = "*Surname cannot exceed 255 characters.";
+  }
+
+  if (!this.email.includes('@')) {
+    this.emailError = "*Please enter a valid email address.";
+  }
+
+  if (this.email.length > 255) {
+    this.emailError = "*Email cannot exceed 255 characters.";
+  }
+
+  if (this.dni.length > 10) {
+    this.dniError = "*DNI cannot exceed 10 characters.";
+  }
+
+  if (this.passwd.length < 8) {
+    this.passwordError = "*Password must be at least 8 characters.";
+  }
+
+  if (this.passwd.length > 255) {
+    this.passwordError = "*Password cannot exceed 255 characters.";
+  }
+
+  if (this.passwd !== this.confirmPassword) {
+    this.confirmPasswordError = "*Passwords do not match.";
+  }
+
+  if (!this.class_code || this.class_code.length !== 8) {
+    this.classCodeError = "*Invalid class code.";
+  }
+
+  if (!this.acceptTerms) {
+    this.termsError = "*You must accept the terms.";
+  }
+
+  if (
+    this.nameError || this.surnameError || this.emailError ||
+    this.dniError || this.passwordError || this.confirmPasswordError ||
+    this.classCodeError || this.termsError
+  ) {
+    return;
+  }
+
+  this.register();
+}
+
   register(): void {
-    if (!this.classData) {
-      this.errorMessage='Class data is missing. Cannot proceed with registration.';
-      this.isLoading = false;
-      return;
-    }
+    this.isLoading = true;
 
     const userData: Student = {
       name: this.name,
@@ -227,18 +154,33 @@ export class RegisterComponent {
       passwd: this.passwd,
       dni: this.dni,
       type: 'STUDENT',
-      student_class_id: this.classData.id
+      class_code: this.class_code?.toUpperCase() || '',
     };
 
     this.authService.register(userData).subscribe({
       next: () => {
-        alert('Verification mail sent succesfully. Please check your inbox.');
         this.isLoading = false;
+        alert('Verification mail sent succesfully. Please check your inbox.');
         this.router.navigate(['/login']);
       },
-      error: () => {
-        this.errorMessage='Error creating account. Please try again.';
+      error: (err) => {
         this.isLoading = false;
+        switch (err.status) {
+          case 400:
+            this.errorMessage = "Invalid registration data";
+            break;
+          case 409:
+            this.errorMessage = "Email or DNI already exists.";
+            break;
+          case 404:
+            this.errorMessage = "Invalid class code";
+            break;
+          case 422:
+            this.errorMessage = "Class is full";
+            break;
+          default:
+            this.errorMessage = "Error creating account. Please try again.";
+        }
       },
     });
   }

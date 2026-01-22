@@ -10,5 +10,5 @@ export interface User {
 }
 
 export interface Student extends User {
-    student_class_id: number;
+    class_code: string;
 }
