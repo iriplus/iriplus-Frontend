@@ -48,35 +48,31 @@ export class LoginComponent {
   }
 
   login(): void {
-    this.isLoading = true;
-
     this.errorMessage = "";
     this.emailError = "";
     this.passwordError = "";
 
     if (!this.email.includes('@')) {
         this.emailError = "*Please enter a valid email address.";
-        this.isLoading = false;
     } 
     
     if (this.email.length > 255) {
         this.emailError = "*Email cannot exceed 255 characters.";
-        this.isLoading = false;
     }
     
     if (this.password.length < 8) {
         this.passwordError = "*Password must be at least 8 characters long.";
-        this.isLoading = false;
     } 
     
     if (this.password.length > 255) {
         this.passwordError = "*Password cannot exceed 255 characters.";
-        this.isLoading = false;
     }
 
     if (this.emailError || this.passwordError) {
         return;
     }
+
+    this.isLoading = true;
 
     const credentials: Login = {
       email: this.email,
@@ -86,13 +82,19 @@ export class LoginComponent {
     this.authService.login(credentials).subscribe({
       next: () => {
         this.authService.loadMe().subscribe(() => {
-      this.isLoading = false;
-      this.router.navigateByUrl(this.returnUrl);
-    });
+          this.isLoading = false;
+          this.router.navigateByUrl(this.returnUrl);
+        });
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Wrong email or password';
+
+        if (err.status === 403) {
+          this.errorMessage = 'Your account is not verified. Please check your email for the verification link.';
+          return;
+        } else {
+          this.errorMessage = 'Wrong email or password';
+        }
       }
     });
   }
