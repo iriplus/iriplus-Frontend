@@ -92,8 +92,10 @@ export class LoginComponent {
         if (err.status === 403) {
           this.errorMessage = 'Your account is not verified. Please check your email for the verification link.';
           return;
-        } else {
+        } else if (err.status === 401) {
           this.errorMessage = 'Wrong email or password';
+        } else {
+          this.errorMessage = 'An error occurred during login. Please try again later.';
         }
       }
     });
