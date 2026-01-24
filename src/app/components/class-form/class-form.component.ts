@@ -29,7 +29,7 @@ export class ClassFormComponent implements OnChanges {
   constructor(private classService: ClassService) {}
 
   submit(): void {
-    if (!this.formData.class_code || !this.formData.description || !this.formData.suggested_level) {
+    if (!this.formData.description || !this.formData.suggested_level || !this.formData.max_capacity) {
       this.errorMessage = 'Please complete all required fields';
       return;
     }

@@ -1,7 +1,7 @@
 <form class="class-form" (ngSubmit)="submit()">
 
   <!-- Código de la clase -->
-  <div class="form-group">
+  <div class="form-group" *ngIf="classData">
     <label for="class_code" class="form-label">Código de la Clase</label>
     <div class="input-wrapper">
       <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
@@ -16,6 +16,7 @@
         class="form-input"
         placeholder="Ingrese el código"
         required
+        disabled
       />
     </div>
   </div>
@@ -57,11 +58,13 @@
         class="form-input"
         required
       >
-        <option value="CAE">CAE</option>
-        <option value="FCE">FCE</option>
-        <option value="Senior">Senior</option>
-        <option value="Junior">Junior</option>
-        <option value="Second Grade">Second Grade</option>
+        <option value="A1">A1</option>
+        <option value="A2">A2</option>
+        <option value="B1">B1</option>
+        <option value="B2">B2</option>
+        <option value="C1">C1</option>
+        <option value="C2">C2</option>
+
       </select>
     </div>
   </div>

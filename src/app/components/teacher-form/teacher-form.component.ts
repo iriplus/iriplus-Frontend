@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { User } from '../../interfaces/user.interface';
-import { UserResponse } from '../../interfaces/user-response.interface';
 
 @Component({
   selector: 'app-teacher-form',
@@ -11,9 +10,8 @@ import { UserResponse } from '../../interfaces/user-response.interface';
   imports: [CommonModule, FormsModule],
   templateUrl: './teacher-form.component.html',
 })
-export class TeacherFormComponent implements OnChanges {
+export class TeacherFormComponent {
 
-  @Input() teacher: UserResponse | null = null;
   @Output() teacherCreated = new EventEmitter<void>();
 
   isLoading = false;
@@ -42,11 +40,7 @@ export class TeacherFormComponent implements OnChanges {
     this.isLoading = true;
     this.errorMessage = '';
 
-    if (this.teacher) {
-      this.updateTeacher();
-    } else {
-      this.createTeacher();
-    }
+    this.createTeacher();
   }
 
   createTeacher(): void {
@@ -61,41 +55,6 @@ export class TeacherFormComponent implements OnChanges {
         this.errorMessage = 'The teacher could not be created';
       }
     });
-  }
-
-  updateTeacher(): void {
-    if (!this.teacher) return;
-
-    this.userService
-      .updateTeacher(this.teacher.id, this.formData)
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.teacherCreated.emit();
-        },
-        error: () => {
-          this.isLoading = false;
-          this.errorMessage = 'The teacher could not be updated';
-        }
-      });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['teacher'] && this.teacher) {
-      this.formData = {
-        name: this.teacher.name,
-        surname: this.teacher.surname,
-        email: this.teacher.email,
-        dni: this.teacher.dni,
-        passwd: '',
-        type: 'TEACHER'
-      };
-      this.confirmPassword = '';
-    }
-
-    if (changes['teacher'] && !this.teacher) {
-      this.resetForm();
-    }
   }
 
   resetForm(): void {

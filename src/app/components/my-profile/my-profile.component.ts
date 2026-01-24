@@ -1,86 +1,79 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-
+import { UserResponse } from '../../interfaces/user-response.interface';
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './my-profile.component.html',
   styleUrls: ['./my-profile.component.css']
 })
-export class MyProfileComponent {
-  firstName = "Juan";
-  lastName = "Pérez";
-  email = "juan.perez@example.com";
-  phone = "+54 11 1234-5678";
-  birthDate = "1990-01-15";
+export class MyProfileComponent implements OnInit {
 
+  user!: UserResponse;
+  originalData: UserResponse | null = null;
 
-  originalData: any = {};
   isEditing = false;
   showDeleteModal = false;
 
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  constructor(private router: Router) {
-    this.saveOriginalData();
+  ngOnInit(): void {
+    this.loadProfile();
   }
 
-
-  saveOriginalData() {
-    this.originalData = {
-      firstName: this.firstName,
-      lastName: this.lastName,
-      email: this.email,
-      phone: this.phone,
-      birthDate: this.birthDate,
-    };
+  loadProfile(): void {
+    this.authService.loadMe().subscribe(user => {
+      if (!user) return;
+      this.user = user;
+      this.saveOriginalData();
+    });
   }
 
+  saveOriginalData(): void {
+    this.originalData = { ...this.user };
+  }
 
-  enableEdit() {
+  enableEdit(): void {
     this.isEditing = true;
   }
 
-
-  cancelEdit() {
-    Object.assign(this, this.originalData);
+  cancelEdit(): void {
+    if (this.originalData) {
+      this.user = { ...this.originalData };
+    }
     this.isEditing = false;
   }
 
-
-  onSubmit() {
+  onSubmit(): void {
+    // PUT /me (más adelante)
     this.saveOriginalData();
     this.isEditing = false;
-    alert("Perfil actualizado correctamente");
+    alert('Perfil actualizado correctamente');
   }
 
-
-  changePassword() {
-    this.router.navigate(["/reset-password"]);
+  changePassword(): void {
+    this.router.navigate(['/reset-password']);
   }
 
-
-  confirmDeleteAccount() {
+  confirmDeleteAccount(): void {
     this.showDeleteModal = true;
   }
 
-
-  closeDeleteModal() {
+  closeDeleteModal(): void {
     this.showDeleteModal = false;
   }
 
-
-  deleteAccount() {
+  deleteAccount(): void {
     this.showDeleteModal = false;
-    setTimeout(() => {
-      alert("Tu cuenta ha sido eliminada");
-      this.router.navigate(["/login"]);
-    }, 500);
+    alert('Tu cuenta ha sido eliminada');
+    this.router.navigate(['/login']);
   }
 }
-
-
-

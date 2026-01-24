@@ -39,12 +39,6 @@ export class UserService {
     catchError(err => throwError(() => err))
     );
   }
-  
-  updateTeacher(userId: number, data: Partial<User>): Observable<UserResponse> {
-    return this.http.put<UserResponse>(`${this.USER_URL}/${userId}`, data).pipe(
-      catchError(err => throwError(() => err))
-    );
-  }
 
   deleteUser(userId: number): Observable<void> {
     return this.http.delete<void>(`${this.USER_URL}/${userId}`).pipe(

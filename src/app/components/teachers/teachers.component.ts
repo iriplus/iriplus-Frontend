@@ -13,7 +13,6 @@ import { TeacherFormComponent } from '../teacher-form/teacher-form.component';
 })
 export class TeachersComponent implements OnInit {
 
-  selectedTeacher: UserResponse | null = null;
   teachers: UserResponse[] = [];
   isLoading = true;
   errorMessage = '';
@@ -21,18 +20,11 @@ export class TeachersComponent implements OnInit {
   filteredTeachers: UserResponse[] = [];
 
 
-  constructor(private userService: UserService) {}
+constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-  this.loadTeachers();
-
-  const modalEl = document.getElementById('newTeacherModal');
-  if (modalEl) {
-    modalEl.addEventListener('hidden.bs.modal', () => {
-      this.selectedTeacher = null;
-    });
+    this.loadTeachers();
   }
-}
 
   loadTeachers(): void {
     this.userService.getTeachers().subscribe({
@@ -49,23 +41,11 @@ export class TeachersComponent implements OnInit {
   }
 
   onTeacherCreated(): void {
-  this.selectedTeacher = null;
   this.loadTeachers();
-
   const modalEl = document.getElementById('newTeacherModal');
   if (modalEl) {
     const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.hide();
-  }
-}
-
-  editTeacher(teacher: UserResponse): void {
-  this.selectedTeacher = teacher;
-
-  const modalEl = document.getElementById('newTeacherModal');
-  if (modalEl) {
-    const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
   }
 }
 

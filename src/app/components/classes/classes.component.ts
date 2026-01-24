@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClassService } from '../../services/class.service';
 import { Class } from '../../interfaces/class.interface';
-import { ClassFormComponent } from '../class-form.component/class-form.component';
+import { ClassFormComponent } from '../class-form/class-form.component';
 
 @Component({
   selector: 'app-classes',

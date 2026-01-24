@@ -5,6 +5,8 @@ import { map, catchError, of } from 'rxjs';
 import { Login, LoginResponse } from '../interfaces/login.interface';
 import { User } from '../interfaces/user.interface';
 import { RegisterStudent } from '../interfaces/register.interface';
+import { UserResponse } from '../interfaces/user-response.interface';
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -45,7 +47,6 @@ export class AuthService {
         this.authenticated = true;
         this.userType = user.type;
         console.log('AUTHENTICATED:', this.authenticated);
-        console.log('USER TYPE:', user.type);
         console.log('USER TYPE:', this.userType);
         return true;
       }),
@@ -89,7 +90,7 @@ export class AuthService {
 }
 
   loadMe() {
-  return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
+  return this.http.get<UserResponse>(this.ME_URL, { withCredentials: true }).pipe(
     map(user => {
       this.authenticated = true;
       this.userType = user.type;

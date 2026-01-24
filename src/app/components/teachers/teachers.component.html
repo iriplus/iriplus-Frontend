@@ -28,7 +28,7 @@
         <input
           type="text"
           class="search-input"
-          placeholder="Search by name, email or ID..."
+          placeholder="Search by name, email or DNI..."
           [(ngModel)]="searchTerm"
           (input)="filterTeachers()"
           />
@@ -62,7 +62,7 @@
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email</th>
-            <th>ID</th>
+            <th>DNI</th>
             <th>Verified</th>
             <th>Actions</th>
           </tr>
@@ -97,9 +97,6 @@
 
             <td>
               <div class="actions-cell">
-                <button class="btn-action btn-edit" class="btn-action btn-edit" (click)="editTeacher(teacher)">
-                  Edit
-                </button>
                 <button class="btn-action btn-delete" (click)="deleteTeacher(teacher.id)">
                   Delete
                 </button>
@@ -120,6 +117,18 @@
       </table>
     </div>
 
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">Total classes:</span>
+        <span class="stat-value">{{ teachers.length }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Showing:</span>
+        <span class="stat-value">{{ teachers.length }}</span>
+      </div>
+    </div>
+
   </div>
 </div>
 <div class="modal fade" id="newTeacherModal" tabindex="-1">
@@ -132,10 +141,7 @@
       </div>
 
       <div class="modal-body">
-        <app-teacher-form
-          [teacher]="selectedTeacher"
-          (teacherCreated)="onTeacherCreated()">
-        </app-teacher-form>
+        <app-teacher-form (teacherCreated)="onTeacherCreated()"></app-teacher-form>
       </div>
 
     </div>

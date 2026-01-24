@@ -34,7 +34,7 @@
             <li class="nav-item" *ngIf="isAuthenticated"><a class="nav-link" (click)="goTo('/home')">Page2</a></li>
             <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/teachers')">Teachers</a></li>
             <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/classes')">Classes</a></li>
-            <li class="nav-item" *ngIf="isAuthenticated"><a class="nav-link" (click)="goTo('/home')">Page3</a></li>
+            <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/levels')">Levels</a></li>
           </ul>
           <!--Login / Sign up or User info-->         
           <div class="dropdown">
