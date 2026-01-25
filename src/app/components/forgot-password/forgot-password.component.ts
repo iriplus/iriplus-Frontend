@@ -1,10 +1,12 @@
-import { Component, ViewChild, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { Component, ViewChild, ElementRef, QueryList, ViewChildren, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { error } from 'console';
+import { ActivatedRoute } from '@angular/router';
+
 
 
 @Component({
@@ -13,7 +15,7 @@ import { error } from 'console';
   styleUrls: ['./forgot-password.component.css'],
   imports: [CommonModule, FormsModule],
 })
-export class ForgotPasswordComponent {
+export class ForgotPasswordComponent implements OnInit {
   email = '';
   step = 1; // Controls the current step: 1 = enter email, 2 = enter code
   code: string[] = ['', '', '', '', '', '']; // Array that holds the 6-digit verification code
@@ -23,14 +25,22 @@ export class ForgotPasswordComponent {
   emailError = "";
   codeError = "";
   errorMessage = "";
+  mode: 'forgot' | 'change' = 'forgot';
+
   
   @ViewChildren('input0, input1, input2, input3, input4, input5') codeInputs!: QueryList<ElementRef>;
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private route: ActivatedRoute,
   ) {}
+  ngOnInit(): void {
+  this.route.queryParams.subscribe(params => {
+    this.mode = params['mode'] === 'change' ? 'change' : 'forgot';
+  });
+}
 
   get isEmailValid(): boolean {
     return !!this.email;
@@ -159,7 +169,11 @@ export class ForgotPasswordComponent {
     }
   }
 
-  goToLogin(): void {
+  goBack(): void {
+  if (this.mode === 'change') {
+    this.router.navigate(['/my-profile']);
+  } else {
     this.router.navigate(['/login']);
   }
+}
 }

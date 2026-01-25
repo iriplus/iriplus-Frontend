@@ -361,3 +361,6 @@
     flex-direction: column;
   }
 }
+ .academic-section p {
+  color: black;
+}
