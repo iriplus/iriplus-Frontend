@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { UserResponse } from '../../interfaces/user-response.interface';
 import { AuthService } from "../../services/auth.service";
+import { UserService } from "../../services/user.service";
 
 @Component({
   selector: 'app-my-profile',
@@ -22,7 +23,8 @@ export class MyProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
@@ -31,6 +33,7 @@ export class MyProfileComponent implements OnInit {
 
   loadProfile(): void {
     this.authService.loadMe().subscribe(user => {
+      console.log('USER FROM BACKEND:', user);
       if (!user) return;
       this.user = user;
       this.saveOriginalData();
@@ -52,15 +55,31 @@ export class MyProfileComponent implements OnInit {
     this.isEditing = false;
   }
 
-  onSubmit(): void {
-    // PUT /me (más adelante)
-    this.saveOriginalData();
-    this.isEditing = false;
-    alert('Perfil actualizado correctamente');
+  onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (!this.user?.id) return;
+
+    const updatePayload = {
+      name: this.user.name,
+      surname: this.user.surname,
+      email: this.user.email,
+      dni: this.user.dni
+    };
+
+    this.userService.updateUser(this.user.id, updatePayload).subscribe({
+      next: () => {
+        this.loadProfile();
+        this.isEditing = false;
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   changePassword(): void {
-    this.router.navigate(['/reset-password']);
+    this.router.navigate(['/forgot-password'], {
+      queryParams: { mode: 'change' }
+    });
   }
 
   confirmDeleteAccount(): void {
@@ -72,8 +91,31 @@ export class MyProfileComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    this.showDeleteModal = false;
-    alert('Tu cuenta ha sido eliminada');
-    this.router.navigate(['/login']);
+  if (!this.user?.id) return;
+
+  this.userService.deleteUser(this.user.id).subscribe({
+    next: () => {
+      this.showDeleteModal = false;
+
+      // cerrar sesión
+      this.authService.logout(); // o el método equivalente que uses
+
+      alert('Your account has been deleted');
+      this.router.navigate(['/login']);
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Error deleting account. Please try again.');
+    }
+  });
+}
+
+
+  get isStudent(): boolean {
+    return this.user?.type === 'Coordinator';
+  }
+
+  get isTeacher(): boolean {
+    return this.user?.type === 'Coordinator';
   }
 }
