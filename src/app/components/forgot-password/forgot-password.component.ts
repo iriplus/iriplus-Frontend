@@ -46,44 +46,37 @@ export class ForgotPasswordComponent {
 
     if (!this.email) {
       this.emailError = "*Email is required.";
-      return;
     }
 
     if (!this.email.includes('@')) {
       this.emailError = "*Please enter a valid email address.";
-      this.isLoading = false;
     }
 
     if (this.email.length > 255) {
       this.emailError = "*Email cannot exceed 255 characters.";
     }
 
-    if (!this.emailError) {
+    if (this.emailError) {
+      return;
+    } else {
       this.isLoading = true;
-      this.userService.getUserByEmail(this.email).subscribe({
+      this.authService.sendResetCode(this.email).subscribe({
         next: () => {
-          this.authService.sendResetCode(this.email).subscribe({
-            next: () => {
-              alert('A verification code has been sent to your email.');
-              this.isLoading = false;
-              this.step = 2;
-              setTimeout(() => {
-                const inputs = this.codeInputs.toArray();
-                if (inputs.length > 0) inputs[0].nativeElement.focus();
-              }, 100);
-            },
-            error: err => {
-              this.isLoading = false;
-              this.errorMessage = err.error?.msg || 'Error sending code';
-            }
-          });
+          alert('A verification code has been sent to your email.');
+          this.isLoading = false;
+          this.step = 2;
+
+          setTimeout(() => {
+            const inputs = this.codeInputs.toArray();
+            if (inputs.length > 0) inputs[0].nativeElement.focus();
+          }, 100);
         },
         error: () => {
-          this.emailError = "*No account found with this email.";
           this.isLoading = false;
+          this.errorMessage = 'Somethin went wrong. Please try again later';
         }
       });
-    };
+    }
   }
 
   onSubmitCode(): void {
@@ -94,22 +87,24 @@ export class ForgotPasswordComponent {
 
     if (fullCode.length !== 6) {
       this.codeError = "*Please enter the 6-digit code.";
-      return;
     }
 
-    this.isLoading = true;
-
-    this.authService.verifyResetCode(this.email, fullCode).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.authService.setIsResettingPassword(true);
-        this.router.navigate(['/reset-password'], { queryParams: { email: this.email } });
-      },
-      error: err => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.msg || 'Invalid or expired code';
-      }
-    });
+    if (this.codeError){
+      return;
+    } else {
+      this.isLoading = true;
+      this.authService.verifyResetCode(this.email, fullCode).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.authService.setIsResettingPassword(true);
+          this.router.navigate(['/reset-password'], { queryParams: { email: this.email } });
+        },
+        error: () => {
+          this.isLoading = false;
+          this.errorMessage = 'Invalid or expired code';
+        }
+      });
+    }
   }
 
   resendCode(): void {

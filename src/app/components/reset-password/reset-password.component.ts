@@ -13,13 +13,14 @@ import { AuthService } from '../../services/auth.service';
 export class ResetPasswordComponent {
   password: string = '';
   confirmPassword: string = '';
-    email: string = '';
+  email: string = '';
 
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   passwordStrength: 'weak' | 'medium' | 'strong' = 'weak';
 
   isLoading = false;
+
   passwordError = "";
   confirmPasswordError = "";
   errorMessage = "";
@@ -108,50 +109,51 @@ export class ResetPasswordComponent {
   }
 
   onSubmit(): void {
-    this.isLoading = true;
-
     this.errorMessage = "";
     this.passwordError = "";
     this.confirmPasswordError = "";
 
     if (!this.password) {
       this.passwordError = "*Password is required.";
-      this.isLoading = false;
     }
 
     if (!this.confirmPassword) {
       this.confirmPasswordError = "*Please confirm your password.";
-      this.isLoading = false;
     }
 
     if (this.password !== this.confirmPassword) {
       this.passwordError = "*Passwords do not match.";
       this.confirmPasswordError = "*Passwords do not match.";
-      this.isLoading = false;
     }
 
     if (this.password.length < 8) {
       this.passwordError = "*Password must be at least 8 characters long.";
-      this.isLoading = false;
     }
 
     if (this.passwordError || this.confirmPasswordError) {
-      this.isLoading = false;
       return;
+    } else {
+      this.isLoading = true;
+      this.authService.resetPassword(this.email, this.password).subscribe({
+        next: () => {
+          alert('Password has been reset successfully. You can now log in with your new password.');
+          this.isLoading = false;
+          this.authService.setIsResettingPassword(false);
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          if (err.status === 403) {
+            this.errorMessage = "Verification expired. Please request a new code.";
+            this.router.navigate(['/forgot-password']);
+          } else if (err.status === 400) {
+            this.errorMessage = "Invalid password"
+          } else {
+            this.errorMessage = 'Error resetting password. Please try again';
+          }
+        }
+      });
     }
-
-    this.authService.resetPassword(this.email, this.password).subscribe({
-      next: () => {
-        this.isLoading = false;
-        alert('Password has been reset successfully. You can now log in with your new password.');
-        this.authService.setIsResettingPassword(false);
-        this.router.navigate(['/login']);
-      },
-      error: err => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.msg || 'Error resetting password. Please try again';
-      }
-    });
   }
 
   goToLogin(): void {
