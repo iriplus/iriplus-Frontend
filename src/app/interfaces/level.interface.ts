@@ -1,6 +1,6 @@
 export interface Level {
   id: number;
-  name: string;
-  description?: string;
-  min_xp?: number;
+  description: string;
+  min_xp: number;
+  cosmetic?: string;
 }
