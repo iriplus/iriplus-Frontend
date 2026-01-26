@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { LevelService } from '../../services/level.service';
 import { Level } from '../../interfaces/level.interface';
 
@@ -18,7 +17,6 @@ export class LevelsComponent implements OnInit {
   filteredLevels: Level[] = [];
   showDeleteModal = false;
   levelToDelete: Level | null = null;
-
 
   searchTerm = '';
 
@@ -91,30 +89,53 @@ export class LevelsComponent implements OnInit {
   ========================== */
 
   saveLevel(): void {
-    if (!this.currentLevel.description || this.currentLevel.min_xp === undefined) {
-      return;
+  if (!this.currentLevel.description || this.currentLevel.min_xp === undefined) {
+    return;
+  }
+
+  const description = this.currentLevel.description.trim().toLowerCase();
+  const minXp = this.currentLevel.min_xp;
+
+  const duplicated = this.levels.some(level => {
+    // Excluir el mismo registro cuando se edita
+    if (this.isEditing && level.id === this.currentLevel.id) {
+      return false;
     }
 
-    if (this.isEditing) {
-      this.levelService
-        .updateLevel(this.currentLevel.id, this.currentLevel)
-        .subscribe({
-          next: () => {
-            this.loadLevels();
-            this.closeModal();
-          },
-          error: err => console.error(err)
-        });
-    } else {
-      this.levelService.createLevel(this.currentLevel).subscribe({
+    return (
+      level.description.trim().toLowerCase() === description ||
+      level.min_xp === minXp
+    );
+  });
+
+  if (duplicated) {
+    alert('There is already a level with the same name or the same minimum experience.');
+    return;
+  }
+
+  /* ==== lo que ya tenías ==== */
+
+  if (this.isEditing) {
+    this.levelService
+      .updateLevel(this.currentLevel.id, this.currentLevel)
+      .subscribe({
         next: () => {
           this.loadLevels();
           this.closeModal();
         },
         error: err => console.error(err)
       });
-    }
+  } else {
+    this.levelService.createLevel(this.currentLevel).subscribe({
+      next: () => {
+        this.loadLevels();
+        this.closeModal();
+      },
+      error: err => console.error(err)
+    });
   }
+}
+
 
   deleteLevel(levelId: number): void {
     if (!confirm('Are you sure you want to delete this level?')) {
