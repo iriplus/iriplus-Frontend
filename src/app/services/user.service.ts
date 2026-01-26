@@ -17,37 +17,37 @@ export class UserService {
   ){}
   
   getUserByEmail(email: string): Observable<User> {
-    return this.http.get<User>(`${this.USER_URL}/email/${email}`).pipe(
+    return this.http.get<User>(`${this.USER_URL}/email/${email}`, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     )
   }
 
   getUserByDNI(dni: string): Observable<User> {
-    return this.http.get<User>(`${this.USER_URL}/dni/${dni}`).pipe(
+    return this.http.get<User>(`${this.USER_URL}/dni/${dni}`, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     )
   }
 
   getTeachers(): Observable<UserResponse[]> {
-    return this.http.get<UserResponse[]>(`${this.USER_URL}/teacher`).pipe(
+    return this.http.get<UserResponse[]>(`${this.USER_URL}/teacher`, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
   createTeacher(user: User): Observable<UserResponse> {
-   return this.http.post<UserResponse>(`${this.USER_URL}/teacher`,user).pipe(
+   return this.http.post<UserResponse>(`${this.USER_URL}/teacher`, user, {withCredentials: true}).pipe(
     catchError(err => throwError(() => err))
     );
   }
 
   updateUser(userId: number, userData: Partial<UserResponse>): Observable<UserResponse> {
-    return this.http.put<UserResponse>(`${this.USER_URL}/${userId}`,userData).pipe(
+    return this.http.put<UserResponse>(`${this.USER_URL}/${userId}`, userData, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
   deleteUser(userId: number): Observable<void> {
-    return this.http.delete<void>(`${this.USER_URL}/${userId}`).pipe(
+    return this.http.delete<void>(`${this.USER_URL}/${userId}`, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     );
   }

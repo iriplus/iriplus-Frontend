@@ -21,31 +21,31 @@ export class ClassService {
   }
 
   getClass(class_code: string): Observable<Class> {
-    return this.http.get<Class>(`${this.CLASS_URL}/code/${class_code}`, this.httpOptions).pipe(
+    return this.http.get<Class>(`${this.CLASS_URL}/code/${class_code}`, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
       );
   }
 
   getClasses(): Observable<Class[]> {
-    return this.http.get<Class[]>(this.CLASS_URL, this.httpOptions).pipe(
+    return this.http.get<Class[]>(this.CLASS_URL, { withCredentials: true }).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
   createClass(Class: Partial<Class>): Observable<Class> {
-    return this.http.post<Class>(this.CLASS_URL, Class, this.httpOptions).pipe(
+    return this.http.post<Class>(this.CLASS_URL, Class, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
   updateClass(classId: number, Class: Partial<Class>): Observable<Class> {
-    return this.http.put<Class>(`${this.CLASS_URL}/${classId}`,Class,this.httpOptions).pipe(
+    return this.http.put<Class>(`${this.CLASS_URL}/${classId}`, Class, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
   deleteClass(classId: number): Observable<void> {
-    return this.http.delete<void>(`${this.CLASS_URL}/${classId}`,this.httpOptions).pipe(
+    return this.http.delete<void>(`${this.CLASS_URL}/${classId}`, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
     );
   }
