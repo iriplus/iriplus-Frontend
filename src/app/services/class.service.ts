@@ -17,7 +17,8 @@ export class ClassService {
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
-    })
+    }),
+     withCredentials: true
   }
 
   getClass(class_code: string): Observable<Class> {

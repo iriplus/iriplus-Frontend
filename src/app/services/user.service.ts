@@ -29,7 +29,7 @@ export class UserService {
   }
 
   getTeachers(): Observable<UserResponse[]> {
-    return this.http.get<UserResponse[]>(`${this.USER_URL}/teacher`).pipe(
+    return this.http.get<UserResponse[]>(`${this.USER_URL}/teacher`, { withCredentials: true }).pipe(
       catchError(err => throwError(() => err))
     );
   }
