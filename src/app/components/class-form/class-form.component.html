@@ -1,94 +1,123 @@
 <form class="class-form" (ngSubmit)="submit()">
+  <div class="form-grid">
+    <!-- Código de la clase -->
+    <div class="form-group" *ngIf="classData">
+      <label for="class_code" class="form-label">Código de la Clase</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        <input
+          type="text"
+          id="class_code"
+          name="class_code"
+          [(ngModel)]="formData.class_code"
+          class="form-input"
+          placeholder="Ingrese el código"
+          required
+          disabled
+        />
+      </div>
+    </div>
 
-  <!-- Código de la clase -->
-  <div class="form-group" *ngIf="classData">
-    <label for="class_code" class="form-label">Código de la Clase</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-      </svg>
-      <input
-        type="text"
-        id="class_code"
-        name="class_code"
-        [(ngModel)]="formData.class_code"
-        class="form-input"
-        placeholder="Ingrese el código"
-        required
-        disabled
-      />
+    <!-- Descripción -->
+    <div class="form-group">
+      <label for="description" class="form-label">Descripción</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <input
+          type="text"
+          id="description"
+          name="description"
+          [(ngModel)]="formData.description"
+          class="form-input"
+          placeholder="Descripción de la clase"
+          required
+        />
+      </div>
     </div>
   </div>
+  <div class="form-grid">
+    <!-- Nivel Sugerido -->
+    <div class="form-group">
+      <label for="suggested_level" class="form-label">Nivel Sugerido</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <select
+          id="suggested_level"
+          name="suggested_level"
+          [(ngModel)]="formData.suggested_level"
+          class="form-input"
+          required
+        >
+          <option value="A1">A1</option>
+          <option value="A2">A2</option>
+          <option value="B1">B1</option>
+          <option value="B2">B2</option>
+          <option value="C1">C1</option>
+          <option value="C2">C2</option>
 
-  <!-- Descripción -->
-  <div class="form-group">
-    <label for="description" class="form-label">Descripción</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10 9 9 9 8 9"></polyline>
-      </svg>
-      <input
-        type="text"
-        id="description"
-        name="description"
-        [(ngModel)]="formData.description"
-        class="form-input"
-        placeholder="Descripción de la clase"
-        required
-      />
+        </select>
+      </div>
+    </div>
+
+    <!-- Capacidad Máxima -->
+    <div class="form-group">
+      <label for="max_capacity" class="form-label">Capacidad Máxima</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <input
+          type="number"
+          id="max_capacity"
+          name="max_capacity"
+          [(ngModel)]="formData.max_capacity"
+          class="form-input"
+          placeholder="Capacidad máxima"
+          min="1"
+          required
+        />
+      </div>
     </div>
   </div>
+  <div class="form-grid">
+    <!-- Teachers -->
+    <div class="form-group">
+      <label class="form-label">Teachers</label>
+      <div class="teachers-selector">
+        <div class="teacher-option" *ngFor="let t of teachers" [class.selected]="isSelected(t.id)" (click)="toggleTeacher(t.id)">
+          <div class="checkbox">
+            <span *ngIf="isSelected(t.id)">✓</span>
+          </div>
+          <span class="teacher-name">
+            {{ t.surname }}, {{ t.name }}
+          </span>
+        </div>
+      </div>
 
-  <!-- Nivel Sugerido -->
-  <div class="form-group">
-    <label for="suggested_level" class="form-label">Nivel Sugerido</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-      </svg>
-      <select
-        id="suggested_level"
-        name="suggested_level"
-        [(ngModel)]="formData.suggested_level"
-        class="form-input"
-        required
-      >
-        <option value="A1">A1</option>
-        <option value="A2">A2</option>
-        <option value="B1">B1</option>
-        <option value="B2">B2</option>
-        <option value="C1">C1</option>
-        <option value="C2">C2</option>
-
-      </select>
-    </div>
-  </div>
-
-  <!-- Capacidad Máxima -->
-  <div class="form-group">
-    <label for="max_capacity" class="form-label">Capacidad Máxima</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-      </svg>
-      <input
-        type="number"
-        id="max_capacity"
-        name="max_capacity"
-        [(ngModel)]="formData.max_capacity"
-        class="form-input"
-        placeholder="Capacidad máxima"
-        min="1"
-        required
-      />
+      <!-- Selected Chips -->
+      <div class="selected-chips" *ngIf="selectedTeacherIds.length > 0">
+        <div class="chip" *ngFor="let id of selectedTeacherIds">
+          {{ getTeacherName(id) }}
+          <span class="chip-remove" (click)="removeTeacher(id)">×</span>
+        </div>
+      </div>
+      <small class="teacher-hint">
+        Maximum 2 teachers per class
+      </small>
     </div>
   </div>
 

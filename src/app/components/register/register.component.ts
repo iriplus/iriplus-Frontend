@@ -6,7 +6,7 @@ import { environment } from "../../../environments/environment";
 import { AuthService } from '../../services/auth.service';
 import { ClassService } from '../../services/class.service';
 import { Class } from '../../interfaces/class.interface';
-import { Student, User } from '../../interfaces/user.interface';
+import { User } from '../../interfaces/user.interface';
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -147,7 +147,8 @@ validateParams(): void {
   register(): void {
     this.isLoading = true;
 
-    const userData: Student = {
+    const userData: User = {
+      id: 0,
       name: this.name,
       surname: this.surname,
       email: this.email,
@@ -155,6 +156,7 @@ validateParams(): void {
       dni: this.dni,
       type: 'STUDENT',
       class_code: this.class_code?.toUpperCase() || '',
+      is_verified: false
     };
 
     this.authService.register(userData).subscribe({

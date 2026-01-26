@@ -40,6 +40,7 @@ export class ClassesComponent implements OnInit {
         this.classes = data;
         this.filteredClasses = data;
         this.isLoading = false;
+        console.log(this.filteredClasses)
       },
       error: () => {
         this.errorMessage = 'Error loading classes';

@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-import { UserResponse } from '../../interfaces/user-response.interface';
+import { User } from '../../interfaces/user.interface';
 import { AuthService } from "../../services/auth.service";
 import { UserService } from "../../services/user.service";
 
@@ -15,8 +15,9 @@ import { UserService } from "../../services/user.service";
 })
 export class MyProfileComponent implements OnInit {
 
-  user!: UserResponse;
-  originalData: UserResponse | null = null;
+  user!: User;
+
+  originalData: User | null = null;
 
   isEditing = false;
   showDeleteModal = false;
@@ -91,31 +92,30 @@ export class MyProfileComponent implements OnInit {
   }
 
   deleteAccount(): void {
-  if (!this.user?.id) return;
+    if (!this.user?.id) return;
 
-  this.userService.deleteUser(this.user.id).subscribe({
-    next: () => {
-      this.showDeleteModal = false;
+    this.userService.deleteUser(this.user.id).subscribe({
+      next: () => {
+        this.showDeleteModal = false;
 
-      // cerrar sesión
-      this.authService.logout(); // o el método equivalente que uses
+        // cerrar sesión
+        this.authService.logout(); // o el método equivalente que uses
 
-      alert('Your account has been deleted');
-      this.router.navigate(['/login']);
-    },
-    error: (err) => {
-      console.error(err);
-      alert('Error deleting account. Please try again.');
-    }
-  });
-}
-
+        alert('Your account has been deleted');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error deleting account. Please try again.');
+      }
+    });
+  }
 
   get isStudent(): boolean {
-    return this.user?.type === 'Coordinator';
+    return this.user?.type === 'COORDINATOR';
   }
 
   get isTeacher(): boolean {
-    return this.user?.type === 'Coordinator';
+    return this.user?.type === 'TEACHER';
   }
 }

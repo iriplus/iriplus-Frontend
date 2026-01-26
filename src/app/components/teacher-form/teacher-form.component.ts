@@ -21,12 +21,15 @@ export class TeacherFormComponent {
   confirmPassword = '';
 
   formData: User = {
+    id: 0,
     name: '',
     surname: '',
     email: '',
     passwd: '',
     dni: '',
-    type: 'TEACHER'
+    type: 'TEACHER',
+    teacher_classes: [],
+    is_verified: false
   };
 
   constructor(private userService: UserService) {}
@@ -59,12 +62,15 @@ export class TeacherFormComponent {
 
   resetForm(): void {
     this.formData = {
+      id: 0,
       name: '',
       surname: '',
       email: '',
       passwd: '',
       dni: '',
-      type: 'TEACHER'
+      type: 'TEACHER',
+      teacher_classes: [],
+      is_verified: false
     };
     this.confirmPassword = '';
   }

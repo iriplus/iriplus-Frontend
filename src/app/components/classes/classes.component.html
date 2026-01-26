@@ -51,7 +51,6 @@
             <th>Suggested Level</th>
             <th>Capacity</th>
             <th>Teachers</th>
-            <th>Students</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -71,7 +70,7 @@
     <td>
       <div class="capacity-info">
         <span class="capacity-current">
-          {{ c.students || 0 }}
+          {{ c.students.length || 0 }}
         </span>
         <span class="capacity-separator">/</span>
         <span class="capacity-max">
@@ -81,14 +80,8 @@
     </td>
 
     <td>
-      <div class="teachers-count">
-        <span>{{ c.teachers || 0 }}</span>
-      </div>
-    </td>
-
-    <td>
-      <div class="students-count">
-        <span>{{ c.students || 0 }}</span>
+      <div class="teachers-count" *ngFor="let t of c.teachers">
+        <span>{{ t.surname}}, {{ t.name }}</span>
       </div>
     </td>
 
@@ -130,7 +123,7 @@
 </div>
 
 <div class="modal fade" id="newClassModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">

@@ -4,9 +4,6 @@ import { environment } from '../../environments/environment';
 import { map, catchError, of } from 'rxjs';
 import { Login, LoginResponse } from '../interfaces/login.interface';
 import { User } from '../interfaces/user.interface';
-import { RegisterStudent } from '../interfaces/register.interface';
-import { UserResponse } from '../interfaces/user-response.interface';
-
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -81,30 +78,27 @@ export class AuthService {
       this.resetPasswordUntil = null;
       return false;
     }
-
     return true;
   }
 
   getUserType(): string | null {
-  return this.userType;
-}
+    return this.userType;
+  }
 
   loadMe() {
-  return this.http.get<UserResponse>(this.ME_URL, { withCredentials: true }).pipe(
-    map(user => {
-      this.authenticated = true;
-      this.userType = user.type;
-      return user;
-    }),
-    catchError(() => {
-      this.authenticated = false;
-      this.userType = null;
-      return of(null);
-    })
-  );
-}
-
-
+    return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
+      map(user => {
+        this.authenticated = true;
+        this.userType = user.type;
+        return user;
+      }),
+      catchError(() => {
+        this.authenticated = false;
+        this.userType = null;
+        return of(null);
+      })
+    );
+  }
 
   logout() {
     return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true });

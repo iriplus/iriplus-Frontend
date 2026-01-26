@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
-import { UserResponse } from '../../interfaces/user-response.interface';
+import { User } from '../../interfaces/user.interface';
 import { TeacherFormComponent } from '../teacher-form/teacher-form.component';
 
 @Component({
@@ -13,11 +13,11 @@ import { TeacherFormComponent } from '../teacher-form/teacher-form.component';
 })
 export class TeachersComponent implements OnInit {
 
-  teachers: UserResponse[] = [];
+  teachers: User[] = [];
   isLoading = true;
   errorMessage = '';
   searchTerm = '';
-  filteredTeachers: UserResponse[] = [];
+  filteredTeachers: User[] = [];
 
 
 constructor(private userService: UserService) {}
@@ -28,7 +28,7 @@ constructor(private userService: UserService) {}
 
   loadTeachers(): void {
     this.userService.getTeachers().subscribe({
-      next: (data: UserResponse[]) => {
+      next: (data: User[]) => {
         this.teachers = data;
         this.isLoading = false;
         this.filteredTeachers = data;

@@ -1,6 +1,7 @@
 /* =========================================================
-   Variables globales
+   VARIABLES GLOBALES
    ========================================================= */
+
 :root {
   /* Colores */
   --color-background: #1E2A22;
@@ -32,8 +33,9 @@
 }
 
 /* =========================================================
-   Reset base
+   RESET BASE
    ========================================================= */
+
 html, body {
   margin: 0;
   padding: 0;
@@ -47,12 +49,12 @@ html, body {
 }
 
 /* =========================================================
-   Tipografía
+   TIPOGRAFÍA
    ========================================================= */
+
 h1, h2, h3, h4 {
   font-family: var(--font-title);
   font-weight: 700;
-  color: inherit;
   margin-top: 0;
 }
 
@@ -62,8 +64,9 @@ p {
 }
 
 /* =========================================================
-   Botones (reutilizables)
+   BOTONES REUTILIZABLES
    ========================================================= */
+
 button {
   font-family: inherit;
   cursor: pointer;
@@ -77,51 +80,37 @@ button:disabled {
 
 /* Primario */
 .btn-primary {
-  background-color: var(--color-light-terracotta);
-  color: var(--color-slate);
+  background: linear-gradient(135deg, var(--color-slate), #1a3a21);
+  color: white;
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
   font-weight: 600;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary:hover {
-  background-color: var(--color-beige);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(39, 83, 47, 0.4);
 }
 
 /* Outline */
 .btn-outline {
-  background-color: transparent;
+  background: transparent;
   border: 1px solid var(--color-light-terracotta);
   color: var(--color-light-terracotta);
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
   font-weight: 600;
-  transition: background-color 0.2s, color 0.2s;
 }
 
 .btn-outline:hover {
   background-color: rgba(240, 172, 145, 0.15);
 }
 
-/* Ghost / Link */
-.btn-ghost {
-  background: none;
-  color: var(--color-ivory);
-  font-weight: 600;
-  padding: 0.4rem 0.6rem;
-}
-
-/* Tamaños */
-.btn-lg {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
-}
-
 /* =========================================================
-   Secciones genéricas
+   SECCIONES GENÉRICAS
    ========================================================= */
+
 .section {
   padding: var(--spacing-xl) calc(var(--spacing-xl) + 1.5rem);
   background-color: var(--color-ivory);
@@ -142,8 +131,9 @@ button:disabled {
 }
 
 /* =========================================================
-   Cards
+   CARDS REUTILIZABLES
    ========================================================= */
+
 .card {
   background-color: var(--color-white-cream);
   padding: var(--spacing-md);
@@ -152,27 +142,9 @@ button:disabled {
 }
 
 /* =========================================================
-   Hero base (reutilizable)
+   TABLAS BASE
    ========================================================= */
-.hero {
-  min-height: 100vh;
-  display: grid;
-  align-items: center;
-}
 
-.hero-content {
-  max-width: 560px;
-}
-
-.hero-actions {
-  margin-top: var(--spacing-md);
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
-/* =========================================================
-   Tablas
-   ========================================================= */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -191,8 +163,32 @@ button:disabled {
 }
 
 /* =========================================================
-   Estados de error
+   INPUTS GLOBALES
    ========================================================= */
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e9ecef;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-slate);
+  box-shadow: 0 0 0 3px rgba(39, 83, 47, 0.12);
+}
+
+.form-input.input-error {
+  border-color: #fc8181;
+}
+
+/* =========================================================
+   ERRORES
+   ========================================================= */
+
 .app-error {
   margin-top: 12px;
   padding: 10px 12px;
@@ -213,19 +209,9 @@ button:disabled {
 }
 
 /* =========================================================
-   Inputs (error)
+   SPINNER
    ========================================================= */
-.form-input.input-error {
-  border-color: #fc8181;
-}
 
-.form-input.input-error:focus {
-  box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.15);
-}
-
-/* =========================================================
-   Spinner
-   ========================================================= */
 .app-spinner {
   width: 20px;
   height: 20px;
@@ -248,8 +234,52 @@ button:disabled {
 }
 
 /* =========================================================
-   Animaciones
+   MODAL GLOBAL (REUTILIZABLE)
    ========================================================= */
+
+.modal.fade .modal-dialog {
+  max-width: 900px; /* Modal grande */
+}
+
+.modal-content {
+  border-radius: var(--radius-xl);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  border: none;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: var(--color-white-cream);
+  border-bottom: 1px solid #e9ecef;
+  padding: 24px 30px;
+}
+
+.modal-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--color-slate);
+}
+
+.modal-body {
+  padding: 30px;
+  background: white;
+}
+
+.modal-footer {
+  padding: 20px 30px;
+  border-top: 1px solid #e9ecef;
+  background: #fafafa;
+}
+
+/* Backdrop más suave */
+.modal-backdrop.show {
+  opacity: 0.6;
+}
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -268,10 +298,72 @@ button:disabled {
 }
 
 /* =========================================================
-   Responsive global
+   RESPONSIVE GLOBAL
    ========================================================= */
+
 @media (max-width: 900px) {
   .section {
     padding: var(--spacing-lg) var(--spacing-md);
   }
+
+  .modal.fade .modal-dialog {
+    max-width: 95%;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
 }
+
+/* =========================================================
+   HERO GLOBAL (lo usa public-home)
+   ========================================================= */
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.hero-content {
+  max-width: 560px;
+}
+
+.hero-actions {
+  margin-top: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+  }
+}
+
+/* =========================================================
+   BOTONES FALTANTES (los usa public-home)
+   ========================================================= */
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ivory);
+  font-weight: 600;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background-color: rgba(252, 250, 244, 0.12);
+  transform: translateY(-1px);
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+}
+
