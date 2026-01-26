@@ -11,10 +11,10 @@ export class LevelService {
 
   private readonly LEVEL_URL = `${environment.backendUrl}/level`;
 
-  private httpOptions = {
+    private httpOptions = {
     withCredentials: true
   };
-
+  
   constructor(private http: HttpClient) {}
 
   getLevels(): Observable<Level[]> {
