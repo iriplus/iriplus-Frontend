@@ -92,24 +92,28 @@ export class MyProfileComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    if (!this.user?.id) return;
+  if (!this.user?.id) return;
 
-    this.userService.deleteUser(this.user.id).subscribe({
-      next: () => {
-        this.showDeleteModal = false;
+  this.userService.deleteUser(this.user.id).subscribe({
+    next: () => {
+      this.showDeleteModal = false;
 
-        // cerrar sesión
-        this.authService.logout(); // o el método equivalente que uses
-
-        alert('Your account has been deleted');
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Error deleting account. Please try again.');
-      }
-    });
-  }
+      this.authService.logout().subscribe({
+        next: () => {
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error('Logout error:', err);
+          this.router.navigate(['/login']);
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Delete error:', err);
+      alert('Error deleting account. Please try again.');
+    }
+  });
+}
 
   get isStudent(): boolean {
     return this.user?.type === 'COORDINATOR';
