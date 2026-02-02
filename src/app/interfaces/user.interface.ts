@@ -15,7 +15,7 @@ export interface User {
 
   // Optional fields if student
   class_code?: string;
-  accumulated_exp?: number,
+  accumulated_xp?: number,
   student_class?: Class;
   student_level?: Level;
 

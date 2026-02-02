@@ -364,3 +364,129 @@
  .academic-section p {
   color: black;
 }
+
+/* ===============================
+   TEACHER SECTION
+=================================*/
+
+.teacher-section {
+  margin-top: 1rem;
+}
+
+.teacher-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #3e4a63;
+  margin-bottom: 1.5rem;
+}
+
+.teacher-title-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #27532f 0%, #9eb28f 100%);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teacher-title-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: white;
+}
+
+.teacher-classes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .teacher-classes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.teacher-class-card {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.teacher-class-card:hover {
+  border-color: #9eb28f;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.teacher-card-content {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.teacher-card-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #27532f 0%, #3a6b44 100%);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.teacher-class-card:hover .teacher-card-icon {
+  transform: scale(1.05);
+}
+
+.teacher-card-icon svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: white;
+}
+
+.teacher-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.teacher-class-code {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #27532f;
+  margin: 0;
+}
+
+.teacher-class-description {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0.5rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teacher-class-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #9eb28f;
+}
+
+.teacher-class-meta svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.no-teacher-classes {
+  color: #2d2d2d;
+}

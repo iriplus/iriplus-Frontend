@@ -1,5 +1,6 @@
 <div class="profile-container">
   <div class="profile-card">
+    <!-- HEADER -->
     <div class="profile-header">
       <div class="avatar-container">
         <div class="avatar">
@@ -13,6 +14,7 @@
       <p class="profile-subtitle">View and update your personal information</p>
     </div>
 
+    <!-- PROFILE FORM -->
     <form class="profile-form" (ngSubmit)="onSubmit($event)">
       <!-- First Name and Last Name -->
       <div class="name-group">
@@ -23,15 +25,7 @@
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              [(ngModel)]="user.name"
-              class="form-input"
-              placeholder="First Name"
-              [disabled]="!isEditing"
-            />
+            <input type="text" id="firstName" name="firstName" [(ngModel)]="user.name" class="form-input" placeholder="First Name" [disabled]="!isEditing" />
           </div>
         </div>
 
@@ -42,22 +36,13 @@
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              [(ngModel)]="user.surname"
-              class="form-input"
-              placeholder="Last Name"
-              [disabled]="!isEditing"
-            />
+            <input type="text" id="lastName" name="lastName" [(ngModel)]="user.surname" class="form-input" placeholder="Last Name" [disabled]="!isEditing" />
           </div>
         </div>
       </div>
 
       <!-- Email and DNI -->
       <div class="name-group">
-        <!-- Email -->
         <div class="form-group half-width">
           <label for="email" class="form-label">Email</label>
           <div class="input-wrapper">
@@ -65,50 +50,28 @@
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
               <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              [(ngModel)]="user.email"
-              class="form-input"
-              placeholder="you@example.com"
-              [disabled]="!isEditing"
-            />
+            <input type="email" id="email" name="email" [(ngModel)]="user.email" class="form-input" placeholder="you@example.com" [disabled]="!isEditing" />
           </div>
         </div>
 
-        <!-- DNI -->
         <div class="form-group half-width">
           <label for="dni" class="form-label">DNI</label>
           <div class="input-wrapper">
             <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-              <line x1="10" y1="9" x2="8" y2="9"/>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <line x1="10" y1="9" x2="8" y2="9" />
             </svg>
-            <input
-              type="text"
-              id="dni"
-              name="dni"
-              [(ngModel)]="user.dni"
-              class="form-input"
-              placeholder="DNI"
-              [disabled]="!isEditing"
-            />
+            <input type="text" id="dni" name="dni" [(ngModel)]="user.dni" class="form-input" placeholder="DNI" [disabled]="!isEditing" />
           </div>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="action-buttons">
-        <button
-          *ngIf="!isEditing"
-          type="button"
-          class="edit-button"
-          (click)="enableEdit()"
-        >
+        <button *ngIf="!isEditing" type="button" class="edit-button" (click)="enableEdit()">
           <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -135,49 +98,288 @@
     </form>
 
     <!-- Academic Information - Student -->
-    <div *ngIf="isStudent" class="section-divider"></div>
+    <div *ngIf="isStudent">
+      <div class="section-divider"></div>
+      <div class="academic-section">
+        <h2 class="section-title">Academic Information</h2>
 
-    <div *ngIf="isStudent" class="academic-section">
-      <h2 class="section-title">Academic Information</h2>
+        <div class="student-section">
+          <!-- Sección de Nivel y XP -->
+          <div class="level-card">
+            <div class="level-header">
+              <div class="level-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              </div>
+              <div class="level-info">
+                <span class="level-label">Mi Nivel</span>
+                <span class="level-name">{{ currentLevel?.description || 'Sin nivel' }}</span>
+              </div>
+              <div class="xp-badge">
+                <span class="xp-value">{{ accumulatedXp || 0 }}</span>
+                <span class="xp-label">XP</span>
+              </div>
+            </div>
 
-      <div class="name-group">
-        <div class="form-group">
-          <label class="form-label">Class</label>
-          <div class="input-wrapper">
-            <input
-              type="text"
-              class="form-input"
-              [value]="user.student_class?.description || 'Not assigned'"
-              disabled
-            />
+            <div class="progress-section">
+              <div class="progress-labels">
+                <span class="progress-current">{{ currentLevel?.description || 'Inicio' }}</span>
+                <span class="progress-next">{{ nextLevel?.description || 'Máximo' }}</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+                <div class="progress-marker" [style.left.%]="progressPercentage">
+                  <div class="marker-dot"></div>
+                </div>
+              </div>
+              <div class="progress-xp-info">
+                <span class="xp-current">{{ accumulatedXp || 0 }} XP</span>
+                <span class="xp-needed" *ngIf="nextLevel">{{ nextLevel.min_xp }} XP para {{ nextLevel.description }}</span>
+                <span class="xp-needed" *ngIf="!nextLevel">Nivel máximo alcanzado</span>
+              </div>
+            </div>
+
+            <div class="level-stats">
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20v-6M6 20V10M18 20V4" />
+                  </svg>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-value">{{ xpToNextLevel || 0 }}</span>
+                  <span class="stat-label">XP restantes</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                    <path d="M4 22h16" />
+                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                  </svg>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-value">{{ currentLevelIndex + 1 }}</span>
+                  <span class="stat-label">de {{ totalLevels }} niveles</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección de Clase -->
+          <div class="class-card">
+            <div class="class-header">
+              <div class="class-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
+              <h3 class="class-title">Mi Clase</h3>
+              <button class="btn-change-class" (click)="openChangeClassModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                  <path d="M16 16h5v5" />
+                </svg>
+                Cambiar clase
+              </button>
+            </div>
+
+            <div class="class-content" *ngIf="currentClass; else noClass">
+              <div class="class-code-badge">
+                <span class="code-label">Código</span>
+                <span class="code-value">{{ currentClass.class_code }}</span>
+              </div>
+
+              <div class="class-details">
+                <div class="detail-row">
+                  <span class="detail-label">Descripción</span>
+                  <span class="detail-value">{{ currentClass.description || 'Sin descripción' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Nivel sugerido</span>
+                  <span class="detail-value level-badge" [ngClass]="'level-' + currentClass.suggested_level.toLowerCase()">
+                    {{ currentClass.suggested_level || 'No especificado' }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Capacidad</span>
+                  <div class="capacity-info">
+                    <div class="capacity-bar-container">
+                      <div class="capacity-bar" [style.width.%]="classCapacityPercentage"></div>
+                    </div>
+                    <span class="capacity-text">{{ currentClass.students.length || 0 }} / {{ currentClass.max_capacity }} estudiantes</span>
+                  </div>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Profesores</span>
+                  <span class="detail-value">{{ currentClass.teachers || 0 }} asignados</span>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noClass>
+              <div class="no-class-message">
+                <div class="no-class-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </svg>
+                </div>
+                <p class="no-class-text">No estás inscripto en ninguna clase</p>
+                <button class="btn-enroll" (click)="openChangeClassModal()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                  </svg>
+                  Inscribirme a una clase
+                </button>
+              </div>
+            </ng-template>
+          </div>
+         </div>
+
+        <!-- Modal para cambiar de clase -->
+        <div class="modal-overlay" *ngIf="showChangeClassModal" (click)="closeChangeClassModal()">
+          <div class="modal-container" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+              <h2 class="modal-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+                Cambiar de Clase
+              </h2>
+              <button class="modal-close" (click)="closeChangeClassModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <div class="search-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input type="text" placeholder="Buscar clase por código o descripción..." [(ngModel)]="classSearchTerm" (input)="filterClasses()" />
+              </div>
+
+              <div class="classes-list">
+                <div class="class-option" *ngFor="let classItem of filteredClasses" [ngClass]="{'selected': selectedClassId === classItem.id, 'current': currentClass?.id === classItem.id}" (click)="selectClass(classItem)">
+                  <div class="class-option-header">
+                    <span class="class-option-code">{{ classItem.class_code }}</span>
+                    <span class="class-option-level" [ngClass]="'level-' + classItem.suggested_level.toLowerCase()">
+                      {{ classItem.suggested_level }}
+                    </span>
+                  </div>
+                  <p class="class-option-description">{{ classItem.description || 'Sin descripción' }}</p>
+                  <div class="class-option-footer">
+                    <span class="class-option-capacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                      {{ classItem.students || 0 }}/{{ classItem.max_capacity }}
+                    </span>
+                    <span class="current-badge" *ngIf="currentClass?.id === classItem.id">Clase actual</span>
+                  </div>
+                </div>
+
+                <div class="no-results" *ngIf="filteredClasses.length === 0">
+                  <p>No se encontraron clases</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn-cancel" (click)="closeChangeClassModal()">Cancelar</button>
+              <button class="btn-confirm" [disabled]="!selectedClassId || selectedClassId === currentClass?.id" (click)="confirmChangeClass()">
+                Cambiar a esta clase
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Academic Information - Teacher -->
-    <div *ngIf="isTeacher" class="section-divider"></div>
+   <!-- Academic Information - Teacher -->
+<div *ngIf="isTeacher">
+  <div class="section-divider"></div>
 
-    <div *ngIf="isTeacher" class="academic-section">
-      <h2 class="section-title">Classes You Teach</h2>
+  <div class="academic-section teacher-section">
+    <h2 class="teacher-title">
+      <div class="teacher-title-icon">
+        <!-- Icono libro -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg>
+      </div>
+      Classes You Teach
+    </h2>
 
-      <div *ngIf="user.teacher_classes?.length; else noClasses">
-        <div *ngFor="let cls of user.teacher_classes" class="form-group">
-          <div class="input-wrapper">
-            <input
-              type="text"
-              class="form-input"
-              [value]="cls.description"
-              disabled
-            />
+    <div *ngIf="user.teacher_classes?.length; else noTeacherClasses"
+         class="teacher-classes-grid">
+
+      <div *ngFor="let cls of user.teacher_classes"
+           class="teacher-class-card">
+
+        <div class="teacher-card-content">
+          <div class="teacher-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+          </div>
+
+          <div class="teacher-card-info">
+            <p class="teacher-class-code">
+              {{ cls.class_code }}
+            </p>
+
+            <p class="teacher-class-description"
+               [title]="cls.description">
+              {{ cls.description }}
+            </p>
+
+            <div class="teacher-class-meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span>
+                {{ cls.students || 0 }} students
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <ng-template #noClasses>
-        <p>You have no assigned classes.</p>
-      </ng-template>
+      </div>
     </div>
+
+    <ng-template #noTeacherClasses>
+      <p class="no-teacher-classes">
+        You have no assigned classes.
+      </p>
+    </ng-template>
+  </div>
+</div>
+
+
 
     <!-- Change Password Section -->
     <div class="section-divider"></div>
@@ -194,7 +396,6 @@
 
     <!-- Danger Zone - Delete Account -->
     <div class="section-divider"></div>
-
     <div class="danger-section">
       <h2 class="section-title danger">Delete Account</h2>
       <p class="danger-text">
@@ -235,5 +436,6 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
