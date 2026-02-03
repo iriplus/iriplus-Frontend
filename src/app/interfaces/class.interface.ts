@@ -8,4 +8,5 @@ export interface Class {
     max_capacity: number;
     students: User[];
     teachers: User[];
+    students_count: number
 }

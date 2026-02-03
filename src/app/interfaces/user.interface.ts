@@ -12,6 +12,7 @@ export interface User {
   dni: string;
   type: UserType;
   is_verified: boolean;
+  profile_picture: string;
 
   // Optional fields if student
   class_code?: string;

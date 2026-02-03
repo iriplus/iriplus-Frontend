@@ -156,7 +156,8 @@ validateParams(): void {
       dni: this.dni,
       type: 'STUDENT',
       class_code: this.class_code?.toUpperCase() || '',
-      is_verified: false
+      is_verified: false,
+      profile_picture:'',
     };
 
     this.authService.register(userData).subscribe({

@@ -29,7 +29,8 @@ export class TeacherFormComponent {
     dni: '',
     type: 'TEACHER',
     teacher_classes: [],
-    is_verified: false
+    is_verified: false,
+    profile_picture:'',
   };
 
   constructor(private userService: UserService) {}
@@ -70,7 +71,8 @@ export class TeacherFormComponent {
       dni: '',
       type: 'TEACHER',
       teacher_classes: [],
-      is_verified: false
+      is_verified: false,
+      profile_picture:'',
     };
     this.confirmPassword = '';
   }

@@ -64,7 +64,7 @@ export class MyProfileComponent implements OnInit {
       if (!user) return;
       this.user = user;
       this.saveOriginalData();
-      console.log(user.teacher_classes?.[0])
+      console.log('clases teacher',user.teacher_classes)
 
 
       if (this.isStudent) {
@@ -89,10 +89,9 @@ calculateClassCapacity(): void {
   }
 
   this.classCapacityPercentage =
-    (this.currentClass.students.length / this.currentClass.max_capacity) * 100;
+    ((this.currentClass.students_count ?? 0) / this.currentClass.max_capacity) * 100;
 }
 loadLevelsAndCalculateProgress(): void {
-  // ⚠️ ajustá esto cuando el backend lo tenga explícito
   this.accumulatedXp = this.user.accumulated_xp ?? 0;
 
   this.levelService.getLevels().subscribe(levels => {
@@ -255,7 +254,6 @@ selectClass(classItem: Class): void {
 }
 
 confirmChangeClass(): void {
-  // más adelante lo implementamos bien
   this.closeChangeClassModal();
 }
 }
