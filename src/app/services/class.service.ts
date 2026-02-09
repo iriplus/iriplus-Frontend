@@ -27,6 +27,12 @@ export class ClassService {
       );
   }
 
+  getClassById(id: number): Observable<Class> {
+    return this.http.get<Class>(`${this.CLASS_URL}/id/${id}`, {withCredentials: true}).pipe(
+      catchError(err => throwError(() => err))
+      );
+  }
+
   getClasses(): Observable<Class[]> {
     return this.http.get<Class[]>(this.CLASS_URL, { withCredentials: true }).pipe(
       catchError(err => throwError(() => err))

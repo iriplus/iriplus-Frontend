@@ -74,22 +74,34 @@ export class MyProfileComponent implements OnInit {
   }
 
   loadStudentAcademicData(): void {
-  this.loadLevelsAndCalculateProgress();
+    this.loadLevelsAndCalculateProgress();
 
-  if (this.user.student_class) {
-    this.currentClass = this.user.student_class;
-    this.calculateClassCapacity();
+    if (!this.user.student_class_id) {
+      this.currentClass = null;
+      return;
+    }
+
+    this.classService.getClassById(this.user.student_class_id).subscribe({
+      next: (cls) => {
+        this.currentClass = cls;
+        console.log("clase vuelta:",cls)
+        this.calculateClassCapacity();
+      },
+      error: (err) => {
+        console.error('Error loading class', err);
+        this.currentClass = null;
+      }
+    });
   }
-}
 
 calculateClassCapacity(): void {
   if (!this.currentClass) {
     this.classCapacityPercentage = 0;
     return;
   }
-
+  
   this.classCapacityPercentage =
-    ((this.currentClass.students_count ?? 0) / this.currentClass.max_capacity) * 100;
+    ((this.currentClass.students?.length ?? 0) / this.currentClass.max_capacity) * 100;
 }
 loadLevelsAndCalculateProgress(): void {
   this.accumulatedXp = this.user.accumulated_xp ?? 0;

@@ -15,6 +15,7 @@ export interface User {
   profile_picture: string;
 
   // Optional fields if student
+  student_class_id?: number;
   class_code?: string;
   accumulated_xp?: number,
   student_class?: Class;
