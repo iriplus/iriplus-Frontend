@@ -248,6 +248,12 @@ button:disabled {
   overflow: hidden;
 }
 
+  /* Modal Teacher */
+  #newTeacherModal .modal-dialog {
+    max-width: 560px;
+  }
+
+
 .modal-header {
   background: var(--color-white-cream);
   border-bottom: 1px solid #e9ecef;

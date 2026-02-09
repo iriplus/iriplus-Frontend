@@ -1,10 +1,9 @@
-<form class="auth-form" (ngSubmit)="submit()">
-
+<form class="class-form" (ngSubmit)="submit()">
 
   <!-- Name + Surname -->
-  <div class="form-group">
-    <label class="form-label">Name and Surname</label>
-    <div class="name-surname-row">
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">First Name</label>
       <div class="input-wrapper">
         <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -12,15 +11,17 @@
         </svg>
         <input
           type="text"
-          id="name"
           name="name"
           [(ngModel)]="formData.name"
           class="form-input"
-          placeholder="First Name"
+          placeholder="First name"
           required
         />
       </div>
+    </div>
 
+    <div class="form-group">
+      <label class="form-label">Last Name</label>
       <div class="input-wrapper">
         <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -28,11 +29,10 @@
         </svg>
         <input
           type="text"
-          id="surname"
           name="surname"
           [(ngModel)]="formData.surname"
           class="form-input"
-          placeholder="Last Name"
+          placeholder="Last name"
           required
         />
       </div>
@@ -40,89 +40,97 @@
   </div>
 
   <!-- Email -->
-  <div class="form-group">
-    <label for="email" class="form-label">Email Address</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-        <polyline points="22,6 12,13 2,6"></polyline>
-      </svg>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        [(ngModel)]="formData.email"
-        class="form-input"
-        placeholder="you@example.com"
-        required
-      />
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="formData.email"
+          class="form-input"
+          placeholder="you@example.com"
+          required
+        />
+      </div>
+    </div>
+
+    <!-- DNI -->
+    <div class="form-group">
+      <label class="form-label">DNI</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+          <line x1="7" y1="8" x2="17" y2="8"></line>
+        </svg>
+        <input
+          type="text"
+          name="dni"
+          [(ngModel)]="formData.dni"
+          class="form-input"
+          placeholder="DNI"
+          required
+        />
+      </div>
     </div>
   </div>
 
-  <!-- DNI -->
-  <div class="form-group">
-    <label for="dni" class="form-label">DNI</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
-        <line x1="7" y1="8" x2="17" y2="8"></line>
-        <line x1="7" y1="12" x2="17" y2="12"></line>
-        <line x1="7" y1="16" x2="13" y2="16"></line>
-      </svg>
-      <input
-        type="text"
-        id="dni"
-        name="dni"
-        [(ngModel)]="formData.dni"
-        class="form-input"
-        placeholder="Enter your DNI"
-        required
-      />
+  <!-- Passwords -->
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <input
+          [type]="showPasswd ? 'text' : 'password'"
+          name="password"
+          [(ngModel)]="formData.passwd"
+          class="form-input"
+          placeholder="At least 8 characters"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Confirm Password</label>
+      <div class="input-wrapper">
+        <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <input
+          [type]="showConfirmPasswd ? 'text' : 'password'"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          class="form-input"
+          placeholder="Repeat password"
+          required
+        />
+      </div>
     </div>
   </div>
 
-  <!-- Password -->
-  <div class="form-group">
-    <label for="password" class="form-label">Password</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-      </svg>
-      <input
-        [type]="showPasswd ? 'text' : 'password'"
-        id="password"
-        name="password"
-        [(ngModel)]="formData.passwd"
-        class="form-input"
-        placeholder="At least 8 characters"
-        required
-      />
-    </div>
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
   </div>
 
-  <!-- Confirm Password -->
-  <div class="form-group">
-    <label for="confirmPassword" class="form-label">Confirm Password</label>
-    <div class="input-wrapper">
-      <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-      </svg>
-      <input
-        [type]="showConfirmPasswd ? 'text' : 'password'"
-        id="confirmPassword"
-        name="confirmPassword"
-        [(ngModel)]="confirmPassword"
-        class="form-input"
-        placeholder="Repeat your password"
-        required
-      />
-    </div>
-  </div>
-
-  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading">
+  <!-- Submit -->
+  <button
+    type="submit"
+    class="submit-button btn-with-spinner"
+    [class.btn-loading]="isLoading"
+  >
     <span *ngIf="isLoading" class="app-spinner"></span>
-    <span *ngIf="!isLoading"> {{ 'Create Teacher' }}</span>
+    <span *ngIf="!isLoading">Create Teacher</span>
   </button>
+
 </form>

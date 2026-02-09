@@ -14,7 +14,7 @@
           name="class_code"
           [(ngModel)]="formData.class_code"
           class="form-input"
-          placeholder="Ingrese el código"
+          placeholder="Enter the code"
           required
           disabled
         />
@@ -23,7 +23,7 @@
 
     <!-- Descripción -->
     <div class="form-group">
-      <label for="description" class="form-label">Descripción</label>
+      <label for="description" class="form-label">Description</label>
       <div class="input-wrapper">
         <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -38,7 +38,7 @@
           name="description"
           [(ngModel)]="formData.description"
           class="form-input"
-          placeholder="Descripción de la clase"
+          placeholder="Description of the class"
           required
         />
       </div>
@@ -47,7 +47,7 @@
   <div class="form-grid">
     <!-- Nivel Sugerido -->
     <div class="form-group">
-      <label for="suggested_level" class="form-label">Nivel Sugerido</label>
+      <label for="suggested_level" class="form-label">Suggested Level</label>
       <div class="input-wrapper">
         <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
@@ -72,7 +72,7 @@
 
     <!-- Capacidad Máxima -->
     <div class="form-group">
-      <label for="max_capacity" class="form-label">Capacidad Máxima</label>
+      <label for="max_capacity" class="form-label">Max Capacity</label>
       <div class="input-wrapper">
         <svg class="input-icon" viewBox="0 0 24 24" stroke="currentColor">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -86,7 +86,7 @@
           name="max_capacity"
           [(ngModel)]="formData.max_capacity"
           class="form-input"
-          placeholder="Capacidad máxima"
+          placeholder="Max Capacity"
           min="1"
           required
         />
@@ -129,6 +129,6 @@
   <!-- Botón de submit -->
   <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading">
     <span *ngIf="isLoading" class="app-spinner"></span>
-    <span *ngIf="!isLoading">{{ classData ? 'Actualizar Clase' : 'Crear Clase' }}</span>
+    <span *ngIf="!isLoading">{{ classData ? 'Update Class' : 'Create Class' }}</span>
   </button>
 </form>

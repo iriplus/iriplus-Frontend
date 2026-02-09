@@ -9,6 +9,7 @@ import { User } from '../../interfaces/user.interface';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './teacher-form.component.html',
+  styleUrls: ['./teacher-form.component.css']
 })
 export class TeacherFormComponent {
 

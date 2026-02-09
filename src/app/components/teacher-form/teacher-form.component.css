@@ -1,0 +1,114 @@
+/* =========================================================
+   Host
+   ========================================================= */
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   Form Layout
+   ========================================================= */
+
+
+
+/* Grid de dos columnas para pantallas grandes */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5%;
+  padding-bottom: 5%;
+}
+
+/* En mobile vuelve a una columna */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   Form Groups
+   ========================================================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* =========================================================
+   Inputs
+   ========================================================= */
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #6c757d;
+}
+
+
+
+.form-input:focus {
+  outline: none;
+  border-color: #27532F;
+  box-shadow: 0 0 0 3px rgba(39, 83, 47, 0.12);
+}
+
+/* Select */
+select.form-input {
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   Submit Button
+   ========================================================= */
+
+.submit-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #27532F 0%, #1a3a21 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(39, 83, 47, 0.35);
+}
+
+/* =========================================================
+   Error Message
+   ========================================================= */
+
+.error-message {
+  font-size: 13px;
+  color: #c62828;
+  background: #ffebee;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
