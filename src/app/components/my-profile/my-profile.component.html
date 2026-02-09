@@ -242,13 +242,13 @@
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                   </svg>
                 </div>
-                <p class="no-class-text">No estás inscripto en ninguna clase</p>
+                <p class="no-class-text">You're not enrolled in any class.</p>
                 <button class="btn-enroll" (click)="openChangeClassModal()">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14" />
                     <path d="M12 5v14" />
                   </svg>
-                  Inscribirme a una clase
+                  Sign up for a class
                 </button>
               </div>
             </ng-template>
@@ -264,7 +264,7 @@
                   <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
                   <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                 </svg>
-                Cambiar de Clase
+                Change Class
               </h2>
               <button class="modal-close" (click)="closeChangeClassModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -280,7 +280,7 @@
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
                 </svg>
-                <input type="text" placeholder="Buscar clase por código o descripción..." [(ngModel)]="classSearchTerm" (input)="filterClasses()" />
+                <input type="text" placeholder="Search for a class by code or description..." [(ngModel)]="classSearchTerm" (input)="filterClasses()" />
               </div>
 
               <div class="classes-list">
@@ -291,7 +291,7 @@
                       {{ classItem.suggested_level }}
                     </span>
                   </div>
-                  <p class="class-option-description">{{ classItem.description || 'Sin descripción' }}</p>
+                  <p class="class-option-description">{{ classItem.description || 'No description' }}</p>
                   <div class="class-option-footer">
                     <span class="class-option-capacity">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -302,20 +302,20 @@
                       </svg>
                       {{ classItem.students_count || 0 }}/{{ classItem.max_capacity }}
                     </span>
-                    <span class="current-badge" *ngIf="currentClass?.id === classItem.id">Clase actual</span>
+                    <span class="current-badge" *ngIf="currentClass?.id === classItem.id">Current Class</span>
                   </div>
                 </div>
 
                 <div class="no-results" *ngIf="filteredClasses.length === 0">
-                  <p>No se encontraron clases</p>
+                  <p>No classes were found</p>
                 </div>
               </div>
             </div>
 
             <div class="modal-footer">
-              <button class="btn-cancel" (click)="closeChangeClassModal()">Cancelar</button>
+              <button class="btn-cancel" (click)="closeChangeClassModal()">Cancel</button>
               <button class="btn-confirm" [disabled]="!selectedClassId || selectedClassId === currentClass?.id" (click)="confirmChangeClass()">
-                Cambiar a esta clase
+                Switch to this class
               </button>
             </div>
           </div>
@@ -349,9 +349,9 @@
           </div>
 
           <div class="teacher-card-info">
-            <p class="teacher-class-code">{{ cls.class_code }}</p>
+            <p class="teacher-class-code">{{ cls.description }}</p>
             <p class="teacher-class-description" [title]="cls.description">
-              {{ cls.description }}
+              {{ cls.class_code }}
             </p>
 
             <div class="teacher-class-meta">
