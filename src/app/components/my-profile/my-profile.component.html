@@ -1,5 +1,4 @@
-<form *ngIf="user" class="profile-form" (ngSubmit)="onSubmit($event)">
-<div class="profile-container">
+<div *ngIf="user" class="profile-container">
   <div class="profile-card">
     <!-- HEADER -->
     <div class="profile-header">
@@ -185,7 +184,7 @@
                 </svg>
               </div>
               <h3 class="class-title">My Class</h3>
-              <button class="btn-change-class" (click)="openChangeClassModal()">
+              <button type="button" class="btn-change-class" (click)="openChangeClassModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                   <path d="M3 3v5h5" />
@@ -243,7 +242,7 @@
                   </svg>
                 </div>
                 <p class="no-class-text">You're not enrolled in any class.</p>
-                <button class="btn-enroll" (click)="openChangeClassModal()">
+                <button type="button" class="btn-enroll" (click)="openChangeClassModal()">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14" />
                     <path d="M12 5v14" />
@@ -253,129 +252,60 @@
               </div>
             </ng-template>
           </div>
-         </div>
-
-        <!-- Modal para cambiar de clase -->
-        <div class="modal-overlay" *ngIf="showChangeClassModal" (click)="closeChangeClassModal()">
-          <div class="modal-container" (click)="$event.stopPropagation()">
-            <div class="modal-header">
-              <h2 class="modal-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                </svg>
-                Change Class
-              </h2>
-              <button class="modal-close" (click)="closeChangeClassModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div class="modal-body">
-              <div class="search-box">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.3-4.3" />
-                </svg>
-                <input type="text" placeholder="Search for a class by code or description..." [(ngModel)]="classSearchTerm" (input)="filterClasses()" />
-              </div>
-
-              <div class="classes-list">
-                <div class="class-option" *ngFor="let classItem of filteredClasses" [ngClass]="{'selected': selectedClassId === classItem.id, 'current': currentClass?.id === classItem.id}" (click)="selectClass(classItem)">
-                  <div class="class-option-header">
-                    <span class="class-option-code">{{ classItem.class_code }}</span>
-                    <span class="class-option-level" [ngClass]="'level-' + classItem.suggested_level.toLowerCase()">
-                      {{ classItem.suggested_level }}
-                    </span>
-                  </div>
-                  <p class="class-option-description">{{ classItem.description || 'No description' }}</p>
-                  <div class="class-option-footer">
-                    <span class="class-option-capacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                      </svg>
-                      {{ classItem.students_count || 0 }}/{{ classItem.max_capacity }}
-                    </span>
-                    <span class="current-badge" *ngIf="currentClass?.id === classItem.id">Current Class</span>
-                  </div>
-                </div>
-
-                <div class="no-results" *ngIf="filteredClasses.length === 0">
-                  <p>No classes were found</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button class="btn-cancel" (click)="closeChangeClassModal()">Cancel</button>
-              <button class="btn-confirm" [disabled]="!selectedClassId || selectedClassId === currentClass?.id" (click)="confirmChangeClass()">
-                Switch to this class
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
 
-   <!-- Academic Information - Teacher -->
-<div *ngIf="isTeacher">
-  <div class="section-divider"></div>
+    <!-- Academic Information - Teacher -->
+    <div *ngIf="isTeacher">
+      <div class="section-divider"></div>
 
-  <div class="academic-section teacher-section">
-    <h2 class="teacher-title">
-      <div class="teacher-title-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-        </svg>
-      </div>
-      Classes You Teach
-    </h2>
-
-    <div *ngIf="user.teacher_classes?.length; else noTeacherClasses" class="teacher-classes-grid">
-      <div *ngFor="let cls of user.teacher_classes" class="teacher-class-card">
-        <div class="teacher-card-content">
-          <div class="teacher-card-icon">
+      <div class="academic-section teacher-section">
+        <h2 class="teacher-title">
+          <div class="teacher-title-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
             </svg>
           </div>
+          Classes You Teach
+        </h2>
 
-          <div class="teacher-card-info">
-            <p class="teacher-class-code">{{ cls.description }}</p>
-            <p class="teacher-class-description" [title]="cls.description">
-              {{ cls.class_code }}
-            </p>
+        <div *ngIf="user.teacher_classes?.length; else noTeacherClasses" class="teacher-classes-grid">
+          <div *ngFor="let cls of user.teacher_classes" class="teacher-class-card">
+            <div class="teacher-card-content">
+              <div class="teacher-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
 
-            <div class="teacher-class-meta">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-              <span>{{ cls.students_count || 0 }} students</span>
+              <div class="teacher-card-info">
+                <p class="teacher-class-code">{{ cls.description }}</p>
+                <p class="teacher-class-description" [title]="cls.description">
+                  {{ cls.class_code }}
+                </p>
+
+                <div class="teacher-class-meta">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  <span>{{ cls.students_count || 0 }} students</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        <ng-template #noTeacherClasses>
+          <p class="no-teacher-classes">You have no assigned classes.</p>
+        </ng-template>
       </div>
     </div>
-
-    <ng-template #noTeacherClasses>
-      <p class="no-teacher-classes">You have no assigned classes.</p>
-    </ng-template>
-  </div>
-</div>
-
-
-
 
     <!-- Change Password Section -->
     <div class="section-divider"></div>
@@ -407,32 +337,77 @@
         Delete Account
       </button>
     </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeDeleteModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <h3 class="modal-title">Are you sure?</h3>
-        </div>
-        <p class="modal-text">
-          This action cannot be undone. All your data will be permanently deleted and your account cannot be recovered.
-        </p>
-        <div class="modal-actions">
-          <button type="button" class="modal-cancel-button" (click)="closeDeleteModal()">
-            Cancel
-          </button>
-          <button type="button" class="modal-delete-button" (click)="deleteAccount()">
-            Yes, delete my account
-          </button>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
-</form>
+
+<!-- MODALS FUERA DEL CONTENEDOR PRINCIPAL -->
+
+<!-- Modal para cambiar de clase -->
+<div class="modal-overlay" *ngIf="showChangeClassModal" (click)="closeChangeClassModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg>
+        Change Class
+      </h2>
+      <button type="button" class="modal-close" (click)="closeChangeClassModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Enter class code</label>
+        <input 
+          type="text"
+          [(ngModel)]="classCodeInput"
+          [ngModelOptions]="{standalone: true}"
+          (input)="classError = ''"
+          placeholder="ABC123"
+          autofocus />
+      </div>
+      <div *ngIf="classError" class="error-message">{{ classError }}</div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-cancel" (click)="closeChangeClassModal()">Cancel</button>
+      <button 
+        type="button" 
+        class="btn-confirm" 
+        (click)="confirmChangeClass()">
+        Switch to this class
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeDeleteModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3 class="modal-title">Are you sure?</h3>
+    </div>
+    <p class="modal-text">
+      This action cannot be undone. All your data will be permanently deleted and your account cannot be recovered.
+    </p>
+    <div class="modal-actions">
+      <button type="button" class="modal-cancel-button" (click)="closeDeleteModal()">
+        Cancel
+      </button>
+      <button type="button" class="modal-delete-button" (click)="deleteAccount()">
+        Yes, delete my account
+      </button>
+    </div>
+  </div>
+</div>

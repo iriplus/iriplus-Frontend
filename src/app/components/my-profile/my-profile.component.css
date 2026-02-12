@@ -116,17 +116,6 @@
   background: white;
 }
 
-.form-input:focus:not(:disabled) {
-  border-color: #27532f;
-  box-shadow: 0 0 0 3px rgba(39, 83, 47, 0.1);
-}
-
-.form-input:disabled {
-  background-color: #f7fafc;
-  color: #4a5568;
-  cursor: not-allowed;
-}
-
 .form-input::placeholder {
   color: #cbd5e0;
 }
@@ -1040,16 +1029,6 @@
   transition: all 0.2s ease;
 }
 
-.btn-confirm:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-confirm:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* ========== RESPONSIVE ========== */
 @media (max-width: 640px) {
   .class-header {
@@ -1215,4 +1194,20 @@
 
 .no-teacher-classes {
   color: #2d2d2d;
+}
+
+.modal-body label {
+  color: #000;
+}
+
+.modal-body input {
+  color: #000;
+}
+
+.modal-body input::placeholder {
+  color: #555;
+}
+
+.error-message {
+  color: #000;
 }

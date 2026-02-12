@@ -46,6 +46,9 @@ export class MyProfileComponent implements OnInit {
   filteredClasses: Class[] = [];
   selectedClassId: number | null = null;
 
+  classCodeInput: string = '';
+  classError: string = '';
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -64,7 +67,6 @@ export class MyProfileComponent implements OnInit {
       if (!user) return;
       this.user = user;
       this.saveOriginalData();
-      console.log('clases teacher',user.teacher_classes)
 
 
       if (this.isStudent) {
@@ -84,7 +86,6 @@ export class MyProfileComponent implements OnInit {
     this.classService.getClassById(this.user.student_class_id).subscribe({
       next: (cls) => {
         this.currentClass = cls;
-        console.log("clase vuelta:",cls)
         this.calculateClassCapacity();
       },
       error: (err) => {
@@ -94,75 +95,73 @@ export class MyProfileComponent implements OnInit {
     });
   }
 
-calculateClassCapacity(): void {
-  if (!this.currentClass) {
-    this.classCapacityPercentage = 0;
-    return;
-  }
-  
-  this.classCapacityPercentage =
-    ((this.currentClass.students?.length ?? 0) / this.currentClass.max_capacity) * 100;
-}
-loadLevelsAndCalculateProgress(): void {
-  this.accumulatedXp = this.user.accumulated_xp ?? 0;
-
-  this.levelService.getLevels().subscribe(levels => {
-    this.levels = [...levels].sort((a, b) => a.min_xp - b.min_xp);
-    this.totalLevels = this.levels.length;
-
-    this.resolveCurrentAndNextLevel();
-    this.calculateProgress();
-  });
-}
-
-resolveCurrentAndNextLevel(): void {
-  let currentIndex = 0;
-
-  for (let i = 0; i < this.levels.length; i++) {
-    if (this.accumulatedXp >= this.levels[i].min_xp) {
-      currentIndex = i;
+  calculateClassCapacity(): void {
+    if (!this.currentClass) {
+      this.classCapacityPercentage = 0;
+      return;
     }
+    
+    this.classCapacityPercentage =
+      ((this.currentClass.students?.length ?? 0) / this.currentClass.max_capacity) * 100;
   }
 
-  this.currentLevelIndex = currentIndex;
-  this.currentLevel = this.levels[currentIndex] ?? null;
-  this.nextLevel = this.levels[currentIndex + 1] ?? null;
-}
+  loadLevelsAndCalculateProgress(): void {
+    this.accumulatedXp = this.user.accumulated_xp ?? 0;
 
-calculateProgress(): void {
-  console.log({
-  accumulatedXp: this.accumulatedXp,
-  currentLevel: this.currentLevel?.min_xp,
-  nextLevel: this.nextLevel?.min_xp,
-  levelRange: this.nextLevel!.min_xp - this.currentLevel!.min_xp,
-  currentProgress: this.accumulatedXp - this.currentLevel!.min_xp
-});
-  if (!this.currentLevel) {
-    this.progressPercentage = 0;
-    this.xpToNextLevel = 0;
-    return;
+    this.levelService.getLevels().subscribe(levels => {
+      this.levels = [...levels].sort((a, b) => a.min_xp - b.min_xp);
+      this.totalLevels = this.levels.length;
+
+      this.resolveCurrentAndNextLevel();
+      this.calculateProgress();
+    });
   }
 
-  if (!this.nextLevel) {
-    this.progressPercentage = 100;
-    this.xpToNextLevel = 0;
-    return;
+  resolveCurrentAndNextLevel(): void {
+    let currentIndex = 0;
+
+    for (let i = 0; i < this.levels.length; i++) {
+      if (this.accumulatedXp >= this.levels[i].min_xp) {
+        currentIndex = i;
+      }
+    }
+
+    this.currentLevelIndex = currentIndex;
+    this.currentLevel = this.levels[currentIndex] ?? null;
+    this.nextLevel = this.levels[currentIndex + 1] ?? null;
   }
 
-  const levelRange =
-    this.nextLevel.min_xp - this.currentLevel.min_xp;
+  calculateProgress(): void {
+    console.log({
+      accumulatedXp: this.accumulatedXp,
+      currentLevel: this.currentLevel?.min_xp,
+      nextLevel: this.nextLevel?.min_xp,
+      levelRange: this.nextLevel!.min_xp - this.currentLevel!.min_xp,
+      currentProgress: this.accumulatedXp - this.currentLevel!.min_xp
+    });
+    
+    if (!this.currentLevel) {
+      this.progressPercentage = 0;
+      this.xpToNextLevel = 0;
+      return;
+    }
 
-  const currentProgress =
-    this.accumulatedXp - this.currentLevel.min_xp;
+    if (!this.nextLevel) {
+      this.progressPercentage = 100;
+      this.xpToNextLevel = 0;
+      return;
+    }
 
-  this.progressPercentage = Math.min(
-    (currentProgress / levelRange) * 100,
-    100
-  );
+    const levelRange = this.nextLevel.min_xp - this.currentLevel.min_xp;
+    const currentProgress = this.accumulatedXp - this.currentLevel.min_xp;
 
-  this.xpToNextLevel =
-    this.nextLevel.min_xp - this.accumulatedXp;
-}
+    this.progressPercentage = Math.min(
+      (currentProgress / levelRange) * 100,
+      100
+    );
+
+    this.xpToNextLevel = this.nextLevel.min_xp - this.accumulatedXp;
+  }
 
   saveOriginalData(): void {
     this.originalData = { ...this.user };
@@ -215,28 +214,28 @@ calculateProgress(): void {
   }
 
   deleteAccount(): void {
-  if (!this.user?.id) return;
+    if (!this.user?.id) return;
 
-  this.userService.deleteUser(this.user.id).subscribe({
-    next: () => {
-      this.showDeleteModal = false;
+    this.userService.deleteUser(this.user.id).subscribe({
+      next: () => {
+        this.showDeleteModal = false;
 
-      this.authService.logout().subscribe({
-        next: () => {
-          this.router.navigate(['/login']);
-        },
-        error: (err) => {
-          console.error('Logout error:', err);
-          this.router.navigate(['/login']);
-        }
-      });
-    },
-    error: (err) => {
-      console.error('Delete error:', err);
-      alert('Error deleting account. Please try again.');
-    }
-  });
-}
+        this.authService.logout().subscribe({
+          next: () => {
+            this.router.navigate(['/login']);
+          },
+          error: (err) => {
+            console.error('Logout error:', err);
+            this.router.navigate(['/login']);
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Delete error:', err);
+        alert('Error deleting account. Please try again.');
+      }
+    });
+  }
 
   get isStudent(): boolean {
     return this.authService.getUserType() === 'Student';
@@ -247,25 +246,60 @@ calculateProgress(): void {
   }
 
   openChangeClassModal(): void {
-  this.showChangeClassModal = true;
-}
+    this.showChangeClassModal = true;
+    this.classCodeInput = ''; 
+    this.classError = ''; 
+  }
 
-closeChangeClassModal(): void {
-  this.showChangeClassModal = false;
-}
-
-filterClasses(): void {
-  const term = this.classSearchTerm.toLowerCase();
-  this.filteredClasses = this.classes.filter(c =>
-    c.description.toLowerCase().includes(term)
-  );
-}
-
-selectClass(classItem: Class): void {
-  this.selectedClassId = classItem.id;
-}
+  closeChangeClassModal(): void {
+    this.showChangeClassModal = false;
+    this.classCodeInput = '';
+    this.classError = '';
+  }
 
 confirmChangeClass(): void {
-  this.closeChangeClassModal();
+  this.classError = '';
+
+  const classCode = this.classCodeInput?.trim();
+
+  if (!classCode) {
+    this.classError = 'Please enter a class code';
+    return;
+  }
+
+  if (!this.user?.id) {
+    this.classError = 'User not found';
+    return;
+  }
+
+  this.classService.getClass(classCode).subscribe({
+    next: (cls) => {
+
+      if (!cls?.id) {
+        this.classError = 'Class not found';
+        return;
+      }
+
+      this.userService.updateUser(this.user.id, {
+        student_class_id: cls.id
+      }).subscribe({
+        next: () => {
+          this.loadProfile();
+          this.closeChangeClassModal();
+        },
+        error: (err) => {
+        console.log('Update error:', err);
+
+        if (err.status === 409) {this.classError = err.error?.message || 'Class is full.';}
+        else if (err.status === 404) {this.classError = 'Class not found.';} 
+        else {this.classError = 'Unexpected error. Please try again.';}
+       }
+      });
+    },
+    error: () => {
+      this.classError = 'Invalid class code. Please verify and try again.';
+    }
+  });
 }
+
 }

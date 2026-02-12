@@ -168,7 +168,7 @@ button:disabled {
 
 .form-input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px 14px 12px 42px;
   border: 2px solid #e9ecef;
   border-radius: var(--radius-md);
   font-size: 14px;
