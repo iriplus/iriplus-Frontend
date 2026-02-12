@@ -1,0 +1,220 @@
+<div class="generate-exam-container">
+  <div class="generate-exam-card">
+
+    <!-- Header (como class.html) -->
+    <div class="card-header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <path d="M14 2v6h6"></path>
+          <path d="M8 13h8"></path>
+          <path d="M8 17h8"></path>
+          <path d="M8 9h2"></path>
+        </svg>
+      </div>
+      <h1>Generate Exam</h1>
+      <p>Generate an exam draft and preview it before sending to review</p>
+    </div>
+
+    <!-- Toolbar (como class.html) -->
+    <div class="toolbar" *ngIf="step === 'form'">
+      <div class="toolbar-info">
+        <h2>Preferences</h2>
+        <p>Select class, context and exercise types</p>
+      </div>
+
+      <div class="toolbar-actions">
+        <button type="button" class="btn-add" (click)="generateExam()">
+          Generate
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= FORM ================= -->
+    <div class="content" *ngIf="step === 'form'">
+      <form [formGroup]="form" class="form-grid">
+
+        <div class="form-group">
+          <label for="classId">Class</label>
+          <select
+            id="classId"
+            class="form-input"
+            formControlName="classId"
+            [ngClass]="{ 'input-error': form.get('classId')?.touched && form.get('classId')?.invalid }"
+          >
+            <option value="">Select class</option>
+            <option *ngFor="let c of classes" [value]="c.id">{{ c.description }}</option>
+          </select>
+          <span class="field-error" *ngIf="form.get('classId')?.touched && form.get('classId')?.invalid">
+            Class is required.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="context">Context</label>
+          <textarea
+            id="context"
+            class="form-input"
+            rows="8"
+            formControlName="context"
+            placeholder="Topic, constraints, level, tone, vocabulary focus, etc."
+            [ngClass]="{ 'input-error': form.get('context')?.touched && form.get('context')?.invalid }"
+          ></textarea>
+          <span class="field-error" *ngIf="form.get('context')?.touched && form.get('context')?.invalid">
+            Context is required.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Exercise Types</label>
+
+          <div
+            class="exercise-types-box"
+            [ngClass]="{ 'exercise-types-error': form.get('exerciseTypeIds')?.touched && form.get('exerciseTypeIds')?.invalid }"
+          >
+            <label class="exercise-type-item" *ngFor="let type of exerciseTypes">
+              <input type="checkbox" (change)="onExerciseToggle($event, type.id)" />
+              <span>{{ type.name }}</span>
+            </label>
+          </div>
+
+          <span class="field-error" *ngIf="form.get('exerciseTypeIds')?.touched && form.get('exerciseTypeIds')?.invalid">
+            Select at least one exercise type.
+          </span>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ================= LOADING ================= -->
+    <div class="content" *ngIf="step === 'loading'">
+      <div class="loading">
+        <h2>Generating exam</h2>
+        <p>This may take a moment.</p>
+
+        <div class="progress-bar" aria-label="Loading">
+          <div class="progress-bar-fill"></div>
+        </div>
+
+        <div class="loading-inline">
+          <span class="app-spinner"></span>
+          <span>Working...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PREVIEW ================= -->
+    <div class="content" *ngIf="step === 'preview' && generatedExam">
+
+      <div class="preview-toolbar">
+        <div class="preview-left">
+          <h2>Preview</h2>
+          <div class="preview-meta">
+            <span class="meta-label">Status</span>
+            <span class="status-pill">{{ generatedExam.status }}</span>
+          </div>
+        </div>
+
+        <div class="preview-actions">
+          <button type="button" class="btn-secondary" (click)="toggleAnswers()">Toggle Answers</button>
+          <button type="button" class="btn-add" (click)="sendToReview()">Send to Review</button>
+          <button type="button" class="btn-danger" (click)="discard()">Discard</button>
+          <button type="button" class="btn-secondary" (click)="changeSomething()">Change Something</button>
+        </div>
+      </div>
+
+      <div class="preview-list">
+        <div class="exercise-card" *ngFor="let ex of generatedExam.generated_exercises">
+
+          <div class="exercise-card-header">
+            <h3>{{ ex.exercise_type_name }}</h3>
+          </div>
+
+          <div class="exercise-card-body">
+            <p class="instructions"><strong>Instructions:</strong> {{ ex.instructions }}</p>
+
+            <ng-container *ngIf="parseJson(ex.content_json) as content">
+              <div *ngIf="content?.items?.length; else unknownSchema">
+                <div class="exercise-item" *ngFor="let item of content.items; let i = index">
+                  <p><strong>{{ i + 1 }}.</strong> {{ item.question }}</p>
+
+                  <ul *ngIf="item.options?.length">
+                    <li *ngFor="let opt of item.options">{{ opt }}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <ng-template #unknownSchema>
+                <div class="app-error">
+                  The generated content schema is not recognized for this exercise type.
+                </div>
+                <pre class="json-dump">{{ content | json }}</pre>
+              </ng-template>
+            </ng-container>
+
+            <div class="answers" *ngIf="showAnswers">
+              <h4>Answer Key</h4>
+              <pre class="json-dump">{{ parseJson(ex.answer_key_json) | json }}</pre>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ITERATION ================= -->
+    <div class="content" *ngIf="step === 'edit'">
+      <div class="edit-header">
+        <h2>Request changes</h2>
+        <p>Describe what should be adjusted and regenerate the exam.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="changeRequest">Change request</label>
+        <textarea
+          id="changeRequest"
+          class="form-input"
+          rows="7"
+          [formControl]="changeRequest"
+          placeholder="E.g., make it harder, change topic, focus on vocabulary, reduce options..."
+          [ngClass]="{ 'input-error': changeRequest.touched && changeRequest.invalid }"
+        ></textarea>
+        <span class="field-error" *ngIf="changeRequest.touched && changeRequest.invalid">
+          Please describe the requested changes.
+        </span>
+      </div>
+
+      <div class="edit-actions">
+        <button
+          type="button"
+          class="btn-add btn-with-spinner"
+          (click)="applyChanges()"
+          [disabled]="changeRequest.invalid"
+        >
+          Regenerate
+        </button>
+
+        <button type="button" class="btn-secondary" (click)="step = 'preview'">
+          Back
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats (como class/teachers) -->
+    <div class="stats-bar" *ngIf="generatedExam">
+      <div class="stat-item">
+        <span class="stat-label">Exercises:</span>
+        <span class="stat-value">{{ generatedExam.generated_exercises.length || 0 }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Exam ID:</span>
+        <span class="stat-value">{{ generatedExam.id }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
