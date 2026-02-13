@@ -32,6 +32,7 @@
           <ul class="navbar-nav nav-links">
             <li class="nav-item" *ngIf="isAuthenticated"><a class="nav-link" (click)="goTo('/home')">Home</a></li>
             <li class="nav-item" *ngIf="isAuthenticated"><a class="nav-link" (click)="goTo('/home')">Page2</a></li>
+            <li class="nav-item" *ngIf="isAuthenticated"><a class="nav-link" (click)="goTo('/exam')">Exams</a></li>
             <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/teachers')">Teachers</a></li>
             <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/classes')">Classes</a></li>
             <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/levels')">Levels</a></li>
