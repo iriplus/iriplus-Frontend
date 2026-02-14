@@ -12,6 +12,7 @@ import { MyProfileComponent } from './components/my-profile/my-profile.component
 import { TeachersComponent } from './components/teachers/teachers.component';
 import { ClassesComponent } from './components/classes/classes.component';
 import { LevelsComponent } from './components/levels/levels.component';
+import { GenerateExamComponent } from './components/generate-exam/generate-exam.component';
 
 export const routes: Routes = [
   {
@@ -23,7 +24,8 @@ export const routes: Routes = [
       { path: 'my-profile', component: MyProfileComponent, canActivate: [privateGuard] },
       { path: 'teachers', component: TeachersComponent, canActivate: [coordinatorGuard] },
       { path: 'classes', component: ClassesComponent, canActivate: [coordinatorGuard] },
-      { path: 'levels', component: LevelsComponent, canActivate: [coordinatorGuard]}
+      { path: 'levels', component: LevelsComponent, canActivate: [coordinatorGuard]},
+      { path: 'teacher-exam', component: GenerateExamComponent, canActivate: [privateGuard]},
     ],
   },
   {

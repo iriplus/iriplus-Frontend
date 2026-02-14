@@ -46,3 +46,24 @@ export const coordinatorGuard: CanActivateFn = (route, state) => {
     })
   );
 };
+
+export const teacherGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
+  const auth = inject(AuthService);
+
+  return auth.checkAuth().pipe(
+    map(isAuth => {
+      if (!isAuth) {
+        return router.createUrlTree(['/login'], {
+          queryParams: { returnUrl: state.url }
+        });
+      }
+
+      if (auth.getUserType() !== 'Teacher') {
+        return router.createUrlTree(['/home']);
+      }
+
+      return true;
+    })
+  );
+};

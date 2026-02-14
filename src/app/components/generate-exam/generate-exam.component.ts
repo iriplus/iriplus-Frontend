@@ -45,7 +45,7 @@ export class GenerateExamComponent implements OnInit {
   loadInitialData(): void {
     this.classService.getClassesByTeacher().subscribe(
       res => this.classes = res);
-    
+
     this.examService.getExerciseTypes().subscribe(
       res => this.exerciseTypes = res);
   }
