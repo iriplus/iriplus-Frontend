@@ -17,7 +17,7 @@
       <p>Generate an exam draft and preview it before sending to review</p>
     </div>
 
-    <!-- Toolbar (como class.html) -->
+    <!-- Toolbar -->
     <div class="toolbar" *ngIf="step === 'form'">
       <div class="toolbar-info">
         <h2>Preferences</h2>
@@ -108,14 +108,14 @@
     </div>
 
     <!-- ================= PREVIEW ================= -->
-    <div class="content" *ngIf="step === 'preview' && generatedExam">
+    <div *ngIf="step === 'preview' && generatedExam as exam" class="exam-preview">
 
       <div class="preview-toolbar">
         <div class="preview-left">
           <h2>Preview</h2>
           <div class="preview-meta">
             <span class="meta-label">Status</span>
-            <span class="status-pill">{{ generatedExam.status }}</span>
+            <span class="status-pill">{{ exam.status }}</span>
           </div>
         </div>
 
@@ -128,37 +128,30 @@
       </div>
 
       <div class="preview-list">
-        <div class="exercise-card" *ngFor="let ex of generatedExam.generated_exercises">
+        <div class="exercise-card" *ngFor="let ex of exam.exercises; let exIndex = index">
 
           <div class="exercise-card-header">
-            <h3>{{ ex.exercise_type_name }}</h3>
+            <h3>{{ exIndex + 1 }}. {{ ex.exercise_type }}</h3>
           </div>
 
           <div class="exercise-card-body">
-            <p class="instructions"><strong>Instructions:</strong> {{ ex.instructions }}</p>
+            <p class="instructions">
+              <strong>Instructions:</strong> {{ ex.instructions }}
+            </p>
 
-            <ng-container *ngIf="parseJson(ex.content_json) as content">
-              <div *ngIf="content?.items?.length; else unknownSchema">
-                <div class="exercise-item" *ngFor="let item of content.items; let i = index">
-                  <p><strong>{{ i + 1 }}.</strong> {{ item.question }}</p>
-
-                  <ul *ngIf="item.options?.length">
-                    <li *ngFor="let opt of item.options">{{ opt }}</li>
-                  </ul>
-                </div>
-              </div>
-
-              <ng-template #unknownSchema>
-                <div class="app-error">
-                  The generated content schema is not recognized for this exercise type.
-                </div>
-                <pre class="json-dump">{{ content | json }}</pre>
-              </ng-template>
-            </ng-container>
+            <div class="exercise-item" *ngFor="let item of ex.items; let i = index">
+              <p>
+                <strong>{{ i + 1 }}.</strong> {{ item.question }}
+              </p>
+            </div>
 
             <div class="answers" *ngIf="showAnswers">
               <h4>Answer Key</h4>
-              <pre class="json-dump">{{ parseJson(ex.answer_key_json) | json }}</pre>
+              <ol>
+                <li *ngFor="let item of ex.items">
+                  {{ item.answer }}
+                </li>
+              </ol>
             </div>
 
           </div>
@@ -204,15 +197,15 @@
       </div>
     </div>
 
-    <!-- Stats (como class/teachers) -->
-    <div class="stats-bar" *ngIf="generatedExam">
+    <!-- Stats -->
+    <div class="stats-bar" *ngIf="generatedExam as exam">
       <div class="stat-item">
         <span class="stat-label">Exercises:</span>
-        <span class="stat-value">{{ generatedExam.generated_exercises.length || 0 }}</span>
+        <span class="stat-value">{{ exam.exercises.length || 0 }}</span>
       </div>
       <div class="stat-item">
         <span class="stat-label">Exam ID:</span>
-        <span class="stat-value">{{ generatedExam.id }}</span>
+        <span class="stat-value">{{ exam.id }}</span>
       </div>
     </div>
 

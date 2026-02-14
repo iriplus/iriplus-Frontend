@@ -1,21 +1,24 @@
+export interface ExamItemDTO {
+  question: string;
+  answer: string;
+}
+
 export interface ExamExerciseInstanceDTO {
-    id: number;
-    exercise_type_id: number;
-    exercise_type_name: string;
-    instructions: string;
-    content_json: string;
-    answer_key_json: string;
+  exercise_type: string;
+  instructions: string;
+  items: ExamItemDTO[];
 }
 
 export interface ExamDTO {
-    id: number;
-    status: string;
-    context: string;
-    class_id: number;
-    generated_exercises: ExamExerciseInstanceDTO[];
+  id: number;
+  status: string;
+  context: string;
+  class_id: number;
+  exercises: ExamExerciseInstanceDTO[];
 }
 
 export interface ExerciseTypeDTO {
   id: number;
   name: string;
+  content_description: string;
 }

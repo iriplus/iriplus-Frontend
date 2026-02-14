@@ -2,7 +2,7 @@ import {Component,EventEmitter,Input,Output,OnChanges,SimpleChanges} from '@angu
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
-import { User } from '../../interfaces/user.interface';
+import { User, UserType } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-teacher-form',
@@ -28,7 +28,7 @@ export class TeacherFormComponent {
     email: '',
     passwd: '',
     dni: '',
-    type: 'TEACHER',
+    type: UserType.TEACHER,
     teacher_classes: [],
     is_verified: false,
     profile_picture:'',
@@ -70,7 +70,7 @@ export class TeacherFormComponent {
       email: '',
       passwd: '',
       dni: '',
-      type: 'TEACHER',
+      type: UserType.TEACHER,
       teacher_classes: [],
       is_verified: false,
       profile_picture:'',

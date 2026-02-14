@@ -2,6 +2,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { map } from 'rxjs';
+import { UserType } from '../interfaces/user.interface';
 
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
@@ -38,7 +39,7 @@ export const coordinatorGuard: CanActivateFn = (route, state) => {
         });
       }
 
-      if (auth.getUserType() !== 'Coordinator') {
+      if (auth.getUserType() !== UserType.COORDINATOR) {
         return router.createUrlTree(['/home']);
       }
 
@@ -59,7 +60,7 @@ export const teacherGuard: CanActivateFn = (route, state) => {
         });
       }
 
-      if (auth.getUserType() !== 'Teacher') {
+      if (auth.getUserType() !== UserType.TEACHER) {
         return router.createUrlTree(['/home']);
       }
 

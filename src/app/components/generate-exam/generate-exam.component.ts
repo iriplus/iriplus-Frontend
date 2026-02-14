@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ExamService } from '../../services/exam.service';
-import { ClassService } from '../../services/class.service';
 import { Class } from '../../interfaces/class.interface';
 import { ExamDTO, ExamExerciseInstanceDTO, ExerciseTypeDTO } from '../../interfaces/exam.interface';
+import { ExerciseService } from '../../services/exercise.service';
+import { AuthService } from '../../services/auth.service';
+import { UserType } from '../../interfaces/user.interface';
 
 
 type Step = 'form' | 'loading' | 'preview' | 'edit';
@@ -29,7 +31,7 @@ export class GenerateExamComponent implements OnInit {
 
   changeRequest: FormControl<string | null>;
 
-  constructor(private fb: FormBuilder, private examService: ExamService, private classService: ClassService) {
+  constructor(private fb: FormBuilder, private examService: ExamService, private authService: AuthService, private exerciseService: ExerciseService) {
     this.form = this.fb.group({
       classId: ['', Validators.required],
       context: ['', Validators.required],
@@ -43,10 +45,15 @@ export class GenerateExamComponent implements OnInit {
   }
 
   loadInitialData(): void {
-    this.classService.getClassesByTeacher().subscribe(
-      res => this.classes = res);
-
-    this.examService.getExerciseTypes().subscribe(
+    this.authService.loadMe().subscribe(
+      res => {
+        console.log(res)
+        if (res?.type == UserType.TEACHER && res.teacher_classes) {
+          this.classes = res.teacher_classes
+        }
+        console.log(this.classes)
+      });
+    this.exerciseService.getAllExercises().subscribe(
       res => this.exerciseTypes = res);
   }
 
@@ -78,12 +85,22 @@ export class GenerateExamComponent implements OnInit {
       exercise_type_ids: this.form.value.exerciseTypeIds
     }
 
+    console.log("Data del dexamn a cerar", exam_data)
+    
     this.examService.generateExam(exam_data).subscribe({
-      next: (exam) => {
-        this.generatedExam = exam;
-        this.step = 'preview';
+      next: (res) => {
+        console.log("Respuesta del generateExam", res)
+        const exam_id = res.exam_id
+        this.examService.getFullExam(exam_id).subscribe({
+          next: (exam) => {
+            console.log("Exam", exam)
+            this.generatedExam = exam;
+            this.step = 'preview'
+          }
+        })
       },
-      error: () => {
+      error: (err) => {
+        console.log(err)
         this.step = 'form';
       }
     });
@@ -114,15 +131,21 @@ export class GenerateExamComponent implements OnInit {
 
     const changed_data = {
       exam_id: this.generatedExam.id,
-      change_request: changeRequestValue
+      feedback: changeRequestValue
     }
 
-    this.examService.iterateExam(changed_data).subscribe({
-      next: (exam) => {
-        this.generatedExam = exam;
-        this.step = 'preview';
+    this.examService.refineExam(changed_data.exam_id, changed_data.feedback).subscribe({
+      next: () => {
+        this.examService.getFullExam(changed_data.exam_id).subscribe({
+          next: (exam) => {
+            console.log("Exam", exam)
+            this.generatedExam = exam;
+            this.step = 'preview'
+          }
+        })
       },
-      error: () => {
+      error: (err) => {
+        console.log(err)
         this.step = 'preview';
       }
     });

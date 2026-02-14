@@ -6,7 +6,7 @@ import { environment } from "../../../environments/environment";
 import { AuthService } from '../../services/auth.service';
 import { ClassService } from '../../services/class.service';
 import { Class } from '../../interfaces/class.interface';
-import { User } from '../../interfaces/user.interface';
+import { User, UserType } from '../../interfaces/user.interface';
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -154,7 +154,7 @@ validateParams(): void {
       email: this.email,
       passwd: this.passwd,
       dni: this.dni,
-      type: 'STUDENT',
+      type: UserType.STUDENT,
       class_code: this.class_code?.toUpperCase() || '',
       is_verified: false,
       profile_picture:'',

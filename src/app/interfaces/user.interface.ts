@@ -1,7 +1,11 @@
 import { Level } from "./level.interface";
 import { Class } from "./class.interface";
 
-export type UserType = 'COORDINATOR' | 'TEACHER' | 'STUDENT';
+export enum UserType {
+  COORDINATOR = 'Coordinator',
+  TEACHER = 'Teacher',
+  STUDENT = 'Student'
+}
 
 export interface User {
   id: number;
@@ -10,7 +14,7 @@ export interface User {
   email: string;
   passwd: string;
   dni: string;
-  type: UserType;
+  type: string;
   is_verified: boolean;
   profile_picture: string;
 
