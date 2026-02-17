@@ -393,6 +393,56 @@
   white-space: nowrap;
 }
 
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+/* Colores por estado */
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-review {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-accepted {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-correction {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-on-correction {
+  background: #f5c6cb;
+  color: #721c24;
+}
+
+.status-test {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.status-student {
+  background: #e0cffc;
+  color: #4b2c91;
+}
+
+.status-default {
+  background: #ececec;
+  color: #333;
+}
+
 .status-dot {
   width: 8px;
   height: 8px;
