@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+<<<<<<< HEAD
+=======
+import { ExamDTO } from '../interfaces/exam.interface';
+>>>>>>> DEV-Exams
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +15,10 @@ export class ExamService {
   private readonly EXAM_URL = `${environment.backendUrl}/exam`;
 
   constructor(private http: HttpClient) {}
+
+  getAllExams(): Observable<ExamDTO[]> {
+    return this.http.get<ExamDTO[]>(`${this.EXAM_URL}`, { withCredentials: true });
+  }
 
   getTeacherClasses(): Observable<any> {
     return this.http.get(`${this.EXAM_URL}/teacher/classes`);

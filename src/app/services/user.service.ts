@@ -13,6 +13,12 @@ export class UserService {
   constructor(
     private http: HttpClient,
   ){}
+
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.USER_URL}/${id}`, { withCredentials: true }).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
   
   getUserByEmail(email: string): Observable<User> {
     return this.http.get<User>(`${this.USER_URL}/email/${email}`, {withCredentials: true}).pipe(

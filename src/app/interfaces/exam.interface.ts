@@ -15,6 +15,11 @@ export interface ExamDTO {
   context: string;
   class_id: number;
   exercises: ExamExerciseInstanceDTO[];
+  generated_exercises: ExamExerciseInstanceDTO[];
+  date_created: Date;
+  class_description?: string;
+  user_id: number;
+  teacher_full_name?: string; 
 }
 
 export interface ExerciseTypeDTO {
