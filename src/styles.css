@@ -3,9 +3,13 @@
    ========================================================= */
 
 :root {
-  /* Colores */
+  /* Colores base */
   --color-background: #1E2A22;
+
   --color-slate: #27532f;
+  --color-slate-rgb: 39,83,47;
+  --color-slate-dark: #1a3a21;
+
   --color-sage: #9EB28F;
   --color-beige: #E0CD95;
   --color-ivory: #F8F5E7;
@@ -13,6 +17,26 @@
   --color-olive: #A3A191;
   --color-terracotta: #C97C5D;
   --color-light-terracotta: #f0ac91;
+
+  /* Superficies / UI */
+  --color-surface: #ffffff;
+  --color-surface-soft: #fafafa;
+  --color-border: #e9ecef;
+
+  /* Texto */
+  --color-text: #111111;
+  --color-text-muted: #6c757d;
+  --color-label: #495057;
+
+  /* Estados (recomendado para unificar acciones/errores) */
+  --color-danger: #c0392b;
+  --color-danger-rgb: 192, 57, 43;
+  --color-danger-soft: #fdeaea;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, .12);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, .30);
 
   /* Tipografía */
   --font-title: "Segoe UI", sans-serif;
@@ -30,6 +54,27 @@
   --spacing-md: 2rem;
   --spacing-lg: 3rem;
   --spacing-xl: 4.5rem;
+
+  /* Layout */
+  --container-max-width: 1200px;
+  --page-padding-y: 40px;
+  --page-padding-x: 20px;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgba(var(--color-slate-rgb), 0.12);
 }
 
 /* =========================================================
@@ -64,7 +109,7 @@ p {
 }
 
 /* =========================================================
-   BOTONES REUTILIZABLES
+   BASE BOTONES
    ========================================================= */
 
 button {
@@ -78,10 +123,20 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* =========================================================
+   BOTONES REUTILIZABLES (GENÉRICOS)
+   ========================================================= */
+
 /* Primario */
+.btn-primary.btn-rounded,
+.btn-outline.btn-rounded,
+.btn-ghost.btn-rounded {
+  border-radius: 12px;
+}
+
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-slate), #1a3a21);
-  color: white;
+  background: linear-gradient(135deg, var(--color-slate), var(--color-slate-dark));
+  color: #ffffff;
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
   font-weight: 600;
@@ -90,7 +145,7 @@ button:disabled {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(39, 83, 47, 0.4);
+  box-shadow: 0 5px 20px rgba(var(--color-slate-rgb), 0.40);
 }
 
 /* Outline */
@@ -101,87 +156,70 @@ button:disabled {
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
   font-weight: 600;
+  transition: background-color 0.2s ease;
 }
 
 .btn-outline:hover {
   background-color: rgba(240, 172, 145, 0.15);
 }
 
-/* =========================================================
-   SECCIONES GENÉRICAS
-   ========================================================= */
-
-.section {
-  padding: var(--spacing-xl) calc(var(--spacing-xl) + 1.5rem);
-  background-color: var(--color-ivory);
-  color: var(--color-slate);
-}
-
-.section-soft {
-  background-color: var(--color-white-cream);
-}
-
-.section-narrow {
-  max-width: 720px;
-}
-
-.section-title-center {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-/* =========================================================
-   CARDS REUTILIZABLES
-   ========================================================= */
-
-.card {
-  background-color: var(--color-white-cream);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-/* =========================================================
-   TABLAS BASE
-   ========================================================= */
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table thead {
-  background-color: var(--color-slate);
+/* Ghost (público o fondos oscuros) */
+.btn-ghost {
+  background: transparent;
   color: var(--color-ivory);
+  font-weight: 600;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.table th,
-.table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--color-olive);
-  text-align: left;
+.btn-ghost:hover {
+  background-color: rgba(252, 250, 244, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Tamaño grande */
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
 }
 
 /* =========================================================
-   INPUTS GLOBALES
+   INPUTS GLOBALES (OPCIÓN A)
    ========================================================= */
 
-.form-input {
+.app-input {
   width: 100%;
-  padding: 12px 14px 12px 42px;
-  border: 2px solid #e9ecef;
+  padding: 12px 14px;
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: 14px;
   transition: all 0.2s ease;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
-.form-input:focus {
+select.app-input {
+  cursor: pointer;
+}
+
+.app-input--icon-left {
+  padding-left: 40px;
+}
+
+.app-input:focus {
   outline: none;
   border-color: var(--color-slate);
   box-shadow: 0 0 0 3px rgba(39, 83, 47, 0.12);
 }
 
-.form-input.input-error {
+.app-input:disabled {
+  background: var(--color-surface-soft);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.app-input.app-input--error {
   border-color: #fc8181;
 }
 
@@ -234,47 +272,398 @@ button:disabled {
 }
 
 /* =========================================================
-   MODAL GLOBAL (REUTILIZABLE)
+   LAYOUT REUTILIZABLE: PAGE / CARD
    ========================================================= */
 
-.modal.fade .modal-dialog {
-  max-width: 900px; /* Modal grande */
+.app-page {
+  min-height: 100vh;
+  padding: var(--page-padding-y) var(--page-padding-x);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-.modal-content {
+.app-page--gradient {
+  background: linear-gradient(135deg, var(--color-slate) 0%, var(--color-slate-dark) 100%);
+}
+
+/* Variantes */
+.app-page--center {
+  align-items: center;
+}
+
+.app-page--background {
+  background: var(--color-background);
+}
+
+.app-card {
+  width: 100%;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.app-card--elevated {
+  box-shadow: var(--shadow-lg);
+}
+
+.app-card--xl { 
+  max-width: 1200px;
+  padding: 40px;
+}
+
+@media (max-width: 768px) {
+  .app-page {
+    padding: 20px 15px;
+  }
+
+  .app-card--xl {
+    padding: 25px 20px;
+  }
+}
+
+/* =========================================================
+   HEADER REUTILIZABLE: APP HEADER
+   ========================================================= */
+
+.app-header {
+  margin-bottom: 30px;
+}
+
+.app-header--center {
+  text-align: center;
+}
+
+.app-header__icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, var(--color-slate) 0%, var(--color-slate-dark) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: #fff;
+}
+
+.app-header__icon svg {
+  width: 35px;
+  height: 35px;
+}
+
+.app-header__title {
+  font-size: 28px;
+  color: var(--color-slate-dark);
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+.app-header__subtitle {
+  color: var(--color-text-muted);
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Variantes */
+.app-header--left {
+  text-align: left;
+}
+
+.app-header--compact .app-header__icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 14px;
+}
+
+.app-header--compact .app-header__title {
+  font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .app-header__title {
+    font-size: 24px;
+  }
+}
+
+/* =========================================================
+   ACTIONS BAR REUTILIZABLE
+   ========================================================= */
+
+.app-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .app-actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* =========================================================
+   SEARCH (REUTILIZABLE) – usa .app-input
+   ========================================================= */
+
+.app-search {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  max-width: 450px;
+}
+
+.app-search__icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.app-search__input {
+  padding-right: 44px;
+  background: var(--color-surface-soft);
+}
+
+.app-search__input:focus {
+  background: var(--color-surface);
+}
+
+.app-search__clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* =========================================================
+   TABLE CONTAINER + TABLE (REUTILIZABLE)
+   ========================================================= */
+
+.app-table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.app-table thead {
+  background: linear-gradient(135deg, var(--color-slate) 0%, var(--color-slate-dark) 100%);
+}
+
+.app-table th {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: left;
+  padding: 16px 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.app-table td {
+  padding: 15px;
+  font-size: 14px;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.app-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.2s ease;
+}
+
+.app-table tbody tr:hover {
+  background: var(--color-surface-soft);
+}
+
+.app-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Helpers */
+.app-table--wide { min-width: 900px; }
+
+/* =========================================================
+   STATS BAR REUTILIZABLE
+   ========================================================= */
+
+.app-stats-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+  padding: 15px 30px;
+  background: var(--color-surface-soft);
+  border-top: 1px solid var(--color-border);
+  margin-top: 18px;
+  border-radius: 12px;
+}
+
+.app-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-stat__label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.app-stat__value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-slate);
+}
+
+@media (max-width: 768px) {
+  .app-stats-bar {
+    padding: 15px 20px;
+    justify-content: space-between;
+    gap: 16px;
+  }
+}
+
+/* =========================================================
+   ICON BUTTONS (ACCIONES EDIT/DELETE) + CLOSE
+   ========================================================= */
+.app-actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.app-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.app-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.app-icon-btn--ghost:hover {
+  color: var(--color-danger);
+}
+
+.app-icon-btn--edit {
+  background: rgba(var(--color-slate-rgb), 0.10);
+  color: var(--color-slate);
+}
+
+.app-icon-btn--edit:hover {
+  background: var(--color-slate);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--color-slate-rgb), 0.30);
+}
+
+.app-icon-btn--neutral {
+  background: rgba(var(--color-slate-rgb), 0.10);
+  color: var(--color-slate);
+}
+
+.app-icon-btn--neutral:hover {
+  background: var(--color-slate);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--color-slate-rgb), 0.30);
+}
+
+.app-icon-btn--danger {
+  background: rgba(var(--color-danger-rgb), 0.12);
+  color: var(--color-danger);
+}
+
+.app-icon-btn--danger:hover {
+  background: var(--color-danger);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--color-danger-rgb), 0.30);
+}
+
+.app-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease, background 0.2s ease;
+  border-radius: 10px;
+}
+
+.app-close-btn:hover {
+  color: var(--color-danger);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.app-close-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* =========================================================
+   MODAL BOOTSTRAP (SCOPED)
+   Requiere class="app-modal" en el modal
+   Ej: <div class="modal fade app-modal" ...>
+   ========================================================= */
+
+.app-modal.modal.fade .modal-dialog {
+  max-width: 900px;
+}
+
+.app-modal .modal-content {
   border-radius: var(--radius-xl);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
   border: none;
   overflow: hidden;
 }
 
-  /* Modal Teacher */
-  #newTeacherModal .modal-dialog {
-    max-width: 560px;
-  }
-
-
-.modal-header {
+.app-modal .modal-header {
   background: var(--color-white-cream);
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border);
   padding: 24px 30px;
 }
 
-.modal-title {
+.app-modal .modal-title {
   font-weight: 700;
   font-size: 20px;
   color: var(--color-slate);
 }
 
-.modal-body {
+.app-modal .modal-body {
   padding: 30px;
-  background: white;
+  background: var(--color-surface);
 }
 
-.modal-footer {
+.app-modal .modal-footer {
   padding: 20px 30px;
-  border-top: 1px solid #e9ecef;
-  background: #fafafa;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
 }
 
 /* Backdrop más suave */
@@ -282,94 +671,25 @@ button:disabled {
   opacity: 0.6;
 }
 
-/* =========================================================
-   ANIMACIONES
-   ========================================================= */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* =========================================================
-   RESPONSIVE GLOBAL
-   ========================================================= */
-
 @media (max-width: 900px) {
-  .section {
-    padding: var(--spacing-lg) var(--spacing-md);
-  }
-
-  .modal.fade .modal-dialog {
+  .app-modal.modal.fade .modal-dialog {
     max-width: 95%;
   }
 
-  .modal-body {
+  .app-modal .modal-body {
     padding: 20px;
   }
 }
 
 /* =========================================================
-   HERO GLOBAL (lo usa public-home)
+   ANIMACIONES
    ========================================================= */
 
-.hero {
-  min-height: 100vh;
-  display: grid;
-  align-items: center;
-  gap: var(--spacing-lg);
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.hero-content {
-  max-width: 560px;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
-
-.hero-actions {
-  margin-top: var(--spacing-md);
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 900px) {
-  .hero {
-    min-height: auto;
-  }
-}
-
-/* =========================================================
-   BOTONES FALTANTES (los usa public-home)
-   ========================================================= */
-
-.btn-ghost {
-  background: transparent;
-  color: var(--color-ivory);
-  font-weight: 600;
-  padding: 0.55rem 0.9rem;
-  border-radius: 999px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.btn-ghost:hover {
-  background-color: rgba(252, 250, 244, 0.12);
-  transform: translateY(-1px);
-}
-
-.btn-lg {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
-}
-

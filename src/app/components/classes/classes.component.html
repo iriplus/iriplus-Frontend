@@ -1,23 +1,22 @@
-<div class="classes-container">
-  <div class="classes-card">
-
+<div class="app-page app-page--gradient">
+  <div class="app-card app-card--xl">
     <!-- Header -->
-    <div class="card-header">
-      <div class="header-icon">
+    <header class="app-header app-header--center">
+      <div class="app-header__icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
         </svg>
       </div>
-      <h1>Class Management</h1>
-      <p>Manage the system’s classes</p>
-    </div>
+      <h1 class="app-header__title">Class Management</h1>
+      <p class="app-header__subtitle">Manage the system’s classes</p>
+    </header>
 
     <!-- Actions Bar -->
-    <div class="actions-bar">
-      <div class="search-container">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+    <div class="app-actions-bar">
+      <div class="app-search">
+        <svg class="app-search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
@@ -25,13 +24,19 @@
 
         <input
           type="text"
-          class="search-input"
+          class="app-input app-input--icon-left app-search__input"
           placeholder="Search by code, description, or level..."
           [(ngModel)]="searchText"
           (input)="filterClasses()"
         />
 
-        <button *ngIf="searchText" class="clear-search" (click)="searchText=''; filterClasses()">
+        <button
+          *ngIf="searchText"
+          type="button"
+          class="app-icon-btn app-icon-btn--ghost app-search__clear"
+          (click)="searchText=''; filterClasses()"
+          aria-label="Clear search"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -40,7 +45,12 @@
         </button>
       </div>
 
-      <button class="btn-add" data-bs-toggle="modal" data-bs-target="#newClassModal">
+      <button
+        class="btn-primary btn-rounded classes__add-btn"
+        type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#newClassModal"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -51,8 +61,8 @@
     </div>
 
     <!-- Table -->
-    <div class="table-container">
-      <table class="classes-table">
+    <div class="app-table-container">
+      <table class="app-table app-table--wide">
         <thead>
           <tr>
             <th>Code</th>
@@ -66,17 +76,9 @@
 
         <tbody>
           <tr *ngFor="let c of filteredClasses">
-            <td>
-              <span class="class-code">{{ c.class_code }}</span>
-            </td>
-
-            <td>
-              <span class="class-description">{{ c.description }}</span>
-            </td>
-
-            <td>
-              <span class="level-badge">{{ c.suggested_level }}</span>
-            </td>
+            <td><span class="class-code">{{ c.class_code }}</span></td>
+            <td><span class="class-description">{{ c.description }}</span></td>
+            <td><span class="level-badge">{{ c.suggested_level }}</span></td>
 
             <td>
               <div class="capacity-info">
@@ -99,8 +101,13 @@
             </td>
 
             <td>
-              <div class="actions-cell">
-                <button class="btn-action btn-edit" title="Edit" (click)="openEdit(c)">
+              <div class="app-actions-cell">
+                <button
+                  type="button"
+                  class="app-icon-btn app-icon-btn--edit"
+                  title="Edit"
+                  (click)="openEdit(c)"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
@@ -108,7 +115,12 @@
                   </svg>
                 </button>
 
-                <button class="btn-action btn-delete" title="Delete" (click)="deleteClass(c.id)">
+                <button
+                  type="button"
+                  class="app-icon-btn app-icon-btn--danger"
+                  title="Delete"
+                  (click)="deleteClass(c.id)"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 6h18"></path>
@@ -135,29 +147,32 @@
     </div>
 
     <!-- Stats -->
-    <div class="stats-bar">
-      <div class="stat-item">
-        <span class="stat-label">Total classes:</span>
-        <span class="stat-value">{{ classes.length }}</span>
+    <div class="app-stats-bar">
+      <div class="app-stat">
+        <span class="app-stat__label">Total classes:</span>
+        <span class="app-stat__value">{{ classes.length }}</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-label">Showing:</span>
-        <span class="stat-value">{{ filteredClasses.length }}</span>
+      <div class="app-stat">
+        <span class="app-stat__label">Showing:</span>
+        <span class="app-stat__value">{{ filteredClasses.length }}</span>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- Modal (Bootstrap) -->
-<div class="modal fade" id="newClassModal" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
+<div class="modal fade app-modal" id="newClassModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title">{{ selectedClass ? 'Edit Class' : 'New Class' }}</h5>
 
-        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
+        <button
+          type="button"
+          class="app-close-btn"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -172,7 +187,6 @@
           (classSaved)="onClassSaved()">
         </app-class-form>
       </div>
-
     </div>
   </div>
 </div>
