@@ -14,30 +14,39 @@
       <p>Manage the system’s classes</p>
     </div>
 
-    <!-- Toolbar -->
-    <div class="toolbar">
+    <!-- Actions Bar -->
+    <div class="actions-bar">
       <div class="search-container">
         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.3-4.3"/>
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
         </svg>
+
         <input
           type="text"
           class="search-input"
           placeholder="Search by code, description, or level..."
           [(ngModel)]="searchText"
           (input)="filterClasses()"
-        >
+        />
+
+        <button *ngIf="searchText" class="clear-search" (click)="searchText=''; filterClasses()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <button class="btn-add" data-bs-toggle="modal" data-bs-target="#newClassModal">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 5v14"/>
-          <path d="M5 12h14"/>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
-        New Class
+        <span>New Class</span>
       </button>
     </div>
 
@@ -56,54 +65,72 @@
         </thead>
 
         <tbody>
+          <tr *ngFor="let c of filteredClasses">
+            <td>
+              <span class="class-code">{{ c.class_code }}</span>
+            </td>
 
-  <tr *ngFor="let c of filteredClasses">
-    <td><span class="class-code">{{ c.class_code }}</span></td>
-    <td><span class="class-description">{{ c.description }}</span></td>
+            <td>
+              <span class="class-description">{{ c.description }}</span>
+            </td>
 
-    <td>
-      <span class="level-badge">
-        {{ c.suggested_level }}
-      </span>
-    </td>
+            <td>
+              <span class="level-badge">{{ c.suggested_level }}</span>
+            </td>
 
-    <td>
-      <div class="capacity-info">
-        <span class="capacity-current">
-          {{ c.students.length || 0 }}
-        </span>
-        <span class="capacity-separator">/</span>
-        <span class="capacity-max">
-          {{ c.max_capacity }}
-        </span>
-      </div>
-    </td>
+            <td>
+              <div class="capacity-info">
+                <span class="capacity-current">{{ c.students.length || 0 }}</span>
+                <span class="capacity-separator">/</span>
+                <span class="capacity-max">{{ c.max_capacity }}</span>
+              </div>
+            </td>
 
-    <td>
-      <div class="teachers-count" *ngFor="let t of c.teachers">
-        <span>{{ t.surname}}, {{ t.name }}</span>
-      </div>
-    </td>
+            <td>
+              <div class="teachers-list">
+                <span class="teacher-pill" *ngFor="let t of c.teachers">
+                  {{ t.surname }}, {{ t.name }}
+                </span>
 
-    <td>
-      <div class="action-buttons">
-        <button class="btn-action btn-edit" title="Edit" (click)="openEdit(c)">✏️</button>
-        <button class="btn-action btn-delete" title="Delete" (click)="deleteClass(c.id)">🗑️</button>
-      </div>
-    </td>
-  </tr>
+                <span class="teacher-pill teacher-pill-empty" *ngIf="!c.teachers.length">
+                  No teachers
+                </span>
+              </div>
+            </td>
 
-  <!-- Empty state -->
-  <tr *ngIf="!isLoading && classes.length === 0">
-    <td colspan="7" class="no-results">
-      <div class="empty-state">
-        <p>No classes found</p>
-      </div>
-    </td>
-  </tr>
+            <td>
+              <div class="actions-cell">
+                <button class="btn-action btn-edit" title="Edit" (click)="openEdit(c)">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                    <path d="m15 5 4 4"></path>
+                  </svg>
+                </button>
 
-</tbody>
+                <button class="btn-action btn-delete" title="Delete" (click)="deleteClass(c.id)">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
 
+          <tr *ngIf="!isLoading && filteredClasses.length === 0">
+            <td colspan="6" class="empty-state">
+              <div class="empty-content">
+                <p>No classes found</p>
+                <span *ngIf="searchText">No results for "{{ searchText }}"</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
@@ -115,26 +142,28 @@
       </div>
       <div class="stat-item">
         <span class="stat-label">Showing:</span>
-        <span class="stat-value">{{ classes.length }}</span>
+        <span class="stat-value">{{ filteredClasses.length }}</span>
       </div>
     </div>
 
   </div>
 </div>
 
+<!-- Modal (Bootstrap) -->
 <div class="modal fade" id="newClassModal" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">
         <h5 class="modal-title">{{ selectedClass ? 'Edit Class' : 'New Class' }}</h5>
-          <button type="button" class="btn-close-custom" data-bs-dismiss="modal">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" 
-         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-  </button>
+
+        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <div class="modal-body">
