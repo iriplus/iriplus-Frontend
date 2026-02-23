@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-<<<<<<< HEAD
-=======
 import { ExamDTO } from '../interfaces/exam.interface';
->>>>>>> DEV-Exams
 
 @Injectable({
   providedIn: 'root'
