@@ -1,30 +1,356 @@
-<div class="landing-container">
+<!-- dEBUGGING PURPOSES ONLY -->
+<div style="position:fixed;top:8px;left:8px;z-index:9999;background:#fff;padding:6px 10px;border-radius:10px">
+  role={{ userType }}
+</div>
 
-  <!-- Principal buttons container -->
-  <section class="hero-actions">
-    <button class="action-btn">Practice</button>
-    <button class="action-btn" type="button" (click)="goTo('/teacher-exam')">Generate Exam</button>
-  </section>
+<!-- home.component.html -->
+<div class="app-page app-page--gradient">
+  <div class="app-card app-card--xl app-card--elevated home">
 
-  <!-- Table (Empty ATM) -->
-  <section class="exams-section">
-    <h2 class="section-title">My Exams</h2>
+    <!-- Header -->
+    <header class="app-header app-header--left home__header">
+      <div class="home__header-row">
+        <div>
+          <h1 class="app-header__title">Home</h1>
+          <p class="app-header__subtitle">Dashboard (mock data / placeholder)</p>
+        </div>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Coordinator</th>
-          <th>Class</th>
-          <th>Student</th>
-          <th>Teacher</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Data rows will go here in the future -->
-      </tbody>
-    </table>
-  </section>
+        <div class="home__quick-actions">
+          <button class="btn-primary btn-lg home__cta" type="button" (click)="goTo('/practice')">
+            Practice
+          </button>
 
+          <button
+            class="btn-outline btn-lg home__cta"
+            type="button"
+            (click)="goTo('/teacher-exam')"
+            *ngIf="userType === 'TEACHER' || userType === 'COORDINATOR'">
+            Generate Exam
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- If userType is not wired yet -->
+    <div class="home__notice" *ngIf="!userType">
+      <strong>Mock mode:</strong> userType is not set yet. Showing all role sections below for layout preview.
+    </div>
+
+    <!-- STUDENT VIEW -->
+    <section class="home-section" *ngIf="!userType || userType === 'STUDENT'">
+      <div class="home-section__title">
+        <h2>Weekly ranking</h2>
+        <p>Duolingo-style leaderboard mockup.</p>
+      </div>
+
+      <div class="home-grid home-grid--2">
+        <div class="home-panel">
+          <div class="home-panel__header">
+            <h3>Leaderboard</h3>
+            <span class="home-chip">This week</span>
+          </div>
+
+          <ol class="rank-list">
+            <li class="rank-item">
+              <span class="rank-pos">1</span>
+              <span class="rank-avatar">A</span>
+              <span class="rank-name">Ana Perez</span>
+              <span class="rank-points">1,420 XP</span>
+            </li>
+            <li class="rank-item">
+              <span class="rank-pos">2</span>
+              <span class="rank-avatar">M</span>
+              <span class="rank-name">Maria Lopez</span>
+              <span class="rank-points">1,180 XP</span>
+            </li>
+            <li class="rank-item rank-item--me">
+              <span class="rank-pos">3</span>
+              <span class="rank-avatar">Y</span>
+              <span class="rank-name">You</span>
+              <span class="rank-points">1,020 XP</span>
+            </li>
+            <li class="rank-item">
+              <span class="rank-pos">4</span>
+              <span class="rank-avatar">L</span>
+              <span class="rank-name">Laura Gomez</span>
+              <span class="rank-points">860 XP</span>
+            </li>
+            <li class="rank-item">
+              <span class="rank-pos">5</span>
+              <span class="rank-avatar">S</span>
+              <span class="rank-name">Sofia Diaz</span>
+              <span class="rank-points">730 XP</span>
+            </li>
+          </ol>
+
+          <div class="home-panel__footer">
+            <span class="home-muted">Tip:</span>
+            <span class="home-muted">Complete one more practice to climb positions.</span>
+          </div>
+        </div>
+
+        <div class="home-panel">
+          <div class="home-panel__header">
+            <h3>Your progress</h3>
+            <span class="home-chip home-chip--soft">Mock</span>
+          </div>
+
+          <div class="home-metrics">
+            <div class="metric">
+              <span class="metric__label">XP this week</span>
+              <span class="metric__value">1,020</span>
+            </div>
+            <div class="metric">
+              <span class="metric__label">Streak</span>
+              <span class="metric__value">4 days</span>
+            </div>
+            <div class="metric">
+              <span class="metric__label">Accuracy</span>
+              <span class="metric__value">87%</span>
+            </div>
+          </div>
+
+          <div class="progress-block">
+            <div class="progress-row">
+              <span class="progress-label">Weekly goal</span>
+              <span class="progress-value">1,020 / 1,400 XP</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill" style="width: 73%;"></div>
+            </div>
+          </div>
+
+          <div class="progress-block">
+            <div class="progress-row">
+              <span class="progress-label">Units completed</span>
+              <span class="progress-value">6 / 10</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill" style="width: 60%;"></div>
+            </div>
+          </div>
+
+          <div class="home-panel__actions">
+            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/practice')">
+              Continue practicing
+            </button>
+            <button class="btn-outline home__small-cta" type="button">
+              View profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEACHER VIEW -->
+    <section class="home-section" *ngIf="!userType || userType === 'TEACHER'">
+      <div class="home-section__title">
+        <h2>Teacher overview</h2>
+        <p>Progress summary for your classes (mock data).</p>
+      </div>
+
+      <div class="home-grid home-grid--3">
+        <div class="home-panel home-panel--tight">
+          <div class="home-panel__header">
+            <h3>3° A</h3>
+            <span class="home-chip">24 students</span>
+          </div>
+
+          <div class="home-kpis">
+            <div class="kpi">
+              <span class="kpi__label">Avg completion</span>
+              <span class="kpi__value">62%</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi__label">Needs attention</span>
+              <span class="kpi__value">5</span>
+            </div>
+          </div>
+
+          <div class="progress-block">
+            <div class="progress-row">
+              <span class="progress-label">Weekly activity</span>
+              <span class="progress-value">18 / 24 active</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill" style="width: 75%;"></div>
+            </div>
+          </div>
+
+          <div class="home-panel__actions">
+            <button class="btn-outline home__small-cta" type="button">View class</button>
+            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/teacher-exam')">Generate exam</button>
+          </div>
+        </div>
+
+        <div class="home-panel home-panel--tight">
+          <div class="home-panel__header">
+            <h3>4° B</h3>
+            <span class="home-chip">19 students</span>
+          </div>
+
+          <div class="home-kpis">
+            <div class="kpi">
+              <span class="kpi__label">Avg completion</span>
+              <span class="kpi__value">71%</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi__label">Pending reviews</span>
+              <span class="kpi__value">2</span>
+            </div>
+          </div>
+
+          <div class="progress-block">
+            <div class="progress-row">
+              <span class="progress-label">Weekly activity</span>
+              <span class="progress-value">14 / 19 active</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill" style="width: 74%;"></div>
+            </div>
+          </div>
+
+          <div class="home-panel__actions">
+            <button class="btn-outline home__small-cta" type="button">View class</button>
+            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/teacher-exam')">Generate exam</button>
+          </div>
+        </div>
+
+        <div class="home-panel home-panel--tight">
+          <div class="home-panel__header">
+            <h3>5° A</h3>
+            <span class="home-chip">22 students</span>
+          </div>
+
+          <div class="home-kpis">
+            <div class="kpi">
+              <span class="kpi__label">Avg completion</span>
+              <span class="kpi__value">54%</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi__label">Needs attention</span>
+              <span class="kpi__value">8</span>
+            </div>
+          </div>
+
+          <div class="progress-block">
+            <div class="progress-row">
+              <span class="progress-label">Weekly activity</span>
+              <span class="progress-value">12 / 22 active</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill" style="width: 55%;"></div>
+            </div>
+          </div>
+
+          <div class="home-panel__actions">
+            <button class="btn-outline home__small-cta" type="button">View class</button>
+            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/teacher-exam')">Generate exam</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COORDINATOR VIEW -->
+    <section class="home-section" *ngIf="!userType || userType === 'COORDINATOR'">
+      <div class="home-section__title">
+        <h2>Coordinator overview</h2>
+        <p>Summary of teachers workload and pending actions (mock data).</p>
+      </div>
+
+      <div class="home-grid home-grid--4">
+        <div class="home-panel home-panel--kpi">
+          <span class="kpi-big__label">Active teachers</span>
+          <span class="kpi-big__value">6</span>
+        </div>
+        <div class="home-panel home-panel--kpi">
+          <span class="kpi-big__label">Pending reviews</span>
+          <span class="kpi-big__value">4</span>
+        </div>
+        <div class="home-panel home-panel--kpi">
+          <span class="kpi-big__label">On correction</span>
+          <span class="kpi-big__value">2</span>
+        </div>
+        <div class="home-panel home-panel--kpi">
+          <span class="kpi-big__label">This week exams</span>
+          <span class="kpi-big__value">11</span>
+        </div>
+      </div>
+
+      <div class="home-panel home-panel--table">
+        <div class="home-panel__header">
+          <h3>Teachers</h3>
+          <span class="home-chip home-chip--soft">Mock</span>
+        </div>
+
+        <div class="app-table-container">
+          <table class="app-table app-table--wide">
+            <thead>
+              <tr>
+                <th>Teacher</th>
+                <th>Classes</th>
+                <th>Pending review</th>
+                <th>On review</th>
+                <th>On correction</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Maria Lopez</td>
+                <td>3</td>
+                <td>2</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Ana Perez</td>
+                <td>2</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Laura Gomez</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shared placeholder: exams table -->
+    <section class="home-section">
+      <div class="home-section__title">
+        <h2>My exams</h2>
+        <p>Placeholder table to keep the structure aligned with the rest of the app.</p>
+      </div>
+
+      <div class="app-table-container">
+        <table class="app-table app-table--wide">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Coordinator</th>
+              <th>Class</th>
+              <th>Student</th>
+              <th>Teacher</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6" class="home-empty">
+                No exams yet (mock placeholder).
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
 </div>

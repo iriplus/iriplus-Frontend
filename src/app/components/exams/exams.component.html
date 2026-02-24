@@ -1,9 +1,11 @@
-<div class="exams-container">
-  <div class="exams-card">
+<div class="app-page app-page--gradient">
+  <div class="app-card app-card--xl app-card--elevated">
+
     <!-- Header -->
-    <div class="card-header">
-      <div class="header-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <header class="app-header app-header--center">
+      <div class="app-header__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
           <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -11,231 +13,231 @@
           <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
       </div>
-      <h1>Exam review</h1>
-      <p>Review, accept, or send for correction the exams created by the teachers.</p>
-    </div>
 
+      <h1 class="app-header__title">Exam review</h1>
+      <p class="app-header__subtitle">Review, accept, or send for correction the exams created by the teachers.</p>
+    </header>
 
-    <!-- Filters Bar -->
-    <div class="filters-bar">
-      <div class="filters-row">
-        <div class="search-container">
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-          <input type="text" class="search-input" placeholder="Search by teacher or date..." [(ngModel)]="searchText" (input)="applyFilters()"/>
-        </div>
-
-
-        <div class="filter-select-container">
-          <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-          </svg>
-          <select
-            class="filter-select"
-            [(ngModel)]="selectedStatus"
-            (change)="applyFilters()">
-
-            <option value="ALL">All states</option>
-            <option value="Pending Review">Pending Review</option>
-            <option value="On Review">On Review</option>
-            <option value="Accepted">Accepted</option>
-            <option value="Pending Correction">Pending Correction</option>
-            <option value="On Correction">On Correction</option>
-            <option value="Student Exam">Student Exam</option>
-            <option value="Test Exam">Test Exam</option>
-          </select>
-        </div>
-        
-        <div class="filter-select-container">
-          <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-          </svg>
+    <!-- Actions / Filters -->
+    <div class="app-actions-bar">
+      <!-- Search -->
+      <div class="app-search">
+        <svg class="app-search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
 
         <input
           type="text"
-          class="filter-select"
-          placeholder="Todos los cursos"
+          class="app-input app-input--icon-left app-search__input"
+          placeholder="Search by teacher or date..."
+          [(ngModel)]="searchText"
+          (input)="applyFilters()"
+        />
+
+        <button
+          *ngIf="searchText"
+          type="button"
+          class="app-icon-btn app-icon-btn--ghost app-search__clear"
+          (click)="searchText=''; applyFilters()"
+          aria-label="Clear search"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Status -->
+      <div class="exams-filter">
+        <svg class="exams-filter__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+
+        <select
+          class="app-input app-input--icon-left exams-filter__control"
+          [(ngModel)]="selectedStatus"
+          (change)="applyFilters()"
+        >
+          <option value="ALL">All states</option>
+          <option value="Pending Review">Pending Review</option>
+          <option value="On Review">On Review</option>
+          <option value="Accepted">Accepted</option>
+          <option value="Pending Correction">Pending Correction</option>
+          <option value="On Correction">On Correction</option>
+          <option value="Student Exam">Student Exam</option>
+          <option value="Test Exam">Test Exam</option>
+        </select>
+      </div>
+
+      <!-- Course -->
+      <div class="exams-filter">
+        <svg class="exams-filter__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+
+        <input
+          type="text"
+          class="app-input app-input--icon-left exams-filter__control"
+          placeholder="All courses"
           list="coursesList"
           [(ngModel)]="selectedClass"
-          (input)="applyFilters()" />
-        
-          <datalist id="coursesList">
-            <option value="ALL">All courses</option>
-            <option *ngFor="let cls of classes" [value]="cls.description"></option>
+          (input)="applyFilters()"
+        />
+
+        <datalist id="coursesList">
+          <option value="ALL">All courses</option>
+          <option *ngFor="let cls of classes" [value]="cls.description"></option>
         </datalist>
-      </div>
       </div>
     </div>
 
-
-    <!-- Stats Cards -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon stat-total">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <!-- Stats Cards (local) -->
+    <div class="exams-stats">
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--total">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
           </svg>
         </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ totalExams }}</span>
-          <span class="stat-label">Total Exams</span>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ totalExams }}</span>
+          <span class="exams-stat-label">Total Exams</span>
         </div>
       </div>
 
-
-      <div class="stat-card">
-        <div class="stat-icon stat-pending">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--pending">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
         </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ pendingExams }}</span>
-          <span class="stat-label">Pending</span>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ pendingExams }}</span>
+          <span class="exams-stat-label">Pending</span>
         </div>
       </div>
 
-
-      <div class="stat-card">
-        <div class="stat-icon stat-review">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--review">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
         </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ onReviewExams }}</span>
-          <span class="stat-label">In Revision</span>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ onReviewExams }}</span>
+          <span class="exams-stat-label">In Revision</span>
         </div>
       </div>
 
-
-      <div class="stat-card">
-        <div class="stat-icon stat-accepted">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--accepted">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
         </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ acceptedExams }}</span>
-          <span class="stat-label">Accepted</span>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ acceptedExams }}</span>
+          <span class="exams-stat-label">Accepted</span>
         </div>
       </div>
     </div>
 
-
     <!-- Results Info -->
-    <div class="results-info">
+    <div class="exams-results">
       <span>Showing {{ filteredExams.length }} of {{ exams.length }} exams</span>
     </div>
 
-
-    <!-- Table -->
-    <div class="table-container">
-      <table class="exams-table">
+    <!-- Table (global) -->
+    <div class="app-table-container">
+      <table class="app-table app-table--wide">
         <thead>
           <tr>
             <th>Context</th>
-            <th>Clase</th>
-            <th>Profesora</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Class</th>
+            <th>Teacher</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
-        <tr *ngFor="let exam of filteredExams">
 
+        <tbody>
+          <tr *ngFor="let exam of filteredExams">
+            <td>
+              <div class="exam-title-cell">
+                <span class="exam-title">{{ truncate(exam.context, 30) }}</span>
+              </div>
+            </td>
 
-  <td>
-    <div class="exam-title-cell">
-      <span class="exam-title">{{ truncate(exam.context, 30) }}</span>
-    </div>
-  </td>
+            <td>
+              <span class="class-badge">
+                {{ exam.class_description || '-' }}
+              </span>
+            </td>
 
+            <td>
+              <div class="teacher-cell">
+                <div class="teacher-avatar">
+                  {{ exam.teacher_full_name ? exam.teacher_full_name.charAt(0) : '?' }}
+                </div>
+                <span>{{ exam.teacher_full_name || 'No teacher' }}</span>
+              </div>
+            </td>
 
-  <td>
-    <span class="class-badge">
-      {{ exam.class_description || '-'}}
-    </span>
-  </td>
+            <td>
+              <span class="date-cell">
+                {{ exam.date_created | date:'dd/MM/yyyy - HH:mm' }}
+              </span>
+            </td>
 
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(exam.status)">
+                {{ exam.status }}
+              </span>
+            </td>
 
-  <td>
-  <div class="teacher-cell">
-    <div class="teacher-avatar">
-      {{ exam.teacher_full_name ? exam.teacher_full_name.charAt(0) : '?' }}
-    </div>
-    <span>
-      {{ exam.teacher_full_name || 'No teacher' }}
-    </span>
-  </div>
-</td>
+            <td>
+              <div class="exams-actions">
+                <button
+                  *ngIf="exam.status === 'Pending Review'"
+                  class="btn-action btn-review"
+                  (click)="assignExam(exam.id)"
+                >
+                  Review
+                </button>
 
+                <ng-container *ngIf="exam.status === 'On Review'">
+                  <span class="status-info">On review</span>
+                </ng-container>
+              </div>
+            </td>
+          </tr>
 
-  <td>
-    <span class="date-cell">
-      {{ exam.date_created | date:'dd/MM/yyyy - HH:mm' }}
-    </span>
-  </td>
-
-
-  <td>
-    <span class="status-badge" [ngClass]="getStatusClass(exam.status)">
-      {{ exam.status}}
-    </span>
-  </td>
-
-
-  <td>
-    <div class="actions-cell">
-
-
-      <button
-        *ngIf="exam.status === 'Pending Review'"
-        class="btn-action btn-review"
-        (click)="assignExam(exam.id)">
-        Review
-      </button>
-
-
-      <ng-container *ngIf="exam.status === 'On Review'">
-
-        <span class="status-info">En revisión</span>
-        <!--<button
-          class="btn-action btn-accept"
-          (click)="acceptExam(exam.id)">
-          Aceptar
-        </button>
-
-
-        <button
-          class="btn-action btn-reject"
-          (click)="openRejectModal(exam)">
-          Rechazar
-        </button>-->
-
-
-      </ng-container>
-
-
-    </div>
-  </td>
-
-
-</tr>
+          <tr *ngIf="!filteredExams.length">
+            <td colspan="6" class="empty-state">
+              <div class="empty-content">
+                <p>No exams found</p>
+                <span *ngIf="searchText">No results for "{{ searchText }}"</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
-  </div>
 
-
-  <!-- Modales ocultos para evitar errores visuales -->
-  <div class="modal-overlay" style="display:none;"></div>
-  <div class="toast" style="display:none;">
-    <span>Operacion realizada</span>
   </div>
 </div>

@@ -1,9 +1,9 @@
-<div class="teachers-container">
-  <div class="teachers-card">
+<div class="app-page app-page--gradient">
+  <div class="app-card app-card--xl teachers">
 
     <!-- Header -->
-    <div class="card-header">
-      <div class="header-icon">
+    <header class="app-header app-header--center">
+      <div class="app-header__icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -12,27 +12,34 @@
           <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
         </svg>
       </div>
-      <h1>Teacher Management</h1>
-      <p>Manage system teachers</p>
-    </div>
+      <h1 class="app-header__title">Teacher Management</h1>
+      <p class="app-header__subtitle">Manage system teachers</p>
+    </header>
 
     <!-- Actions Bar -->
-    <div class="actions-bar">
-      <!-- Search -->
-      <div class="search-container">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+    <div class="app-actions-bar">
+      <div class="teachers__search">
+        <svg class="teachers__search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
         </svg>
+
         <input
           type="text"
-          class="search-input"
+          class="app-input app-input--icon-left"
           placeholder="Search by name, email or DNI..."
           [(ngModel)]="searchTerm"
           (input)="filterTeachers()"
-          />
-        <button class="clear-search" (click)="clearSearch()">
+        />
+
+        <button
+          *ngIf="searchTerm"
+          type="button"
+          class="app-icon-btn teachers__clear-btn"
+          (click)="clearSearch()"
+          aria-label="Clear search"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -41,9 +48,8 @@
         </button>
       </div>
 
-      <!-- Add Button -->
-      <button class="btn-add" data-bs-toggle="modal" data-bs-target="#newTeacherModal">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+      <button class="btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#newTeacherModal">
+        <svg class="teachers__btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -53,9 +59,8 @@
     </div>
 
     <!-- Table -->
-    <div class="table-container">
-      <table class="teachers-table">
-
+    <div class="app-table-container app-table-container--wide">
+      <table class="app-table">
         <thead>
           <tr>
             <th>Photo</th>
@@ -64,17 +69,17 @@
             <th>Email</th>
             <th>DNI</th>
             <th>Verified</th>
-            <th>Actions</th>
+            <th class="teachers__th-actions">Actions</th>
           </tr>
         </thead>
 
         <tbody>
           <tr *ngFor="let teacher of filteredTeachers">
             <td>
-              <div class="avatar">
-                <div class="avatar-placeholder">
+              <div class="teachers__avatar" aria-hidden="true">
+                <span class="teachers__avatar-text">
                   {{ teacher.name.charAt(0) }}{{ teacher.surname.charAt(0) }}
-                </div>
+                </span>
               </div>
             </td>
 
@@ -82,68 +87,78 @@
             <td>{{ teacher.surname }}</td>
 
             <td>
-              <span class="email-cell">{{ teacher.email }}</span>
+              <span class="teachers__email">{{ teacher.email }}</span>
             </td>
 
             <td>{{ teacher.dni }}</td>
 
             <td>
               <span
-                class="badge"
-                [ngClass]="teacher.is_verified ? 'badge-verified' : 'badge-pending'">
+                class="teachers__badge"
+                [ngClass]="teacher.is_verified ? 'teachers__badge--ok' : 'teachers__badge--pending'"
+              >
                 {{ teacher.is_verified ? 'Verified' : 'Pending' }}
               </span>
             </td>
 
             <td>
-              <div class="actions-cell">
-                <button class="btn-action btn-delete" (click)="deleteTeacher(teacher.id)">
-                  Delete
+              <div class="teachers__actions">
+                <button
+                  type="button"
+                  class="app-icon-btn teachers__icon-danger"
+                  (click)="deleteTeacher(teacher.id)"
+                  aria-label="Delete teacher"
+                  title="Delete"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg>
                 </button>
-                
               </div>
             </td>
           </tr>
 
           <tr *ngIf="filteredTeachers.length === 0">
-            <td colspan="7" class="empty-state">
-              <div class="empty-content">
-                <p>No teachers found</p>
-              </div>
+            <td colspan="7" class="teachers__empty">
+              No teachers found
             </td>
           </tr>
         </tbody>
-
       </table>
     </div>
 
     <!-- Stats -->
-    <div class="stats-bar">
-      <div class="stat-item">
-        <span class="stat-label">Total classes:</span>
-        <span class="stat-value">{{ teachers.length }}</span>
+    <div class="app-stats-bar teachers__stats">
+      <div class="teachers__stat">
+        <span class="teachers__stat-label">Total teachers:</span>
+        <span class="teachers__stat-value">{{ teachers.length }}</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-label">Showing:</span>
-        <span class="stat-value">{{ teachers.length }}</span>
+      <div class="teachers__stat">
+        <span class="teachers__stat-label">Showing:</span>
+        <span class="teachers__stat-value">{{ filteredTeachers.length }}</span>
       </div>
     </div>
 
   </div>
 </div>
-<div class="modal fade" id="newTeacherModal" tabindex="-1">
+
+<!-- Modal -->
+<div class="modal fade app-modal" id="newTeacherModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title">Teacher</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
         <app-teacher-form (teacherCreated)="onTeacherCreated()"></app-teacher-form>
       </div>
-
     </div>
   </div>
 </div>
