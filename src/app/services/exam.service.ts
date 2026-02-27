@@ -38,10 +38,19 @@ export class ExamService {
   }
 
   sendToReview(examId: number): Observable<any> {
-    return this.http.patch(`${this.EXAM_URL}/${examId}/send-to-review`, {});
+    return this.http.patch(`${this.EXAM_URL}/${examId}/send-to-review`,{}, {withCredentials: true});
   }
 
   deleteExam(examId: number): Observable<any> {
     return this.http.delete<any>(`${this.EXAM_URL}/${examId}`);
+  }
+
+  leaveReview(examId: number): Observable<any> {
+  return this.http.patch(`${this.EXAM_URL}/${examId}/leave-review`,{},{ withCredentials: true });
+  }
+
+  acceptExam(examId: number): Observable<any> {
+    return this.http.patch(`${this.EXAM_URL}/${examId}/accept`,{},{ withCredentials: true }
+    );
   }
 }

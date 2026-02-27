@@ -77,8 +77,8 @@
   background: linear-gradient(135deg, #5bc0de 0%, #3a9fc0 100%);
 }
 
-.exams-stat-icon--accepted {
-  background: linear-gradient(135deg, #5cb85c 0%, #3d8b3d 100%);
+.exams-stat-icon--pendingcorrection {
+  background: linear-gradient(135deg, #b8935c 0%, #8b713d 100%);
 }
 
 .exams-stat-info {

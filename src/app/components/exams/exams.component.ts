@@ -6,6 +6,8 @@ import { AuthService } from '../../services/auth.service';
 import { ClassService } from '../../services/class.service';
 import { UserService } from '../../services/user.service';
 import { FormsModule } from '@angular/forms';
+import { Router } from "@angular/router";
+import { error } from 'console';
 
 
 @Component({
@@ -26,18 +28,30 @@ export class ExamsComponent {
   selectedClass: string = 'ALL';
   classSearch: string = '';
   searchText: string = '';
+  currentUserId: number | null = null;
 
 
   constructor(
     private examService: ExamService,
+    private router: Router,
+    private authService: AuthService
   ) {
     console.log('ExamService:', this.examService);
   }
 
 
   ngOnInit(): void {
+    this.loadCurrentUser();
     this.loadExams();
   }
+
+  loadCurrentUser(): void {
+  this.authService.loadMe().subscribe(user => {
+    if (!user) return;
+    console.log('CURRENT USER:', user.id);
+    this.currentUserId = user.id;
+  });
+}
 
 loadExams(): void {
   this.examService.getAllExams().subscribe({
@@ -55,10 +69,14 @@ loadExams(): void {
 
   assignExam(id: number): void {
     this.examService.sendToReview(id).subscribe(() => {
-      this.loadExams();
-    });
+      //this.loadExams();
+      this.router.navigate(['/exam-review', id]);
+    })
   }
 
+  continueReview(id: number): void {
+  this.router.navigate(['/exam-review', id]);
+}
 
   acceptExam(id: number): void {
     console.log('Accept exam', id);
@@ -130,8 +148,8 @@ get onReviewExams(): number {
   return this.exams.filter(e => e.status === 'On Review').length;
 }
 
-get acceptedExams(): number {
-  return this.exams.filter(e => e.status === 'Accepted').length;
+get pendingCorrectionExams(): number {
+  return this.exams.filter(e => e.status === 'Pending Correction').length;
 }
 
 getStatusClass(status: string): string {

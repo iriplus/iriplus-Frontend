@@ -1,0 +1,307 @@
+<div class="page">
+  <div class="card">
+
+    <!-- Loading / Error -->
+    <div *ngIf="loading" class="stateBox">Cargando examen...</div>
+    <div *ngIf="!loading && errorMessage" class="stateBox error">
+      {{ errorMessage }}
+    </div>
+
+    <ng-container *ngIf="!loading && exam">
+
+      <!-- Top Bar -->
+      <div class="topbar">
+        <button class="btn btn-outline" (click)="backToList()" type="button">
+          ← Volver a exámenes
+        </button>
+
+        <span class="badge" [ngClass]="{ 'pulse': exam.status === 'On Review' }">
+        <span class="badgeDot"></span>
+          {{ getStatusLabel(exam.status) }}
+        </span>
+      </div>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="headerText">
+          <h1>{{ exam.title }}</h1>
+          <p class="muted" *ngIf="exam.description">
+            {{ exam.description }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Meta -->
+      <div class="metaGrid">
+        <div class="metaItem">
+          <div class="metaIcon" aria-hidden="true"><i class="bi bi-person-lines-fill"></i></div>
+          <div>
+            <div class="metaLabel">PROFESORA</div>
+            <div class="metaValue">{{ exam.teacherName }}</div>
+          </div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaIcon" aria-hidden="true"><i class="bi bi-archive-fill"></i></div>
+          <div>
+            <div class="metaLabel">CLASE</div>
+            <div class="metaValue">{{ exam.className }}</div>
+          </div>
+        </div>
+
+        <div class="metaItem">
+          <div class="metaIcon" aria-hidden="true"><i class="bi bi-calendar-week"></i></div>
+          <div>
+            <div class="metaLabel">FECHA DE CREACIÓN</div>
+            <div class="metaValue">{{ exam.date }}</div>
+          </div>
+        </div>
+
+      </div>
+
+      
+
+      <!-- Content -->
+      <div class="content">
+        <div class="contentHeader">
+          <h2>Contenido del Examen</h2>
+          <div class="pills">
+            <span class="pill">{{ sections.length }} secciones</span>
+          </div>
+        </div>
+
+        <!-- Sections -->
+        <div *ngFor="let section of sections; let i = index" class="section">
+          
+          <p class="sectionInstr" *ngIf="section.instructions">
+            {{ section.instructions }}
+          </p>
+
+          <!-- Questions -->
+          <div class="questions">
+            <div
+              *ngFor="let q of section.questions; let j = index"
+              class="question"
+            >
+              <div class="qIndex">{{ j + 1 }}</div>
+
+              <div class="qBody">
+                <!-- Texto completo de la pregunta (con opciones embebidas) -->
+                <p class="qText">{{ q.question }}</p>
+
+                <!-- Respuesta correcta -->
+                <div class="tfRow">
+                  <span class="tfLabel">Respuesta correcta:</span>
+                  <span class="tfBadge tfTrue">
+                    {{ q.answer }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div class="actionbar" *ngIf="exam.status === 'On Review' || exam.status === 'Pending Review'">
+        <div class="actionHint"><i class="bi bi-exclamation-triangle-fill"></i>
+           <span>Estás revisando este examen. Seleccioná una acción.</span>
+        </div>
+        <div class="actionButtons">
+          <button
+            class="btn btn-warn"
+            type="button"
+            (click)="openLater()">
+            <i class="bi bi-stopwatch"></i> Revisar luego
+          </button>
+          <button
+            class="btn btn-danger"
+            type="button"
+            (click)="openCorrections()">
+            <i class="bi bi-pencil-fill"></i> Enviar correcciones
+          </button>
+          <button
+            class="btn btn-primary"
+            type="button"
+            (click)="openAccept()">
+            <i class="bi bi-check-square-fill"></i> Aceptar examen
+          </button>
+        </div>
+      </div>
+
+      <!-- MODAL Correcciones -->
+      <div
+        class="modalOverlay open"
+        *ngIf="showCorrectionModal"
+        (click)="showCorrectionModal = false">
+        <div class="modal" (click)="$event.stopPropagation()">
+          <div class="modalHeader">
+            <div class="modalHeaderLeft">
+              <div class="modalIcon danger">✏️</div>
+              <div>
+                <h3>Enviar a Corrección</h3>
+                <p class="muted">{{ exam.title }}</p>
+              </div>
+            </div>
+            <button
+              class="iconBtn"
+              type="button"
+              (click)="showCorrectionModal = false">
+              ✕
+            </button>
+          </div>
+
+          <div class="modalBody">
+            <label class="fieldLabel">
+              Observaciones de corrección *
+            </label>
+            <textarea
+              class="textarea"
+              rows="6"
+              [(ngModel)]="correctionNotes"
+              placeholder="Detallá las correcciones..."
+            ></textarea>
+            <div class="helpText">
+              Este mensaje será enviado a la profesora responsable.
+            </div>
+
+            <div class="warningBox">
+              ⚠️ El estado cambiará a “Pendiente Corrección”.
+            </div>
+          </div>
+
+          <div class="modalFooter">
+            <button
+              class="btn btn-outline"
+              type="button"
+              (click)="showCorrectionModal = false"
+            >
+              Cancelar
+            </button>
+            <button
+              class="btn btn-danger"
+              type="button"
+              [disabled]="!correctionNotes.trim()"
+              (click)="sendCorrection()"
+            >
+              📨 Enviar correcciones
+            </button>
+          </div>
+        </div>
+      </div>
+
+<!-- MODAL Aceptar -->
+<div
+  *ngIf="showAcceptModal"
+  class="exam-review-modal-overlay"
+  (click)="showAcceptModal = false"
+>
+  <div
+    class="exam-review-modal exam-review-modal--success"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="exam-review-modal__header">
+      <h2 class="exam-review-modal__title">Aceptar examen</h2>
+      <button
+        type="button"
+        class="app-close-btn"
+        (click)="showAcceptModal = false"
+        aria-label="Close"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="exam-review-modal__body">
+      <div class="exam-review-warning-icon">
+        <i class="bi bi-check-all"></i>
+      </div>
+
+      <p class="exam-review__muted exam-review__muted--center">
+        Estás por aceptar el examen
+        <strong>"{{ exam.title }}"</strong>.
+      </p>
+    </div>
+
+    <div class="exam-review-modal__actions">
+      <button
+        type="button"
+        class="btn-outline btn-lg"
+        (click)="showAcceptModal = false"
+      >
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn-primary btn-lg"
+        (click)="confirmAccept()"
+      >
+        <i class="bi bi-check-lg"></i> Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+<!-- MODAL Revisar luego -->
+<div
+  *ngIf="showLaterModal"
+  class="exam-review-modal-overlay"
+  (click)="showLaterModal = false"
+>
+  <div
+    class="exam-review-modal exam-review-modal--warn"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="exam-review-modal__header">
+      <h2 class="exam-review-modal__title">Revisar luego</h2>
+      <button
+        type="button"
+        class="app-close-btn"
+        (click)="showLaterModal = false"
+        aria-label="Close"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="exam-review-modal__body">
+      <div class="exam-review-warning-icon">
+        <i class="bi bi-clock-history"></i>
+      </div>
+
+      <p class="exam-review__muted exam-review__muted--center">
+        Podés retomar la revisión más tarde.
+      </p>
+    </div>
+
+    <div class="exam-review-modal__actions">
+      <button
+        type="button"
+        class="btn-outline btn-lg"
+        (click)="showLaterModal = false"
+      >
+        Seguir revisando
+      </button>
+      <button
+        type="button"
+        class="btn-primary btn-lg"
+        (click)="confirmLater()"
+      >
+        ⏱️ Salir
+      </button>
+    </div>
+  </div>
+</div>
+
+    </ng-container>
+  </div>
+</div>

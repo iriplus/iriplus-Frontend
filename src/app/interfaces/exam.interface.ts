@@ -19,7 +19,8 @@ export interface ExamDTO {
   date_created: Date;
   class_description?: string;
   user_id: number;
-  teacher_full_name?: string; 
+  teacher_full_name?: string;
+  coordinator_id?:number; 
 }
 
 export interface ExerciseTypeDTO {
