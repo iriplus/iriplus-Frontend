@@ -257,48 +257,55 @@ export class MyProfileComponent implements OnInit {
     this.classError = '';
   }
 
+
 confirmChangeClass(): void {
   this.classError = '';
 
-  const classCode = this.classCodeInput?.trim();
+  const code = this.classCodeInput?.trim().toUpperCase();
 
-  if (!classCode) {
-    this.classError = 'Please enter a class code';
+  if (!code) {
+    this.classError = 'Please enter a valid class code.';
     return;
   }
 
-  if (!this.user?.id) {
-    this.classError = 'User not found';
-    return;
-  }
+  this.classService.validateClassCode(code).subscribe({
+    next: (clazz) => {
 
-  this.classService.getClass(classCode).subscribe({
-    next: (cls) => {
+      const currentStudents = clazz.students?.length ?? 0;
 
-      if (!cls?.id) {
-        this.classError = 'Class not found';
+      if (currentStudents >= clazz.max_capacity) {
+        this.classError = 'This class is already full.';
         return;
       }
 
-      this.userService.updateUser(this.user.id, {
-        student_class_id: cls.id
-      }).subscribe({
+      if (!this.user?.id) return;
+
+      const updatePayload = {
+        student_class_id: clazz.id
+      };
+
+      this.userService.updateUser(this.user.id, updatePayload).subscribe({
         next: () => {
-          this.loadProfile();
           this.closeChangeClassModal();
+          this.loadProfile();
         },
         error: (err) => {
-        console.log('Update error:', err);
-
-        if (err.status === 409) {this.classError = err.error?.message || 'Class is full.';}
-        else if (err.status === 404) {this.classError = 'Class not found.';} 
-        else {this.classError = 'Unexpected error. Please try again.';}
-       }
+          console.error(err);
+          this.classError = 'Error updating class. Please try again.';
+        }
       });
     },
-    error: () => {
-      this.classError = 'Invalid class code. Please verify and try again.';
-    }
+    error: (err) => {
+  console.error(err);
+
+  if (err.status === 409) {
+    this.classError = 'This class is already full.';
+  } else if (err.status === 404) {
+    this.classError = 'Class code not found.';
+  } else {
+    this.classError = 'Error validating class. Please try again.';
+  }
+}
   });
 }
 

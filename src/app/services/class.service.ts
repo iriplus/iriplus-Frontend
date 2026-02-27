@@ -62,4 +62,10 @@ export class ClassService {
       catchError(err => throwError(() => err))
     );
   }
+
+  validateClassCode(class_code: string): Observable<Class> {
+    return this.http.get<Class>(`${this.CLASS_URL}/validate-code/${class_code}`, { withCredentials: true }).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
 }
