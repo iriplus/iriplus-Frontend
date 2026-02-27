@@ -86,6 +86,7 @@ ngOnInit(): void {
 
       console.log('Mapped header:', this.exam);
       console.log('Mapped sections:', this.sections);
+      console.log("notas", this.exam.notes)
 
       this.loading = false;
     },
@@ -118,16 +119,20 @@ ngOnInit(): void {
 }
 
   sendCorrection(): void {
-    const notes = this.correctionNotes.trim();
-    if (!notes) return;
-    this.showCorrectionModal = false;
+  const notes = this.correctionNotes.trim();
+  if (!notes || !this.exam?.id) return;
 
-    if (this.exam) {
-      this.exam.status = 'Pending Correction';
-      this.exam.notes = notes;
+  this.examService.sendToCorrection(this.exam.id, notes).subscribe({
+    next: () => {
+      this.showCorrectionModal = false;
+      this.correctionNotes = '';
+      this.router.navigate(['/exam']);
+    },
+    error: (err) => {
+      console.error('Error sending to correction:', err);
     }
-    this.correctionNotes = '';
-  }
+  });
+}
 
 confirmLater(): void {
   if (!this.examId) return;

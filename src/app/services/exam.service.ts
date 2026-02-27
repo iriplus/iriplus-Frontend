@@ -53,4 +53,8 @@ export class ExamService {
     return this.http.patch(`${this.EXAM_URL}/${examId}/accept`,{},{ withCredentials: true }
     );
   }
+
+  sendToCorrection(examId: number, notes: string): Observable<any> {
+    return this.http.patch(`${this.EXAM_URL}/${examId}/send-to-correction`,{ notes },{ withCredentials: true });
+  }
 }
