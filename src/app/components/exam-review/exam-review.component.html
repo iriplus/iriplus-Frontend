@@ -62,7 +62,7 @@
       <!-- Notes -->
       <div class="notesBox">
         <div class="notesTitle">
-          ⚠️ <span>Notes from the last review</span>
+          <i class="bi bi-exclamation-triangle-fill"></i> <span>Notes from the last review</span>
         </div>
         <p>{{ exam.notes }}</p>
       </div>
@@ -205,7 +205,7 @@
         [disabled]="!correctionNotes.trim()"
         (click)="sendCorrection()"
       >
-        📨 Send corrections
+        <i class="bi bi-folder2"></i> Send corrections
       </button>
     </div>
   </div>
@@ -318,7 +318,7 @@
         class="btn-primary btn-lg"
         (click)="confirmLater()"
       >
-        ⏱️ Exit
+        <i class="bi bi-clock-history"></i> Exit
       </button>
     </div>
   </div>
