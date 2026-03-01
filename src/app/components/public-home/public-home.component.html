@@ -1,105 +1,123 @@
-<!-- Topbar -->
 <header class="public-topbar">
   <button class="btn-ghost" (click)="navigate('login')">
-    Iniciar sesión
+    Sign in
   </button>
   <button class="btn-primary" (click)="navigate('register')">
-    Crear cuenta
+    Create account
   </button>
 </header>
 
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-content">
-    <span class="hero-eyebrow">Plataforma académica</span>
+<main class="public-home">
+  <section class="hero">
+    <div class="public-container hero__grid">
+      <div class="hero__content">
+        <span class="hero__eyebrow">Academic platform</span>
 
-    <h1>Instituto Rosarino de Idiomas</h1>
+        <h1>Instituto Rosarino de Idiomas</h1>
 
-    <p class="hero-description">
-      Un entorno digital donde alumnos, docentes y coordinadoras
-      gestionan el aprendizaje, las evaluaciones y el seguimiento
-      académico de forma organizada y transparente.
-    </p>
+        <p class="hero__description">
+          A modern digital space where students, teachers, and coordinators
+          manage learning, assessments, and academic progress with clarity,
+          structure, and shared visibility.
+        </p>
 
-    <div class="hero-actions">
-      <button class="btn-primary btn-lg" (click)="navigate('register')">
-        Comenzar ahora
-      </button>
-      <button class="btn-outline btn-lg" (click)="navigate('login')">
-        Ya tengo cuenta
-      </button>
+        <div class="hero__highlights">
+          <span class="hero__pill">Courses and groups</span>
+          <span class="hero__pill">Assessments and exams</span>
+          <span class="hero__pill">Academic follow-up</span>
+        </div>
+      </div>
+
+      <div class="hero__visual">
+        <div class="hero__image-frame">
+          <img
+            src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
+            alt="Students learning together in a language class"
+          />
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="hero-image">
-    <img
-      src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
-      alt="Estudiantes aprendiendo idiomas"
-    />
-  </div>
-</section>
+  <section class="public-section public-section--soft">
+    <div class="public-container public-container--narrow">
+      <div class="section-heading section-heading--center">
+        <span class="section-kicker">About the institute</span>
+        <h2 class="section-title">A long-standing commitment to language education</h2>
+        <p class="section-text">
+          Since 1990, Rosario Language Institute has supported children,
+          teenagers, and adults in their language-learning journey, promoting
+          education as a key tool for personal, social, and professional growth.
+        </p>
+      </div>
+    </div>
+  </section>
 
-<!-- Institucional -->
-<section class="section section-soft">
-  <div class="section-narrow">
-    <h2>Sobre la institución</h2>
-    <p>
-      Desde 1990, el Instituto Rosarino de Idiomas acompaña la enseñanza
-      de idiomas a niños, adolescentes y adultos, promoviendo el aprendizaje
-      como una herramienta clave para el desarrollo personal, social
-      y profesional.
-    </p>
-  </div>
-</section>
+  <section class="public-section">
+    <div class="public-container">
+      <div class="section-heading section-heading--center">
+        <span class="section-kicker">Platform value</span>
+        <h2 class="section-title">What the platform offers</h2>
+        <p class="section-text">
+          The platform centralizes the essential academic workflows in one place,
+          making day-to-day management clearer for every role involved.
+        </p>
+      </div>
 
-<!-- Features -->
-<section class="section">
-  <h2 class="section-title-center">¿Qué ofrece la plataforma?</h2>
+      <div class="features">
+        <article class="feature-card">
+          <span class="feature-card__label">01</span>
+          <h3>Course management</h3>
+          <p>
+            Support regular courses, workshops, and private lessons with clear
+            organization by level, group, and teacher.
+          </p>
+        </article>
 
-  <div class="features">
-    <article class="feature-card">
-      <h3>Gestión de cursos</h3>
-      <p>
-        Acompaña cursos regulares, talleres y clases particulares,
-        con organización por niveles, grupos y docentes.
-      </p>
-    </article>
+        <article class="feature-card">
+          <span class="feature-card__label">02</span>
+          <h3>Assessments and exams</h3>
+          <p>
+            Work with dynamic assessments and exams created by teachers and
+            reviewed through academic coordination.
+          </p>
+        </article>
 
-    <article class="feature-card">
-      <h3>Evaluaciones y exámenes</h3>
-      <p>
-        Práctica con exámenes dinámicos y evaluaciones creadas por
-        docentes y validadas por coordinación.
-      </p>
-    </article>
+        <article class="feature-card">
+          <span class="feature-card__label">03</span>
+          <h3>Academic follow-up</h3>
+          <p>
+            Access records, results, and reports to monitor each student’s
+            progress in a more organized way.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
 
-    <article class="feature-card">
-      <h3>Seguimiento académico</h3>
-      <p>
-        Acceso a registros, resultados y reportes para monitorear
-        el progreso de cada alumno.
-      </p>
-    </article>
-  </div>
-</section>
+  <section class="public-image-section">
+    <div class="public-container">
+      <div class="public-image-section__frame">
+        <img
+          src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b"
+          alt="Teacher leading a language class"
+        />
+      </div>
+    </div>
+  </section>
 
-<!-- Imagen full -->
-<section class="image-section">
-  <img
-    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b"
-    alt="Clase de idiomas"
-  />
-</section>
-
-<!-- CTA -->
-<section class="cta">
-  <h2>Sumate al entorno digital del IRI</h2>
-  <p>
-    Organizá el aprendizaje, las evaluaciones y el seguimiento académico
-    en una única plataforma.
-  </p>
-
-  <button class="btn-primary btn-lg" (click)="navigate('register')">
-    Crear cuenta
-  </button>
-</section>
+  <section class="public-cta">
+    <div class="public-container public-container--narrow">
+      <div class="section-heading section-heading--center section-heading--no-margin">
+        <span class="section-kicker section-kicker--light">One platform, shared visibility</span>
+        <h2 class="section-title section-title--light">
+          Learning, assessment, and academic follow-up in one clear digital experience
+        </h2>
+        <p class="section-text section-text--light">
+          The landing stays focused on communicating value, while access actions
+          remain cleanly grouped in the header.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>

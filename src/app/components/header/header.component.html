@@ -1,53 +1,117 @@
-<main class="header-container">
+<header class="header-container">
   <nav class="navbar navbar-expand-lg custom-navbar">
     <div class="container">
 
-      <!--Logo -->
+      <!-- Logo -->
       <a class="navbar-brand brand-logo" [routerLink]="isAuthenticated ? '/home' : '/'">
-        <img src="assets/logo.png" alt="IRI+ Logo" class="logo-img">
+        <img src="assets/logo.png" alt="IRI+ logo" class="logo-img" />
       </a>
 
-      <!--Toggle btn-->
-      <button 
-        class="navbar-toggler custom-toggler" 
-        type="button" 
+      <!-- Toggle -->
+      <button
+        class="navbar-toggler custom-toggler"
+        type="button"
         data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasNavbar" 
-        aria-controls="offcanvasNavbar" 
+        data-bs-target="#offcanvasNavbar"
+        aria-controls="offcanvasNavbar"
         aria-label="Toggle navigation"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!--SideBar -->
-      <div class="offcanvas offcanvas-start custom-offcanvas" id="offcanvasNavbar">
-        <!--SideBar Header-->
+      <!-- Offcanvas real -->
+      <div
+        class="offcanvas offcanvas-start custom-offcanvas"
+        tabindex="-1"
+        id="offcanvasNavbar"
+        aria-labelledby="offcanvasNavbarLabel"
+      >
         <div class="offcanvas-header">
-          <h5 class="offcanvas-title brand-title">IRI+</h5>
-          <button type="button" class="btn-close custom-close" data-bs-dismiss="offcanvas"></button>
+          <h5 class="offcanvas-title brand-title" id="offcanvasNavbarLabel">IRI+</h5>
+          <button
+            type="button"
+            class="btn-close custom-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
         </div>
 
-        <!--SideBar Body-->
         <div class="offcanvas-body nav-body">
-          <ul class="navbar-nav nav-links">
-            <li class="nav-item" *ngIf="isAuthenticated"><a class="nav-link" (click)="goTo('/home')">Home</a></li>
-            <li class="nav-item" *ngIf="isAuthenticated"><a class="nav-link" (click)="goTo('/exam')">Exams</a></li>
-            <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/teachers')">Teachers</a></li>
-            <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/classes')">Classes</a></li>
-            <li class="nav-item" *ngIf="isCoordinator"><a class="nav-link" (click)="goTo('/levels')">Levels</a></li>
+
+          <!-- NAV LINKS (solo autenticado) -->
+          <ul class="navbar-nav nav-links" *ngIf="isAuthenticated">
+            <li class="nav-item">
+              <button type="button" class="nav-link nav-link-btn" (click)="goTo('/home')">
+                Home
+              </button>
+            </li>
+
+            <li class="nav-item">
+              <button type="button" class="nav-link nav-link-btn" (click)="goTo('/exam')">
+                Exams
+              </button>
+            </li>
+
+            <li class="nav-item" *ngIf="isCoordinator">
+              <button type="button" class="nav-link nav-link-btn" (click)="goTo('/teachers')">
+                Teachers
+              </button>
+            </li>
+
+            <li class="nav-item" *ngIf="isCoordinator">
+              <button type="button" class="nav-link nav-link-btn" (click)="goTo('/classes')">
+                Classes
+              </button>
+            </li>
+
+            <li class="nav-item" *ngIf="isCoordinator">
+              <button type="button" class="nav-link nav-link-btn" (click)="goTo('/levels')">
+                Levels
+              </button>
+            </li>
           </ul>
-          <!--Login / Sign up or User info-->         
-          <div class="dropdown">
-            <button class="dropdown-toggle dropdown-trigger" *ngIf="isAuthenticated" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+          <!-- Actions (solo NO autenticado) -->
+          <div class="header-auth-actions" *ngIf="!isAuthenticated">
+            <button type="button" class="btn-ghost header-btn-ghost" (click)="goTo('/login')">
+              Sign in
+            </button>
+            <button type="button" class="btn-primary header-btn-primary" (click)="goTo('/register')">
+              Create account
+            </button>
+          </div>
+
+          <!-- User dropdown (solo autenticado) -->
+          <div class="dropdown" *ngIf="isAuthenticated">
+            <button
+              class="dropdown-toggle header-user-btn"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              aria-label="Open user menu"
+            >
               <i class="bi bi-person"></i>
             </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" (click)="goTo('/my-profile')"><i class="bi bi-person-gear"></i><span>My Profile</span></a></li>
-                <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-person-x"></i>Log Out</a></li>
-              </ul>
-            </div>
+
+            <ul class="dropdown-menu dropdown-menu-end header-dropdown-menu">
+              <li>
+                <button type="button" class="dropdown-item" (click)="goTo('/my-profile')">
+                  <i class="bi bi-person-gear"></i>
+                  <span>My Profile</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item" (click)="logout()">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Log Out</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
         </div>
       </div>
+
     </div>
   </nav>
-</main>
+</header>
