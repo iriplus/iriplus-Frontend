@@ -27,7 +27,7 @@ export const routes: Routes = [
       { path: 'teachers', component: TeachersComponent, canActivate: [coordinatorGuard] },
       { path: 'classes', component: ClassesComponent, canActivate: [coordinatorGuard] },
       { path: 'levels', component: LevelsComponent, canActivate: [coordinatorGuard]},
-      { path: 'exam', component: ExamsComponent, canActivate: [coordinatorGuard]},
+      { path: 'exam', component: ExamsComponent, canActivate: [privateGuard]},
       { path: 'teacher-exam', component: GenerateExamComponent, canActivate: [privateGuard]},
       { path: 'exam-review/:id', component: ExamReviewComponent, canActivate: [coordinatorGuard]}
     ],

@@ -1,7 +1,6 @@
 <div class="app-page app-page--gradient">
   <div class="app-card app-card--xl app-card--elevated">
 
-    <!-- Header -->
     <header class="app-header app-header--center">
       <div class="app-header__icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -14,13 +13,11 @@
         </svg>
       </div>
 
-      <h1 class="app-header__title">Exam review</h1>
-      <p class="app-header__subtitle">Review, accept, or send for correction the exams created by the teachers.</p>
+      <h1 class="app-header__title">{{ pageTitle }}</h1>
+      <p class="app-header__subtitle">{{ pageSubtitle }}</p>
     </header>
 
-    <!-- Actions / Filters -->
     <div class="app-actions-bar">
-      <!-- Search -->
       <div class="app-search">
         <svg class="app-search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -31,7 +28,7 @@
         <input
           type="text"
           class="app-input app-input--icon-left app-search__input"
-          placeholder="Search by teacher or date..."
+          [placeholder]="searchPlaceholder"
           [(ngModel)]="searchText"
           (input)="applyFilters()"
         />
@@ -51,8 +48,7 @@
         </button>
       </div>
 
-      <!-- Status -->
-      <div class="exams-filter">
+      <div class="exams-filter" *ngIf="!isStudent">
         <svg class="exams-filter__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
@@ -74,7 +70,6 @@
         </select>
       </div>
 
-      <!-- Course -->
       <div class="exams-filter">
         <svg class="exams-filter__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -84,21 +79,39 @@
         <input
           type="text"
           class="app-input app-input--icon-left exams-filter__control"
-          placeholder="All courses"
+          placeholder="All classes"
           list="coursesList"
           [(ngModel)]="selectedClass"
           (input)="applyFilters()"
         />
 
         <datalist id="coursesList">
-          <option value="ALL">All courses</option>
+          <option value="ALL">All classes</option>
           <option *ngFor="let cls of classes" [value]="cls.description"></option>
         </datalist>
       </div>
+
+      <button
+        *ngIf="isStudent"
+        type="button"
+        class="btn-primary btn-rounded exams-new-btn"
+        (click)="startNewExam()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>New Exam</span>
+      </button>
     </div>
 
-    <!-- Stats Cards (local) -->
-    <div class="exams-stats">
+    <div *ngIf="errorMessage" class="app-error exams-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Coordinator stats -->
+    <div class="exams-stats" *ngIf="isCoordinator">
       <div class="exams-stat-card">
         <div class="exams-stat-icon exams-stat-icon--total">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -137,17 +150,17 @@
         </div>
         <div class="exams-stat-info">
           <span class="exams-stat-value">{{ onReviewExams }}</span>
-          <span class="exams-stat-label">In Revision</span>
+          <span class="exams-stat-label">In Review</span>
         </div>
       </div>
 
       <div class="exams-stat-card">
         <div class="exams-stat-icon exams-stat-icon--pendingcorrection">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20h9"></path>
-          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-        </svg>
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+          </svg>
         </div>
         <div class="exams-stat-info">
           <span class="exams-stat-value">{{ pendingCorrectionExams }}</span>
@@ -156,21 +169,137 @@
       </div>
     </div>
 
-    <!-- Results Info -->
+    <!-- Teacher stats -->
+    <div class="exams-stats" *ngIf="isTeacher">
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--total">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ totalExams }}</span>
+          <span class="exams-stat-label">Total Exams</span>
+        </div>
+      </div>
+
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--review">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ onReviewExams }}</span>
+          <span class="exams-stat-label">In Review</span>
+        </div>
+      </div>
+
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--pendingcorrection">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ pendingCorrectionExams }}</span>
+          <span class="exams-stat-label">Pending Correction</span>
+        </div>
+      </div>
+
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--accepted">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ acceptedExams }}</span>
+          <span class="exams-stat-label">Accepted</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student stats -->
+    <div class="exams-stats" *ngIf="isStudent">
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--total">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ totalExams }}</span>
+          <span class="exams-stat-label">Completed Exams</span>
+        </div>
+      </div>
+
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--score">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ averageScore }}</span>
+          <span class="exams-stat-label">Average Score</span>
+        </div>
+      </div>
+
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--exp">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ totalExpGained }}</span>
+          <span class="exams-stat-label">Total EXP</span>
+        </div>
+      </div>
+
+      <div class="exams-stat-card">
+        <div class="exams-stat-icon exams-stat-icon--accepted">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+        </div>
+        <div class="exams-stat-info">
+          <span class="exams-stat-value">{{ bestScore }}</span>
+          <span class="exams-stat-label">Best Score</span>
+        </div>
+      </div>
+    </div>
+
     <div class="exams-results">
       <span>Showing {{ filteredExams.length }} of {{ exams.length }} exams</span>
     </div>
 
-    <!-- Table (global) -->
     <div class="app-table-container">
       <table class="app-table app-table--wide">
         <thead>
           <tr>
-            <th>Context</th>
+            <th>Content</th>
             <th>Class</th>
-            <th>Teacher</th>
+            <th *ngIf="isCoordinator">Teacher</th>
+            <th *ngIf="isTeacher">Coordinator</th>
             <th>Date</th>
-            <th>Status</th>
+            <th *ngIf="isStudent">Score</th>
+            <th *ngIf="isStudent">EXP Gained</th>
+            <th *ngIf="!isStudent">Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -179,7 +308,7 @@
           <tr *ngFor="let exam of filteredExams">
             <td>
               <div class="exam-title-cell">
-                <span class="exam-title">{{ truncate(exam.context, 30) }}</span>
+                <span class="exam-title">{{ truncate(exam.context, 42) }}</span>
               </div>
             </td>
 
@@ -189,7 +318,7 @@
               </span>
             </td>
 
-            <td>
+            <td *ngIf="isCoordinator">
               <div class="teacher-cell">
                 <div class="teacher-avatar">
                   {{ exam.teacher_full_name ? exam.teacher_full_name.charAt(0) : '?' }}
@@ -198,46 +327,91 @@
               </div>
             </td>
 
+            <td *ngIf="isTeacher">
+              <ng-container *ngIf="exam.coordinator_full_name; else unassignedCoordinator">
+                <div class="teacher-cell">
+                  <div class="teacher-avatar">
+                    {{ getCoordinatorInitial(exam.coordinator_full_name) }}
+                  </div>
+                  <span>{{ exam.coordinator_full_name }}</span>
+                </div>
+              </ng-container>
+
+              <ng-template #unassignedCoordinator>
+                <span class="unassigned-badge">Unassigned</span>
+              </ng-template>
+            </td>
+
             <td>
               <span class="date-cell">
                 {{ exam.date_created | date:'dd/MM/yyyy - HH:mm' }}
               </span>
             </td>
 
-            <td>
+            <td *ngIf="isStudent">
+              <span class="score-badge">
+                {{ exam.score ?? 0 }}/100
+              </span>
+            </td>
+
+            <td *ngIf="isStudent">
+              <span class="exp-badge">
+                +{{ exam.exp_gained ?? 0 }} EXP
+              </span>
+            </td>
+
+            <td *ngIf="!isStudent">
               <span class="status-badge" [ngClass]="getStatusClass(exam.status)">
                 {{ exam.status }}
               </span>
             </td>
 
             <td>
-              <div class="exams-actions">
+              <div class="exams-actions" *ngIf="isCoordinator">
                 <button
                   *ngIf="exam.status === 'Pending Review' && !exam.coordinator_id"
-
                   class="btn-action btn-review"
                   (click)="assignExam(exam.id)"
                 >
                   Review
                 </button>
 
-                 <!-- Continuar revisión si ya es mío -->
-                  <button
-                   *ngIf="exam.status === 'Pending Review' && exam.coordinator_id === currentUserId"
-                    class="btn-action btn-review"
-                    (click)="assignExam(exam.id)">
-                    Continue review
-                  </button>
+                <button
+                  *ngIf="exam.status === 'Pending Review' && exam.coordinator_id === currentUserId"
+                  class="btn-action btn-review"
+                  (click)="continueReview(exam.id)"
+                >
+                  Continue Review
+                </button>
 
                 <ng-container *ngIf="exam.status === 'On Review'">
                   <span class="status-info">On review</span>
                 </ng-container>
               </div>
+
+              <div class="exams-actions" *ngIf="isTeacher">
+                <button
+                  class="btn-action"
+                  [ngClass]="exam.status === 'Pending Correction' ? 'btn-revise' : 'btn-view'"
+                  (click)="openTeacherExam(exam)"
+                >
+                  {{ getTeacherActionLabel(exam) }}
+                </button>
+              </div>
+
+              <div class="exams-actions" *ngIf="isStudent">
+                <button
+                  class="btn-action btn-view"
+                  (click)="openStudentExam(exam)"
+                >
+                  View Exam
+                </button>
+              </div>
             </td>
           </tr>
 
           <tr *ngIf="!filteredExams.length">
-            <td colspan="6" class="empty-state">
+            <td [attr.colspan]="6" class="empty-state">
               <div class="empty-content">
                 <p>No exams found</p>
                 <span *ngIf="searchText">No results for "{{ searchText }}"</span>

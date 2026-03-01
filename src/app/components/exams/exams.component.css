@@ -1,4 +1,4 @@
-/* Filters (status + course) */
+/* Filters (status + class) */
 .exams-filter {
   position: relative;
   min-width: 220px;
@@ -25,7 +25,25 @@
   background: var(--color-surface);
 }
 
-/* Stats cards (local) */
+/* New exam button */
+.exams-new-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exams-new-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Optional local spacing for component error */
+.exams-error {
+  margin-bottom: 20px;
+}
+
+/* Stats cards */
 .exams-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -81,6 +99,18 @@
   background: linear-gradient(135deg, #b8935c 0%, #8b713d 100%);
 }
 
+.exams-stat-icon--accepted {
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+}
+
+.exams-stat-icon--score {
+  background: linear-gradient(135deg, #6f42c1 0%, #4b2c91 100%);
+}
+
+.exams-stat-icon--exp {
+  background: linear-gradient(135deg, var(--color-terracotta) 0%, #b85e3b 100%);
+}
+
 .exams-stat-info {
   display: flex;
   flex-direction: column;
@@ -129,7 +159,7 @@
   border: 1px solid var(--color-border);
 }
 
-/* Teacher cell */
+/* Person cell */
 .teacher-cell {
   display: flex;
   align-items: center;
@@ -150,6 +180,41 @@
   flex-shrink: 0;
 }
 
+/* Teacher-specific unassigned badge */
+.unassigned-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff8e1;
+  color: #b8860b;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Student-specific badges */
+.score-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #e8f5e9;
+  color: #1b5e20;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.exp-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(201, 124, 93, 0.15);
+  color: #9c4d2f;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* Date */
 .date-cell {
   color: var(--color-text-muted);
@@ -157,7 +222,7 @@
   white-space: nowrap;
 }
 
-/* Status badges (single source of truth, sin duplicados) */
+/* Status badges */
 .status-badge {
   padding: 6px 12px;
   border-radius: 999px;
@@ -167,7 +232,6 @@
   white-space: nowrap;
 }
 
-/* Mapeá esto con getStatusClass(status) */
 .status-pending {
   background: #fff8e1;
   color: #b8860b;
@@ -232,7 +296,7 @@
   white-space: nowrap;
 }
 
-/* Review */
+/* Coordinator review button */
 .btn-review {
   background: #e0f3ff;
   color: #2980b9;
@@ -245,7 +309,33 @@
   box-shadow: 0 4px 12px rgba(41, 128, 185, 0.30);
 }
 
-/* Empty state (si lo usás en el template) */
+/* Teacher and student view button */
+.btn-view {
+  background: rgba(var(--color-slate-rgb), 0.10);
+  color: var(--color-slate);
+}
+
+.btn-view:hover {
+  background: var(--color-slate);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--color-slate-rgb), 0.30);
+}
+
+/* Teacher revise button */
+.btn-revise {
+  background: rgba(var(--color-danger-rgb), 0.12);
+  color: var(--color-danger);
+}
+
+.btn-revise:hover {
+  background: var(--color-danger);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--color-danger-rgb), 0.30);
+}
+
+/* Empty state */
 .empty-state {
   text-align: center;
   padding: 60px 20px !important;
@@ -280,6 +370,12 @@
 @media (max-width: 768px) {
   .exams-filter {
     min-width: 100%;
+  }
+
+  .exams-new-btn {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
   }
 }
 
