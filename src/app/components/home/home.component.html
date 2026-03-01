@@ -1,356 +1,647 @@
-<!-- dEBUGGING PURPOSES ONLY -->
-<div style="position:fixed;top:8px;left:8px;z-index:9999;background:#fff;padding:6px 10px;border-radius:10px">
+<!-- DEBUG PURPOSES ONLY -->
+<div
+  *ngIf="userType"
+  style="position: fixed; top: 8px; left: 8px; z-index: 9999; background: #fff; padding: 6px 10px; border-radius: 10px; color: #111;"
+>
   role={{ userType }}
 </div>
 
-<!-- home.component.html -->
 <div class="app-page app-page--gradient">
   <div class="app-card app-card--xl app-card--elevated home">
 
-    <!-- Header -->
     <header class="app-header app-header--left home__header">
       <div class="home__header-row">
         <div>
           <h1 class="app-header__title">Home</h1>
-          <p class="app-header__subtitle">Dashboard (mock data / placeholder)</p>
-        </div>
-
-        <div class="home__quick-actions">
-          <button class="btn-primary btn-lg home__cta" type="button" (click)="goTo('/practice')">
-            Practice
-          </button>
-
-          <button
-            class="btn-outline btn-lg home__cta"
-            type="button"
-            (click)="goTo('/teacher-exam')"
-            *ngIf="userType === 'TEACHER' || userType === 'COORDINATOR'">
-            Generate Exam
-          </button>
+          <p class="app-header__subtitle">
+            Informative dashboard prototype with mock data.
+          </p>
         </div>
       </div>
     </header>
 
-    <!-- If userType is not wired yet -->
     <div class="home__notice" *ngIf="!userType">
-      <strong>Mock mode:</strong> userType is not set yet. Showing all role sections below for layout preview.
+      <strong>Mock mode:</strong> no role detected yet. Showing the Student dashboard preview by default.
     </div>
 
-    <!-- STUDENT VIEW -->
+    <!-- STUDENT DASHBOARD -->
     <section class="home-section" *ngIf="!userType || userType === 'STUDENT'">
-      <div class="home-section__title">
-        <h2>Weekly ranking</h2>
-        <p>Duolingo-style leaderboard mockup.</p>
-      </div>
 
-      <div class="home-grid home-grid--2">
-        <div class="home-panel">
-          <div class="home-panel__header">
-            <h3>Leaderboard</h3>
-            <span class="home-chip">This week</span>
+      <!-- Course summary strip -->
+      <article class="student-course-strip">
+        <div class="student-course-strip__main">
+          <span class="student-course-strip__eyebrow">Current course</span>
+          <h2 class="student-course-strip__title">{{ studentCourse.name }}</h2>
+          <p class="student-course-strip__description">
+            {{ studentCourse.description }}
+          </p>
+        </div>
+
+        <div class="student-course-strip__meta">
+          <div class="student-course-meta">
+            <span class="student-course-meta__label">Teachers</span>
+            <span class="student-course-meta__value">
+              {{ studentCourse.teachers.join(' · ') }}
+            </span>
+          </div>
+
+          <div class="student-course-meta">
+            <span class="student-course-meta__label">Students enrolled</span>
+            <span class="student-course-meta__value">
+              {{ studentCourse.studentsEnrolled }}
+            </span>
+          </div>
+
+          <div class="student-course-meta">
+            <span class="student-course-meta__label">English level</span>
+            <span class="student-course-meta__value">
+              {{ studentCourse.englishLevel }}
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Top row -->
+      <div class="home-grid home-grid--student-top">
+
+        <!-- Leaderboard -->
+        <article class="home-panel student-panel">
+          <div class="home-panel__header home-panel__header--start">
+            <div>
+              <h3>Level & XP leaderboard</h3>
+              <p class="home-panel__subtitle">
+                Ranking by level first, then by total experience.
+              </p>
+            </div>
+
+            <div class="home-segmented">
+              <button
+                type="button"
+                class="home-segmented__btn"
+                [class.home-segmented__btn--active]="leaderboardScope === 'COURSE'"
+                (click)="setLeaderboardScope('COURSE')"
+              >
+                My course
+              </button>
+
+              <button
+                type="button"
+                class="home-segmented__btn"
+                [class.home-segmented__btn--active]="leaderboardScope === 'GLOBAL'"
+                (click)="setLeaderboardScope('GLOBAL')"
+              >
+                All students
+              </button>
+            </div>
           </div>
 
           <ol class="rank-list">
-            <li class="rank-item">
-              <span class="rank-pos">1</span>
-              <span class="rank-avatar">A</span>
-              <span class="rank-name">Ana Perez</span>
-              <span class="rank-points">1,420 XP</span>
-            </li>
-            <li class="rank-item">
-              <span class="rank-pos">2</span>
-              <span class="rank-avatar">M</span>
-              <span class="rank-name">Maria Lopez</span>
-              <span class="rank-points">1,180 XP</span>
-            </li>
-            <li class="rank-item rank-item--me">
-              <span class="rank-pos">3</span>
-              <span class="rank-avatar">Y</span>
-              <span class="rank-name">You</span>
-              <span class="rank-points">1,020 XP</span>
-            </li>
-            <li class="rank-item">
-              <span class="rank-pos">4</span>
-              <span class="rank-avatar">L</span>
-              <span class="rank-name">Laura Gomez</span>
-              <span class="rank-points">860 XP</span>
-            </li>
-            <li class="rank-item">
-              <span class="rank-pos">5</span>
-              <span class="rank-avatar">S</span>
-              <span class="rank-name">Sofia Diaz</span>
-              <span class="rank-points">730 XP</span>
+            <li
+              class="rank-item"
+              *ngFor="let student of visibleLeaderboard; let i = index"
+              [class.rank-item--current]="student.isCurrentUser"
+            >
+              <span class="rank-pos">#{{ i + 1 }}</span>
+
+              <span class="rank-avatar">
+                {{ student.name.charAt(0) }}
+              </span>
+
+              <div class="rank-content">
+                <span class="rank-name">
+                  {{ student.name }}
+                  <span class="rank-you" *ngIf="student.isCurrentUser">You</span>
+                </span>
+                <span class="rank-level">Level {{ student.level }}</span>
+              </div>
+
+              <span class="rank-points">{{ student.xp | number }} XP</span>
             </li>
           </ol>
+        </article>
 
-          <div class="home-panel__footer">
-            <span class="home-muted">Tip:</span>
-            <span class="home-muted">Complete one more practice to climb positions.</span>
-          </div>
-        </div>
-
-        <div class="home-panel">
-          <div class="home-panel__header">
-            <h3>Your progress</h3>
-            <span class="home-chip home-chip--soft">Mock</span>
-          </div>
-
-          <div class="home-metrics">
-            <div class="metric">
-              <span class="metric__label">XP this week</span>
-              <span class="metric__value">1,020</span>
+        <!-- Weekly XP chart -->
+        <article class="home-panel student-panel">
+          <div class="home-panel__header home-panel__header--start">
+            <div>
+              <h3>Weekly XP gain</h3>
+              <p class="home-panel__subtitle">
+                Experience earned during the last 7 days.
+              </p>
             </div>
-            <div class="metric">
-              <span class="metric__label">Streak</span>
-              <span class="metric__value">4 days</span>
-            </div>
-            <div class="metric">
-              <span class="metric__label">Accuracy</span>
-              <span class="metric__value">87%</span>
+
+            <div class="student-chart-stats">
+              <div class="student-chart-stat">
+                <span class="student-chart-stat__label">Total</span>
+                <span class="student-chart-stat__value">{{ weeklyXpTotal }} XP</span>
+              </div>
+              <div class="student-chart-stat">
+                <span class="student-chart-stat__label">Best day</span>
+                <span class="student-chart-stat__value">{{ bestXpDay.label }}</span>
+              </div>
             </div>
           </div>
 
-          <div class="progress-block">
-            <div class="progress-row">
-              <span class="progress-label">Weekly goal</span>
-              <span class="progress-value">1,020 / 1,400 XP</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-bar__fill" style="width: 73%;"></div>
-            </div>
+          <div class="student-chart">
+            <svg
+              class="student-chart__svg"
+              viewBox="0 0 360 220"
+              preserveAspectRatio="none"
+              aria-label="Weekly XP line chart"
+            >
+              <line
+                *ngFor="let y of chartGridLines"
+                x1="36"
+                [attr.y1]="y"
+                x2="340"
+                [attr.y2]="y"
+                class="student-chart__grid"
+              ></line>
+
+              <polyline
+                [attr.points]="chartPoints"
+                class="student-chart__line"
+              ></polyline>
+
+              <ng-container *ngFor="let point of chartDots">
+                <circle
+                  [attr.cx]="point.x"
+                  [attr.cy]="point.y"
+                  r="4.5"
+                  class="student-chart__dot"
+                ></circle>
+
+                <text
+                  [attr.x]="point.x"
+                  y="208"
+                  text-anchor="middle"
+                  class="student-chart__label"
+                >
+                  {{ point.label }}
+                </text>
+              </ng-container>
+            </svg>
           </div>
-
-          <div class="progress-block">
-            <div class="progress-row">
-              <span class="progress-label">Units completed</span>
-              <span class="progress-value">6 / 10</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-bar__fill" style="width: 60%;"></div>
-            </div>
-          </div>
-
-          <div class="home-panel__actions">
-            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/practice')">
-              Continue practicing
-            </button>
-            <button class="btn-outline home__small-cta" type="button">
-              View profile
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TEACHER VIEW -->
-    <section class="home-section" *ngIf="!userType || userType === 'TEACHER'">
-      <div class="home-section__title">
-        <h2>Teacher overview</h2>
-        <p>Progress summary for your classes (mock data).</p>
-      </div>
-
-      <div class="home-grid home-grid--3">
-        <div class="home-panel home-panel--tight">
-          <div class="home-panel__header">
-            <h3>3° A</h3>
-            <span class="home-chip">24 students</span>
-          </div>
-
-          <div class="home-kpis">
-            <div class="kpi">
-              <span class="kpi__label">Avg completion</span>
-              <span class="kpi__value">62%</span>
-            </div>
-            <div class="kpi">
-              <span class="kpi__label">Needs attention</span>
-              <span class="kpi__value">5</span>
-            </div>
-          </div>
-
-          <div class="progress-block">
-            <div class="progress-row">
-              <span class="progress-label">Weekly activity</span>
-              <span class="progress-value">18 / 24 active</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-bar__fill" style="width: 75%;"></div>
-            </div>
-          </div>
-
-          <div class="home-panel__actions">
-            <button class="btn-outline home__small-cta" type="button">View class</button>
-            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/teacher-exam')">Generate exam</button>
-          </div>
-        </div>
-
-        <div class="home-panel home-panel--tight">
-          <div class="home-panel__header">
-            <h3>4° B</h3>
-            <span class="home-chip">19 students</span>
-          </div>
-
-          <div class="home-kpis">
-            <div class="kpi">
-              <span class="kpi__label">Avg completion</span>
-              <span class="kpi__value">71%</span>
-            </div>
-            <div class="kpi">
-              <span class="kpi__label">Pending reviews</span>
-              <span class="kpi__value">2</span>
-            </div>
-          </div>
-
-          <div class="progress-block">
-            <div class="progress-row">
-              <span class="progress-label">Weekly activity</span>
-              <span class="progress-value">14 / 19 active</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-bar__fill" style="width: 74%;"></div>
-            </div>
-          </div>
-
-          <div class="home-panel__actions">
-            <button class="btn-outline home__small-cta" type="button">View class</button>
-            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/teacher-exam')">Generate exam</button>
-          </div>
-        </div>
-
-        <div class="home-panel home-panel--tight">
-          <div class="home-panel__header">
-            <h3>5° A</h3>
-            <span class="home-chip">22 students</span>
-          </div>
-
-          <div class="home-kpis">
-            <div class="kpi">
-              <span class="kpi__label">Avg completion</span>
-              <span class="kpi__value">54%</span>
-            </div>
-            <div class="kpi">
-              <span class="kpi__label">Needs attention</span>
-              <span class="kpi__value">8</span>
-            </div>
-          </div>
-
-          <div class="progress-block">
-            <div class="progress-row">
-              <span class="progress-label">Weekly activity</span>
-              <span class="progress-value">12 / 22 active</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-bar__fill" style="width: 55%;"></div>
-            </div>
-          </div>
-
-          <div class="home-panel__actions">
-            <button class="btn-outline home__small-cta" type="button">View class</button>
-            <button class="btn-primary home__small-cta" type="button" (click)="goTo('/teacher-exam')">Generate exam</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- COORDINATOR VIEW -->
-    <section class="home-section" *ngIf="!userType || userType === 'COORDINATOR'">
-      <div class="home-section__title">
-        <h2>Coordinator overview</h2>
-        <p>Summary of teachers workload and pending actions (mock data).</p>
+        </article>
       </div>
 
-      <div class="home-grid home-grid--4">
-        <div class="home-panel home-panel--kpi">
-          <span class="kpi-big__label">Active teachers</span>
-          <span class="kpi-big__value">6</span>
+      <!-- Level progress -->
+      <article class="home-panel student-panel student-progress-panel">
+        <div class="home-panel__header home-panel__header--start">
+          <div>
+            <h3>Current level progress</h3>
+            <p class="home-panel__subtitle">
+              Track your current experience and how much is left to reach the next level.
+            </p>
+          </div>
         </div>
-        <div class="home-panel home-panel--kpi">
-          <span class="kpi-big__label">Pending reviews</span>
-          <span class="kpi-big__value">4</span>
-        </div>
-        <div class="home-panel home-panel--kpi">
-          <span class="kpi-big__label">On correction</span>
-          <span class="kpi-big__value">2</span>
-        </div>
-        <div class="home-panel home-panel--kpi">
-          <span class="kpi-big__label">This week exams</span>
-          <span class="kpi-big__value">11</span>
-        </div>
-      </div>
 
-      <div class="home-panel home-panel--table">
-        <div class="home-panel__header">
-          <h3>Teachers</h3>
-          <span class="home-chip home-chip--soft">Mock</span>
+        <div class="student-progress-summary">
+          <div class="student-progress-kpi">
+            <span class="student-progress-kpi__label">Current level</span>
+            <span class="student-progress-kpi__value">Level {{ studentProgress.currentLevel }}</span>
+          </div>
+
+          <div class="student-progress-kpi">
+            <span class="student-progress-kpi__label">Current XP</span>
+            <span class="student-progress-kpi__value">{{ studentProgress.currentXp | number }} XP</span>
+          </div>
+
+          <div class="student-progress-kpi">
+            <span class="student-progress-kpi__label">XP to next level</span>
+            <span class="student-progress-kpi__value">{{ xpToNextLevel | number }} XP</span>
+          </div>
+        </div>
+
+        <div class="progress-block student-progress-block">
+          <div class="progress-row">
+            <span class="progress-label">
+              Level {{ studentProgress.currentLevel }}
+            </span>
+            <span class="progress-value">
+              {{ studentProgress.currentXp | number }} / {{ studentProgress.nextLevelXp | number }} XP
+            </span>
+          </div>
+
+          <div class="progress-bar student-progress-bar">
+            <div
+              class="progress-bar__fill student-progress-bar__fill"
+              [style.width.%]="levelProgressPercent"
+            ></div>
+          </div>
+
+          <p class="student-progress-hint">
+            You need <strong>{{ xpToNextLevel | number }} XP</strong> to reach
+            <strong>Level {{ studentProgress.currentLevel + 1 }}</strong>.
+          </p>
+        </div>
+      </article>
+
+      <!-- Pending feedbacks -->
+      <article class="home-panel student-panel home-panel--table">
+        <div class="home-panel__header home-panel__header--start">
+          <div>
+            <h3>Last Exams</h3>
+            <p class="home-panel__subtitle">
+              Last exams you completed but have not reviewed yet.
+            </p>
+          </div>
+
+          <span class="home-chip">
+            {{ pendingFeedbacks.length }} pending
+          </span>
         </div>
 
         <div class="app-table-container">
           <table class="app-table app-table--wide">
             <thead>
               <tr>
-                <th>Teacher</th>
-                <th>Classes</th>
-                <th>Pending review</th>
-                <th>On review</th>
-                <th>On correction</th>
+                <th>Completion date</th>
+                <th>Context</th>
+                <th>Grade</th>
+                <th>XP awarded</th>
+                <th>View Exam</th>
               </tr>
             </thead>
+
             <tbody>
-              <tr>
-                <td>Maria Lopez</td>
-                <td>3</td>
-                <td>2</td>
-                <td>1</td>
-                <td>0</td>
-              </tr>
-              <tr>
-                <td>Ana Perez</td>
-                <td>2</td>
-                <td>1</td>
-                <td>0</td>
-                <td>1</td>
-              </tr>
-              <tr>
-                <td>Laura Gomez</td>
-                <td>1</td>
-                <td>0</td>
-                <td>1</td>
-                <td>0</td>
+              <tr *ngFor="let exam of pendingFeedbacks">
+                <td>{{ exam.completedAt }}</td>
+
+                <td>
+                  <div class="feedback-context">
+                    {{ getContextPreview(exam.context) }}
+                  </div>
+                </td>
+
+                <td>
+                  <span class="grade-pill">{{ exam.grade }}</span>
+                </td>
+
+                <td>{{ exam.xpAwarded }} XP</td>
+
+                <td>
+                  <button
+                    type="button"
+                    class="btn-outline home__small-cta"
+                    (click)="viewExam(exam.id)"
+                  >
+                    View Exam
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </article>
     </section>
 
-    <!-- Shared placeholder: exams table -->
-    <section class="home-section">
+    <!-- TEACHER DASHBOARD -->
+    <section class="home-section" *ngIf="userType === 'TEACHER'">
       <div class="home-section__title">
-        <h2>My exams</h2>
-        <p>Placeholder table to keep the structure aligned with the rest of the app.</p>
+        <h2>Teacher dashboard</h2>
+        <p>Course performance and exam workflow overview for the selected class.</p>
       </div>
 
-      <div class="app-table-container">
-        <table class="app-table app-table--wide">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Coordinator</th>
-              <th>Class</th>
-              <th>Student</th>
-              <th>Teacher</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="6" class="home-empty">
-                No exams yet (mock placeholder).
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Course selector -->
+      <div class="teacher-course-switcher">
+        <div class="home-segmented">
+          <button
+            type="button"
+            class="teacher-course-switcher__btn"
+            *ngFor="let course of teacherCourses"
+            [class.teacher-course-switcher__btn--active]="course.id === selectedTeacherCourseId"
+            (click)="setSelectedTeacherCourse(course.id)"
+          >
+            {{ course.name }}
+          </button>
+        </div>
       </div>
+
+      <!-- Course summary strip -->
+      <article class="student-course-strip teacher-course-strip">
+        <div class="student-course-strip__main">
+          <span class="student-course-strip__eyebrow">Selected course</span>
+          <h2 class="student-course-strip__title">{{ selectedTeacherCourse.name }}</h2>
+          <p class="student-course-strip__description">
+            {{ selectedTeacherCourse.description }}
+          </p>
+        </div>
+
+        <div class="student-course-strip__meta">
+          <div class="student-course-meta">
+            <span class="student-course-meta__label">Teachers assigned</span>
+            <span class="student-course-meta__value">
+              {{ selectedTeacherCourse.teachers.join(' · ') }}
+            </span>
+          </div>
+
+          <div class="student-course-meta">
+            <span class="student-course-meta__label">Students enrolled</span>
+            <span class="student-course-meta__value">
+              {{ selectedTeacherCourse.studentsEnrolled }}
+            </span>
+          </div>
+
+          <div class="student-course-meta">
+            <span class="student-course-meta__label">English level</span>
+            <span class="student-course-meta__value">
+              {{ selectedTeacherCourse.englishLevel }}
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Top row -->
+      <div class="home-grid home-grid--teacher-top">
+
+        <!-- Leaderboard -->
+        <article class="home-panel student-panel">
+          <div class="home-panel__header home-panel__header--start">
+            <div>
+              <h3>Student leaderboard</h3>
+              <p class="home-panel__subtitle">
+                Ranking for the selected course by level and total experience.
+              </p>
+            </div>
+
+            <span class="home-chip">
+              {{ selectedTeacherCourse.studentsEnrolled }} students
+            </span>
+          </div>
+
+          <ol class="rank-list">
+            <li
+              class="rank-item"
+              *ngFor="let student of selectedTeacherCourse.leaderboard; let i = index"
+            >
+              <span class="rank-pos">#{{ i + 1 }}</span>
+
+              <span class="rank-avatar">
+                {{ student.name.charAt(0) }}
+              </span>
+
+              <div class="rank-content">
+                <span class="rank-name">{{ student.name }}</span>
+                <span class="rank-level">Level {{ student.level }}</span>
+              </div>
+
+              <span class="rank-points">{{ student.xp | number }} XP</span>
+            </li>
+          </ol>
+        </article>
+
+        <!-- Weekly XP multi-student chart -->
+        <article class="home-panel student-panel teacher-chart-panel">
+          <div class="home-panel__header home-panel__header--start">
+            <div>
+              <h3>Weekly XP by student</h3>
+              <p class="home-panel__subtitle">
+                Compare the last 7 days of experience for the selected students in this course.
+              </p>
+            </div>
+
+            <div class="teacher-chart-controls">
+              <button
+                type="button"
+                class="teacher-multi-select__trigger"
+                (click)="toggleTeacherStudentMenu()"
+              >
+                <span>Students</span>
+                <span>{{ selectedTeacherChartStudents.length }} selected</span>
+              </button>
+
+              <div
+                class="teacher-multi-select__menu"
+                *ngIf="teacherStudentMenuOpen"
+              >
+                <label
+                  class="teacher-multi-select__option"
+                  *ngFor="let series of selectedTeacherCourse.weeklyXpByStudent"
+                >
+                  <input
+                    type="checkbox"
+                    class="teacher-multi-select__checkbox"
+                    [checked]="isTeacherStudentSelected(series.name)"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleTeacherChartStudent(series.name)"
+                  />
+                  <span class="teacher-multi-select__name">{{ series.name }}</span>
+                </label>
+
+                <p class="teacher-multi-select__hint">
+                  At least one student must remain selected.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="student-chart teacher-chart">
+            <svg
+              class="student-chart__svg"
+              viewBox="0 0 360 220"
+              preserveAspectRatio="none"
+              aria-label="Weekly XP comparison chart"
+            >
+              <line
+                *ngFor="let y of chartGridLines"
+                x1="36"
+                [attr.y1]="y"
+                x2="340"
+                [attr.y2]="y"
+                class="student-chart__grid"
+              ></line>
+
+              <ng-container *ngFor="let series of teacherSelectedWeeklySeries">
+                <polyline
+                  [attr.points]="series.polyline"
+                  class="teacher-chart__series-line"
+                  [style.stroke]="series.color"
+                ></polyline>
+
+                <circle
+                  *ngFor="let point of series.points"
+                  [attr.cx]="point.x"
+                  [attr.cy]="point.y"
+                  r="4"
+                  class="teacher-chart__series-dot"
+                  [style.fill]="series.color"
+                ></circle>
+              </ng-container>
+
+              <ng-container *ngFor="let point of teacherChartXAxis">
+                <text
+                  [attr.x]="point.x"
+                  y="208"
+                  text-anchor="middle"
+                  class="student-chart__label"
+                >
+                  {{ point.label }}
+                </text>
+              </ng-container>
+            </svg>
+          </div>
+
+          <div class="teacher-selected-list">
+            <span
+              class="teacher-selected-chip"
+              *ngFor="let series of teacherSelectedWeeklySeries"
+            >
+              <span
+                class="teacher-selected-chip__dot"
+                [style.background]="series.color"
+              ></span>
+              {{ series.name }}
+            </span>
+          </div>
+        </article>
+      </div>
+
+      <!-- Pending correction -->
+      <article class="home-panel student-panel home-panel--table teacher-table-panel">
+        <div class="home-panel__header home-panel__header--start">
+          <div>
+            <h3>Exams Pending Revision</h3>
+            <p class="home-panel__subtitle">
+              Generated exams that still require teacher correction.
+            </p>
+          </div>
+
+          <span class="home-chip">
+            {{ selectedTeacherCourse.pendingCorrectionExams.length }} pending
+          </span>
+        </div>
+
+        <div class="app-table-container">
+          <table class="app-table app-table--wide">
+            <thead>
+              <tr>
+                <th>Generation date</th>
+                <th>Context</th>
+                <th>Class</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let exam of selectedTeacherCourse.pendingCorrectionExams">
+                <td>{{ exam.generationDate }}</td>
+
+                <td>
+                  <div class="feedback-context">
+                    {{ getContextPreview(exam.context, 105) }}
+                  </div>
+                </td>
+
+                <td>{{ exam.className }}</td>
+
+                <td>
+                  <button
+                    type="button"
+                    class="btn-primary home__small-cta"
+                    (click)="openTeacherExam(exam.id, 'correction')"
+                  >
+                    Revise Exam
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- Pending review -->
+      <article class="home-panel student-panel home-panel--table teacher-table-panel">
+        <div class="home-panel__header home-panel__header--start">
+          <div>
+            <h3>Exams Pending Review</h3>
+            <p class="home-panel__subtitle">
+              Exams waiting for coordinator review and final validation.
+            </p>
+          </div>
+
+          <span class="home-chip">
+            {{ selectedTeacherCourse.pendingReviewExams.length }} pending
+          </span>
+        </div>
+
+        <div class="app-table-container">
+          <table class="app-table app-table--wide">
+            <thead>
+              <tr>
+                <th>Generation date</th>
+                <th>Context</th>
+                <th>Class</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let exam of selectedTeacherCourse.pendingReviewExams">
+                <td>{{ exam.generationDate }}</td>
+
+                <td>
+                  <div class="feedback-context">
+                    {{ getContextPreview(exam.context, 105) }}
+                  </div>
+                </td>
+
+                <td>{{ exam.className }}</td>
+
+                <td>
+                  <button
+                    type="button"
+                    class="btn-outline home__small-cta"
+                    (click)="openTeacherExam(exam.id, 'review')"
+                  >
+                    View Exam
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
     </section>
 
+    <!-- COORDINATOR DASHBOARD -->
+    <section class="home-section" *ngIf="userType === 'COORDINATOR'">
+      <div class="home-section__title">
+        <h2>Coordinator dashboard</h2>
+        <p>Enrollment and course occupancy overview for the last week.</p>
+      </div>
+
+      <div class="coordinator-stats-grid">
+        <article class="coordinator-stat-card">
+          <span class="coordinator-stat-card__label">New enrolled students this week</span>
+          <span class="coordinator-stat-card__value">
+            {{ coordinatorStats.newEnrolledStudentsLastWeek }}
+          </span>
+          <p class="coordinator-stat-card__description">
+            Students who joined a course during the last 7 days.
+          </p>
+        </article>
+
+        <article class="coordinator-stat-card">
+          <span class="coordinator-stat-card__label">Total enrolled students</span>
+          <span class="coordinator-stat-card__value">
+            {{ coordinatorStats.totalEnrolledStudents }}
+          </span>
+          <p class="coordinator-stat-card__description">
+            Total number of active students currently enrolled in the platform.
+          </p>
+        </article>
+
+        <article class="coordinator-stat-card">
+          <span class="coordinator-stat-card__label">Average course occupancy</span>
+          <span class="coordinator-stat-card__value">
+            {{ coordinatorStats.averageCourseOccupancy }}%
+          </span>
+          <p class="coordinator-stat-card__description">
+            Average percentage of occupied seats across all active courses.
+          </p>
+        </article>
+      </div>
+    </section>
   </div>
 </div>
