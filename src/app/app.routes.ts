@@ -16,6 +16,7 @@ import { GenerateExamComponent } from './components/generate-exam/generate-exam.
 import { ExamsComponent } from './components/exams/exams.component';
 import { ExamReviewComponent } from './components/exam-review/exam-review.component';
 import { UserType } from './interfaces/user.interface';
+import { ExamReviseComponent } from './exam-revise/exam-revise.component';
 
 export const routes: Routes = [
   {
@@ -29,7 +30,7 @@ export const routes: Routes = [
       { path: 'exam', component: ExamsComponent, canActivate: [privateGuard] },
 
       {
-        path: 'teacher-exam',
+        path: 'generate-exam',
         component: GenerateExamComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.TEACHER, UserType.COORDINATOR] }
@@ -58,6 +59,12 @@ export const routes: Routes = [
         component: ExamReviewComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.COORDINATOR] }
+      },
+      {
+        path: 'exam-revise/:id',
+        component: ExamReviseComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.TEACHER] }
       }
     ]
   },

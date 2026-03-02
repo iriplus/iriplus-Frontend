@@ -1,0 +1,438 @@
+.revise-exam-page {
+  align-items: flex-start;
+}
+
+.revise-exam {
+  color: var(--color-text);
+}
+
+.revise-exam__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.revise-exam__topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.revise-exam__mode-pill,
+.revise-exam__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.revise-exam__mode-pill {
+  background: rgba(var(--color-slate-rgb), 0.10);
+  color: var(--color-slate);
+  border: 1px solid rgba(var(--color-slate-rgb), 0.16);
+}
+
+.revise-exam__status {
+  background: rgba(240, 172, 145, 0.18);
+  color: #8a4e36;
+  border: 1px solid rgba(201, 124, 93, 0.30);
+}
+
+.revise-exam__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c97c5d;
+}
+
+.revise-exam__header {
+  margin-bottom: 24px;
+}
+
+.revise-exam__eyebrow {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.revise-exam__meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.revise-exam__meta-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface-soft);
+}
+
+.revise-exam__meta-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.revise-exam__meta-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-slate-dark);
+}
+
+.revise-exam__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.revise-exam__main {
+  min-width: 0;
+}
+
+.revise-exam__panel {
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-surface-soft);
+  padding: 22px;
+}
+
+.revise-exam__panel + .revise-exam__panel {
+  margin-top: 22px;
+}
+
+.revise-exam__panel--context {
+  background: linear-gradient(180deg, #fcfcfb 0%, #f7f7f4 100%);
+}
+
+.revise-exam__panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.revise-exam__panel-title {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  color: var(--color-slate-dark);
+}
+
+.revise-exam__panel-subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.revise-exam__panel-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.revise-exam__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #e8f0e9;
+  color: var(--color-slate);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.revise-exam__section {
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: #f8faf8;
+  overflow: hidden;
+}
+
+.revise-exam__section + .revise-exam__section {
+  margin-top: 18px;
+}
+
+.revise-exam__section-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, var(--color-slate) 0%, var(--color-slate-dark) 100%);
+}
+
+.revise-exam__section-index {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.revise-exam__section-heading h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 17px;
+}
+
+.revise-exam__section-instructions {
+  margin: 0;
+  padding: 18px 18px 0 18px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.revise-exam__questions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.revise-exam__question {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.revise-exam__question:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.revise-exam__question-index {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #e8f0e9;
+  color: var(--color-slate);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.revise-exam__question-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.revise-exam__field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.revise-exam__field-label--answer {
+  margin-top: 14px;
+}
+
+.revise-exam__editable {
+  min-height: 58px;
+  padding: 14px 16px;
+  border: 2px solid var(--color-border);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--color-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  cursor: text;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.revise-exam__editable:hover {
+  border-color: rgba(var(--color-slate-rgb), 0.22);
+}
+
+.revise-exam__editable:focus {
+  outline: none;
+  border-color: var(--color-slate);
+  box-shadow: 0 0 0 4px rgba(var(--color-slate-rgb), 0.10);
+  background: #ffffff;
+}
+
+.revise-exam__editable--answer {
+  min-height: 48px;
+  background: #f1f7f2;
+  border-color: #dbe8dd;
+  font-weight: 700;
+  color: var(--color-slate-dark);
+}
+
+.revise-exam__editable--context {
+  min-height: 180px;
+  background: #fffdf8;
+}
+
+.revise-exam__sidebar {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.revise-exam__side-card {
+  border-radius: 18px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.revise-exam__side-card--notes {
+  background: var(--color-danger-soft);
+  border-color: rgba(var(--color-danger-rgb), 0.18);
+}
+
+.revise-exam__side-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.revise-exam__side-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--color-slate-dark);
+}
+
+.revise-exam__note-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(var(--color-danger-rgb), 0.10);
+  color: var(--color-danger);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.revise-exam__notes-text {
+  margin: 0;
+  color: #6b2a24;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.revise-exam__empty-notes {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px dashed rgba(var(--color-danger-rgb), 0.28);
+  color: #7a4a45;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.revise-exam__helper-text {
+  margin: 0 0 16px 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.revise-exam__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.revise-exam__actions .btn-outline,
+.revise-exam__actions .btn-primary {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 1100px) {
+  .revise-exam__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .revise-exam__sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 900px) {
+  .revise-exam__meta-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .revise-exam__topbar {
+    align-items: stretch;
+  }
+
+  .revise-exam__topbar-right {
+    justify-content: flex-start;
+  }
+
+  .revise-exam__panel {
+    padding: 18px;
+  }
+
+  .revise-exam__question {
+    flex-direction: column;
+  }
+
+  .revise-exam__question-index {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 640px) {
+  .revise-exam__meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .revise-exam__section-bar {
+    align-items: flex-start;
+  }
+}
