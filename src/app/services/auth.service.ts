@@ -5,10 +5,6 @@ import { environment } from '../../environments/environment';
 import { Login, LoginResponse } from '../interfaces/login.interface';
 import { User, UserType } from '../interfaces/user.interface';
 
-type MeResponse = Omit<User, 'type'> & {
-  type: string;
-};
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private authenticated: boolean | null = null;
@@ -34,7 +30,7 @@ export class AuthService {
     );
   }
 
-  private normalizeMeResponse(user: MeResponse): User | null {
+  private normalizeMeResponse(user: User): User | null {
     if (!this.isUserType(user.type)) {
       return null;
     }
@@ -57,10 +53,20 @@ export class AuthService {
     this.userType = null;
   }
 
+  private resetAuthState(): void {
+    this.authenticated = null;
+    this.currentUser = null;
+    this.userType = null;
+  }
+
   login(credentials: Login): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.LOGIN_URL, credentials, {
       withCredentials: true
-    });
+    }).pipe(
+      tap(() => { 
+        this.resetAuthState();
+      })
+    );
   }
 
   register(userData: User) {
@@ -78,18 +84,25 @@ export class AuthService {
   }
 
   loadMe(force = false): Observable<User | null> {
+    console.log('step 1');
     if (!force && this.currentUser) {
       return of(this.currentUser);
     }
+
+    console.log('step 2');
 
     if (!force && this.authenticated === false) {
       return of(null);
     }
 
-    return this.http.get<MeResponse>(this.ME_URL, { withCredentials: true }).pipe(
+    console.log('step 3');
+
+    return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
       map((rawUser) => {
         console.log('Raw user data from /me:', rawUser);
         const user = this.normalizeMeResponse(rawUser);
+
+        console.log('Normalized user data:', user);
 
         if (!user) {
           this.clearAuthState();
@@ -99,8 +112,8 @@ export class AuthService {
         this.setAuthState(user);
         return user;
       }),
-      catchError(() => {
-        console.log('Error fetching /me:');
+      catchError((err) => {
+        console.log('Error fetching /me:', err);
         this.clearAuthState();
         return of(null);
       })

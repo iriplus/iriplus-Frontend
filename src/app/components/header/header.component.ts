@@ -5,6 +5,7 @@ import { Router } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../environments/environment";
 import { AuthService } from '../../services/auth.service';
+import { UserType } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-header',
@@ -39,7 +40,11 @@ export class HeaderComponent {
   }
 
   get isCoordinator(): boolean {
-    return this.authService.getUserType() === 'Coordinator';
+    return this.authService.getUserType() === UserType.COORDINATOR;
+  }
+
+  get isTeacher(): boolean {
+    return this.authService.getUserType() === UserType.TEACHER;
   }
 
   get isAuthenticated(): boolean {

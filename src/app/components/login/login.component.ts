@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { finalize, switchMap } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { Login } from "../../interfaces/login.interface";
 
@@ -79,12 +80,19 @@ export class LoginComponent {
       password: this.password,
     };
 
-    this.authService.login(credentials).subscribe({
-      next: () => {
-        this.authService.loadMe().subscribe(() => {
+    this.authService.login(credentials).pipe(
+      switchMap(() => this.authService.loadMe(true)),
+      finalize(() => { 
+        this.isLoading = false
+      })
+    ).subscribe({
+      next: (user) => {
+        if (!user) {
+          this.errorMessage = 'Could not load user session after login';
+          return;
+        }
           this.isLoading = false;
           this.router.navigateByUrl(this.returnUrl);
-        });
       },
       error: (err) => {
         this.isLoading = false;
