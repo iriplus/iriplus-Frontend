@@ -34,7 +34,6 @@ export class ExamService {
   }
 
   refineExam(id: number, feedback: string): Observable<any> {
-    console.log("Refining exam with ID:", id, "and feedback:", feedback);
     return this.http.post(`${this.EXAM_URL}/${id}/refine`, {feedback}, {withCredentials: true});
   }
 
