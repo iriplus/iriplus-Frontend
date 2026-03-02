@@ -1,18 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { catchError, map, of, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { map, catchError, of } from 'rxjs';
 import { Login, LoginResponse } from '../interfaces/login.interface';
-import { User } from '../interfaces/user.interface';
+import { User, UserType } from '../interfaces/user.interface';
+
+type MeResponse = Omit<User, 'type'> & {
+  type: string;
+};
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private authenticated: boolean | null = null;
-  private userType: string | null = null;
-
+  private currentUser: User | null = null;
+  private userType: UserType | null = null;
 
   private resetPasswordUntil: number | null = null;
-  private readonly RESET_PASSWORD_TTL_MS = 60 * 60 * 1000; // 1 hour in milliseconds
+  private readonly RESET_PASSWORD_TTL_MS = 60 * 60 * 1000;
 
   private readonly ME_URL = `${environment.backendUrl}/me`;
   private readonly LOGOUT_URL = `${environment.backendUrl}/logout`;
@@ -21,49 +25,114 @@ export class AuthService {
   private readonly FORGOT_PASSWORD_URL = `${environment.backendUrl}/forgot-password`;
   private readonly RESET_PASSWORD_URL = `${environment.backendUrl}/reset-password`;
 
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
-  login(credentials: Login) {
-    return this.http.post<LoginResponse>(this.LOGIN_URL, credentials, {withCredentials: true});
+  private isUserType(value: unknown): value is UserType {
+    return (
+      typeof value === 'string' &&
+      Object.values(UserType).includes(value as UserType)
+    );
+  }
+
+  private normalizeMeResponse(user: MeResponse): User | null {
+    if (!this.isUserType(user.type)) {
+      return null;
+    }
+
+    return {
+      ...user,
+      type: user.type
+    };
+  }
+
+  private setAuthState(user: User): void {
+    this.authenticated = true;
+    this.currentUser = user;
+    this.userType = user.type;
+  }
+
+  private clearAuthState(): void {
+    this.authenticated = false;
+    this.currentUser = null;
+    this.userType = null;
+  }
+
+  login(credentials: Login): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.LOGIN_URL, credentials, {
+      withCredentials: true
+    });
   }
 
   register(userData: User) {
-    console.log(userData);
     return this.http.post(this.REGISTER_URL, userData);
   }
 
-  checkAuth() {
-    if (this.authenticated !== null) {
+  checkAuth(force = false): Observable<boolean> {
+    if (!force && this.authenticated !== null) {
       return of(this.authenticated);
     }
-    
-    return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
-      map((user) => {
-        this.authenticated = true;
-        this.userType = user.type;
-        console.log('AUTHENTICATED:', this.authenticated);
-        console.log('USER TYPE:', this.userType);
-        return true;
+
+    return this.loadMe(force).pipe(
+      map((user) => !!user)
+    );
+  }
+
+  loadMe(force = false): Observable<User | null> {
+    if (!force && this.currentUser) {
+      return of(this.currentUser);
+    }
+
+    if (!force && this.authenticated === false) {
+      return of(null);
+    }
+
+    return this.http.get<MeResponse>(this.ME_URL, { withCredentials: true }).pipe(
+      map((rawUser) => {
+        console.log('Raw user data from /me:', rawUser);
+        const user = this.normalizeMeResponse(rawUser);
+
+        if (!user) {
+          this.clearAuthState();
+          return null;
+        }
+
+        this.setAuthState(user);
+        return user;
       }),
       catchError(() => {
-        this.authenticated = false;
-        this.userType = null;
-        return of(false);
+        console.log('Error fetching /me:');
+        this.clearAuthState();
+        return of(null);
       })
     );
   }
 
-  setAuthenticated(value: boolean) {
+  setAuthenticated(value: boolean): void {
     this.authenticated = value;
+
+    if (!value) {
+      this.currentUser = null;
+      this.userType = null;
+    }
   }
 
   isAuthenticated(): boolean {
     return this.authenticated === true;
   }
 
-  setIsResettingPassword(value: boolean) {
+  getCurrentUser(): User | null {
+    return this.currentUser;
+  }
+
+  getCurrentUserId(): number | null {
+    return this.currentUser?.id ?? null;
+  }
+
+  getUserType(): UserType | null {
+    return this.userType;
+  }
+
+  setIsResettingPassword(value: boolean): void {
     if (value) {
       this.resetPasswordUntil = Date.now() + this.RESET_PASSWORD_TTL_MS;
     } else {
@@ -72,36 +141,22 @@ export class AuthService {
   }
 
   getIsResettingPassword(): boolean {
-    if (!this.resetPasswordUntil) return false;
+    if (!this.resetPasswordUntil) {
+      return false;
+    }
 
     if (Date.now() > this.resetPasswordUntil) {
       this.resetPasswordUntil = null;
       return false;
     }
+
     return true;
   }
 
-  getUserType(): string | null {
-    return this.userType;
-  }
-
-  loadMe() {
-    return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
-      map(user => {
-        this.authenticated = true;
-        this.userType = user.type;
-        return user;
-      }),
-      catchError(() => {
-        this.authenticated = false;
-        this.userType = null;
-        return of(null);
-      })
-    );
-  }
-
   logout() {
-    return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true });
+    return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true }).pipe(
+      tap(() => this.clearAuthState())
+    );
   }
 
   sendResetCode(email: string) {

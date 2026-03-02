@@ -104,3 +104,18 @@
   width: 20px;
   height: 20px;
 }
+
+.class-description {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.classes__single-action {
+  justify-content: flex-start;
+}
+
+.classes__view-btn {
+  min-width: 110px;
+  justify-content: center;
+  padding: 0.55rem 1rem;
+}

@@ -7,7 +7,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { PublicHome } from './components/public-home/public-home.component';
-import { authGuard, privateGuard, coordinatorGuard } from './guards/auth.guard';
+import { authGuard, privateGuard, roleGuard } from './guards/auth.guard';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { TeachersComponent } from './components/teachers/teachers.component';
 import { ClassesComponent } from './components/classes/classes.component';
@@ -15,6 +15,7 @@ import { LevelsComponent } from './components/levels/levels.component';
 import { GenerateExamComponent } from './components/generate-exam/generate-exam.component';
 import { ExamsComponent } from './components/exams/exams.component';
 import { ExamReviewComponent } from './components/exam-review/exam-review.component';
+import { UserType } from './interfaces/user.interface';
 
 export const routes: Routes = [
   {
@@ -22,26 +23,53 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       { path: '', component: PublicHome },
+
       { path: 'home', component: HomeComponent, canActivate: [privateGuard] },
       { path: 'my-profile', component: MyProfileComponent, canActivate: [privateGuard] },
-      { path: 'teachers', component: TeachersComponent, canActivate: [coordinatorGuard] },
-      { path: 'classes', component: ClassesComponent, canActivate: [coordinatorGuard] },
-      { path: 'levels', component: LevelsComponent, canActivate: [coordinatorGuard]},
-      { path: 'exam', component: ExamsComponent, canActivate: [privateGuard]},
-      { path: 'teacher-exam', component: GenerateExamComponent, canActivate: [privateGuard]},
-      { path: 'exam-review/:id', component: ExamReviewComponent, canActivate: [coordinatorGuard]}
-    ],
+      { path: 'exam', component: ExamsComponent, canActivate: [privateGuard] },
+
+      {
+        path: 'teacher-exam',
+        component: GenerateExamComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.TEACHER, UserType.COORDINATOR] }
+      },
+
+      {
+        path: 'teachers',
+        component: TeachersComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.COORDINATOR] }
+      },
+      {
+        path: 'classes',
+        component: ClassesComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.COORDINATOR, UserType.TEACHER] }
+      },
+      {
+        path: 'levels',
+        component: LevelsComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.COORDINATOR] }
+      },
+      {
+        path: 'exam-review/:id',
+        component: ExamReviewComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.COORDINATOR] }
+      }
+    ]
   },
   {
     path: '',
     component: AuthLayout,
     children: [
       { path: 'login', component: LoginComponent, canActivate: [authGuard] },
-      { path: 'register', component: RegisterComponent },
-      { path: 'forgot-password', component: ForgotPasswordComponent },
-      { path: 'reset-password', component: ResetPasswordComponent },
-    ],
+      { path: 'register', component: RegisterComponent, canActivate: [authGuard] },
+      { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [authGuard] },
+      { path: 'reset-password', component: ResetPasswordComponent, canActivate: [authGuard] }
+    ]
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: '' }
 ];
-

@@ -14,7 +14,7 @@ export interface User {
   email: string;
   passwd: string;
   dni: string;
-  type: string;
+  type: UserType;
   is_verified: boolean;
   profile_picture: string;
 

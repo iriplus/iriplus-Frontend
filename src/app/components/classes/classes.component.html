@@ -1,6 +1,5 @@
 <div class="app-page app-page--gradient">
   <div class="app-card app-card--xl">
-    <!-- Header -->
     <header class="app-header app-header--center">
       <div class="app-header__icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -9,11 +8,14 @@
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
         </svg>
       </div>
-      <h1 class="app-header__title">Class Management</h1>
-      <p class="app-header__subtitle">Manage the system’s classes</p>
+      <h1 class="app-header__title">{{ pageTitle }}</h1>
+      <p class="app-header__subtitle">{{ pageSubtitle }}</p>
     </header>
 
-    <!-- Actions Bar -->
+    <div *ngIf="errorMessage" class="app-error">
+      {{ errorMessage }}
+    </div>
+
     <div class="app-actions-bar">
       <div class="app-search">
         <svg class="app-search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -34,7 +36,7 @@
           *ngIf="searchText"
           type="button"
           class="app-icon-btn app-icon-btn--ghost app-search__clear"
-          (click)="searchText=''; filterClasses()"
+          (click)="clearSearch()"
           aria-label="Clear search"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -46,6 +48,7 @@
       </div>
 
       <button
+        *ngIf="isCoordinator"
         class="btn-primary btn-rounded classes__add-btn"
         type="button"
         data-bs-toggle="modal"
@@ -60,7 +63,6 @@
       </button>
     </div>
 
-    <!-- Table -->
     <div class="app-table-container">
       <table class="app-table app-table--wide">
         <thead>
@@ -75,6 +77,15 @@
         </thead>
 
         <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="empty-state">
+              <div class="empty-content">
+                <div class="app-spinner"></div>
+                <span>Loading classes...</span>
+              </div>
+            </td>
+          </tr>
+
           <tr *ngFor="let c of filteredClasses">
             <td><span class="class-code">{{ c.class_code }}</span></td>
             <td><span class="class-description">{{ c.description }}</span></td>
@@ -101,7 +112,7 @@
             </td>
 
             <td>
-              <div class="app-actions-cell">
+              <div class="app-actions-cell" *ngIf="isCoordinator">
                 <button
                   type="button"
                   class="app-icon-btn app-icon-btn--edit"
@@ -131,13 +142,23 @@
                   </svg>
                 </button>
               </div>
+
+              <div class="app-actions-cell classes__single-action" *ngIf="isTeacher">
+                <button
+                  type="button"
+                  class="btn-outline btn-rounded classes__view-btn"
+                  (click)="viewClass(c)"
+                >
+                  View Class
+                </button>
+              </div>
             </td>
           </tr>
 
           <tr *ngIf="!isLoading && filteredClasses.length === 0">
             <td colspan="6" class="empty-state">
               <div class="empty-content">
-                <p>No classes found</p>
+                <p>{{ isTeacher ? 'No assigned classes found' : 'No classes found' }}</p>
                 <span *ngIf="searchText">No results for "{{ searchText }}"</span>
               </div>
             </td>
@@ -146,10 +167,9 @@
       </table>
     </div>
 
-    <!-- Stats -->
     <div class="app-stats-bar">
       <div class="app-stat">
-        <span class="app-stat__label">Total classes:</span>
+        <span class="app-stat__label">{{ totalClassesLabel }}</span>
         <span class="app-stat__value">{{ classes.length }}</span>
       </div>
       <div class="app-stat">
@@ -160,8 +180,7 @@
   </div>
 </div>
 
-<!-- Modal (Bootstrap) -->
-<div class="modal fade app-modal" id="newClassModal" tabindex="-1">
+<div *ngIf="isCoordinator" class="modal fade app-modal" id="newClassModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">

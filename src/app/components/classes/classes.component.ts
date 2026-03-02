@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { ClassService } from '../../services/class.service';
 import { Class } from '../../interfaces/class.interface';
 import { ClassFormComponent } from '../class-form/class-form.component';
+import { AuthService } from '../../services/auth.service';
+import { UserType } from '../../interfaces/user.interface';
+
 
 @Component({
   selector: 'app-classes',
@@ -13,19 +16,50 @@ import { ClassFormComponent } from '../class-form/class-form.component';
   styleUrls: ['./classes.component.css']
 })
 export class ClassesComponent implements OnInit {
-
   selectedClass: Class | null = null;
   classes: Class[] = [];
+  filteredClasses: Class[] = [];
   isLoading = true;
   errorMessage = '';
   searchText = '';
-  filteredClasses: Class[] = [];
 
-  constructor(private classService: ClassService) {}
+  currentUser: UserType | null = null;
+  currentUserId: number | null = null;
+
+  constructor(
+    private classService: ClassService,
+    private authService: AuthService
+  ) {}
+
+  get isCoordinator(): boolean {
+    return this.currentUser === UserType.COORDINATOR;
+  }
+
+  get isTeacher(): boolean {
+    return this.currentUser === UserType.TEACHER;
+  }
+
+  get pageTitle(): string {
+    return this.isTeacher ? 'My Classes': 'Class Management';
+  }
+
+  get pageSubtitle(): string {
+    return this.isTeacher ? 'View the classes assigned to you' : 'Manage the systems classes';
+  }
+
+  get totalClassesLabel(): string {
+    return this.isTeacher ? 'My Classes' : 'Total Classes';
+  }
 
   ngOnInit(): void {
-    this.loadClasses();
+    this.currentUser = this.authService.getUserType()
+    this.currentUserId = this.authService.getCurrentUserId();
 
+    this.loadClasses();
+    this.registerModalReset();
+  }
+
+  private registerModalReset(): void {
     const modalEl = document.getElementById('newClassModal');
     if (modalEl) {
       modalEl.addEventListener('hidden.bs.modal', () => {
@@ -35,10 +69,13 @@ export class ClassesComponent implements OnInit {
   }
 
   loadClasses(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.classService.getClasses().subscribe({
       next: (data: Class[]) => {
-        this.classes = data;
-        this.filteredClasses = data;
+        this.classes = this.applyRolefilter(data);
+        this.filteredClasses = [...this.classes];
         this.isLoading = false;
         console.log(this.filteredClasses)
       },
@@ -49,7 +86,26 @@ export class ClassesComponent implements OnInit {
     });
   }
 
+  private applyRolefilter(data: Class[]): Class[] {
+    if (!this.isTeacher) {
+      return data;
+    }
+
+    if (this.currentUserId == null) {
+      return [];
+    }
+
+    return data.filter((c: any) => 
+      Array.isArray(c.teachers) &&
+      c.teachers.some((t: any) => t.id === this.currentUserId)
+    );
+  }
+
   onClassSaved(): void {
+    if (!this.isCoordinator) {
+      return;
+    }
+
     this.selectedClass = null;
     this.loadClasses();
 
@@ -61,6 +117,10 @@ export class ClassesComponent implements OnInit {
   }
 
   openEdit(classData: Class): void {
+    if (!this.isCoordinator) {
+      return;
+    }
+
     this.selectedClass = classData;
 
     const modalEl = document.getElementById('newClassModal');
@@ -71,6 +131,10 @@ export class ClassesComponent implements OnInit {
   }
 
   deleteClass(id: number): void {
+    if (!this.isCoordinator) {
+      return;
+    }
+
     const confirmed = confirm('Are you sure you want to delete this class?');
     if (!confirmed) return;
 
@@ -83,6 +147,10 @@ export class ClassesComponent implements OnInit {
         this.errorMessage = 'The class could not be removed';
       }
     });
+  }
+
+  viewClass(classData: Class): void {
+    console.log('View class clicked: ', classData);
   }
 
   filterClasses(): void {
