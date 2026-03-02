@@ -1,9 +1,8 @@
-<div class="generate-exam-container">
-  <div class="generate-exam-card">
+<div class="app-page app-page--background generate-exam-page">
+  <section class="app-card app-card--xl app-card--elevated generate-exam-card">
 
-    <!-- Header (como class.html) -->
-    <div class="card-header">
-      <div class="header-icon">
+    <div class="app-header app-header--center generate-exam-header">
+      <div class="app-header__icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -13,71 +12,92 @@
           <path d="M8 9h2"></path>
         </svg>
       </div>
-      <h1>Generate Exam</h1>
-      <p>Generate an exam draft and preview it before sending to review</p>
+
+      <h1 class="app-header__title">Generate Exam</h1>
+      <p class="app-header__subtitle">
+        Generate an exam draft and preview it before sending it to review.
+      </p>
     </div>
 
-    <!-- Toolbar -->
-    <div class="toolbar" *ngIf="step === 'form'">
-      <div class="toolbar-info">
+    <div class="app-actions-bar generate-exam-toolbar" *ngIf="step === 'form'">
+      <div class="generate-exam-toolbar__info">
         <h2>Preferences</h2>
-        <p>Select class, context and exercise types</p>
+        <p>Select the class, define the context and choose the exercise types.</p>
       </div>
 
-      <div class="toolbar-actions">
-        <button type="button" class="btn-add" (click)="generateExam()">
-          Generate
-        </button>
-        <button type="button" class="btn-secondary" (click)="cancel()">
+      <div class="generate-exam-toolbar__actions">
+        <button type="button" class="btn-outline btn-rounded btn-lg" (click)="cancel()">
           Cancel
+        </button>
+
+        <button type="button" class="btn-primary btn-rounded btn-lg" (click)="generateExam()">
+          Generate
         </button>
       </div>
     </div>
 
     <!-- ================= FORM ================= -->
-    <div class="content" *ngIf="step === 'form'">
-      <form [formGroup]="form" class="form-grid">
+    <div class="generate-exam-content" *ngIf="step === 'form'">
+      <form [formGroup]="form" class="generate-exam-form">
 
-        <div class="form-group">
-          <label for="classId">Class</label>
-          <select
-            id="classId"
-            class="form-input"
-            formControlName="classId"
-            [ngClass]="{ 'input-error': form.get('classId')?.touched && form.get('classId')?.invalid }"
-          >
-            <option value="">Select class</option>
-            <option *ngFor="let c of classes" [value]="c.id">{{ c.description }}</option>
-          </select>
-          <span class="field-error" *ngIf="form.get('classId')?.touched && form.get('classId')?.invalid">
-            Class is required.
-          </span>
-        </div>
+        <section class="generate-exam-panel">
+          <div class="generate-exam-panel__header">
+            <h3>General setup</h3>
+            <p>Choose the class and provide the generation context for the draft.</p>
+          </div>
 
-        <div class="form-group">
-          <label for="context">Context</label>
-          <textarea
-            id="context"
-            class="form-input"
-            rows="8"
-            formControlName="context"
-            placeholder="Topic, constraints, level, tone, vocabulary focus, etc."
-            [ngClass]="{ 'input-error': form.get('context')?.touched && form.get('context')?.invalid }"
-          ></textarea>
-          <span class="field-error" *ngIf="form.get('context')?.touched && form.get('context')?.invalid">
-            Context is required.
-          </span>
-        </div>
+          <div class="generate-exam-form__grid">
+            <div class="form-group">
+              <label for="classId">Class</label>
+              <select
+                id="classId"
+                class="app-input"
+                formControlName="classId"
+                [ngClass]="{ 'app-input--error': form.get('classId')?.touched && form.get('classId')?.invalid }"
+              >
+                <option value="">Select class</option>
+                <option *ngFor="let c of classes" [value]="c.id">{{ c.description }}</option>
+              </select>
 
-        <div class="form-group">
-          <label>Exercise Types</label>
+              <span class="field-error" *ngIf="form.get('classId')?.touched && form.get('classId')?.invalid">
+                Class is required.
+              </span>
+            </div>
+
+            <div class="form-group generate-exam-form__group--full">
+              <label for="context">Context</label>
+              <textarea
+                id="context"
+                class="app-input generate-exam-textarea"
+                rows="8"
+                formControlName="context"
+                placeholder="The text which the exam is going to be based on. E.g. a reading passage, a math problem, a scientific scenario..."
+                [ngClass]="{ 'app-input--error': form.get('context')?.touched && form.get('context')?.invalid }"
+              ></textarea>
+
+              <span class="field-error" *ngIf="form.get('context')?.touched && form.get('context')?.invalid">
+                Context is required.
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section class="generate-exam-panel">
+          <div class="generate-exam-panel__header">
+            <h3>Exercise types</h3>
+            <p>Select at least one type to include in the generated exam.</p>
+          </div>
 
           <div
             class="exercise-types-box"
             [ngClass]="{ 'exercise-types-error': form.get('exerciseTypeIds')?.touched && form.get('exerciseTypeIds')?.invalid }"
           >
             <label class="exercise-type-item" *ngFor="let type of exerciseTypes">
-              <input type="checkbox" (change)="onExerciseToggle($event, type.id)" />
+              <input
+                type="checkbox"
+                [checked]="form.get('exerciseTypeIds')?.value?.includes(type.id)"
+                (change)="onExerciseToggle($event, type.id)"
+              />
               <span>{{ type.name }}</span>
             </label>
           </div>
@@ -85,129 +105,158 @@
           <span class="field-error" *ngIf="form.get('exerciseTypeIds')?.touched && form.get('exerciseTypeIds')?.invalid">
             Select at least one exercise type.
           </span>
-        </div>
+        </section>
 
       </form>
     </div>
 
     <!-- ================= LOADING ================= -->
-    <div class="content" *ngIf="step === 'loading'">
-      <div class="loading">
+    <div class="generate-exam-content" *ngIf="step === 'loading'">
+      <div class="generate-exam-loading">
+        <div class="generate-exam-loading__icon">
+          <span class="app-spinner"></span>
+        </div>
+
         <h2>Generating exam</h2>
-        <p>This may take a moment.</p>
+        <p>This may take a moment while the draft is being prepared.</p>
 
         <div class="progress-bar" aria-label="Loading">
           <div class="progress-bar-fill"></div>
         </div>
 
         <div class="loading-inline">
-          <span class="app-spinner"></span>
-          <span>Working...</span>
+          <span>Working on your preview...</span>
         </div>
       </div>
     </div>
 
     <!-- ================= PREVIEW ================= -->
-    <div *ngIf="step === 'preview' && generatedExam as exam" class="exam-preview">
+    <ng-container *ngIf="generatedExam as exam">
+      <div *ngIf="step === 'preview'" class="generate-exam-content generate-exam-content--preview">
 
-      <div class="preview-toolbar">
-        <div class="preview-left">
-          <h2>Preview</h2>
-          <div class="preview-meta">
-            <span class="meta-label">Status</span>
-            <span class="status-pill">{{ exam.status }}</span>
+        <div class="app-actions-bar generate-exam-preview__toolbar">
+          <div class="generate-exam-preview__left">
+            <h2>Preview</h2>
+
+            <div class="generate-exam-preview__meta">
+              <span class="meta-label">Status</span>
+              <span class="status-pill">{{ exam.status }}</span>
+            </div>
+          </div>
+
+          <div class="generate-exam-preview__actions">
+            <button type="button" class="btn-outline btn-rounded" (click)="toggleAnswers()">
+              Toggle Answers
+            </button>
+
+            <button type="button" class="btn-outline btn-rounded" (click)="changeSomething()">
+              Change Something
+            </button>
+
+            <button type="button" class="generate-exam-btn-danger" (click)="discard()">
+              Discard
+            </button>
+
+            <button type="button" class="btn-primary btn-rounded" (click)="sendToReview()">
+              Send to Review
+            </button>
           </div>
         </div>
 
-        <div class="preview-actions">
-          <button type="button" class="btn-secondary" (click)="toggleAnswers()">Toggle Answers</button>
-          <button type="button" class="btn-add" (click)="sendToReview()">Send to Review</button>
-          <button type="button" class="btn-danger" (click)="discard()">Discard</button>
-          <button type="button" class="btn-secondary" (click)="changeSomething()">Change Something</button>
-        </div>
-      </div>
+        <div class="generate-exam-preview__list">
+          <article class="generate-exam-exercise" *ngFor="let ex of exam.exercises; let exIndex = index">
 
-      <div class="preview-list">
-        <div class="exercise-card" *ngFor="let ex of exam.exercises; let exIndex = index">
+            <div class="generate-exam-exercise__header">
+              <div>
+                <span class="generate-exam-exercise__index">Exercise {{ exIndex + 1 }}</span>
+                <h3>{{ ex.exercise_type }}</h3>
+              </div>
+            </div>
 
-          <div class="exercise-card-header">
-            <h3>{{ exIndex + 1 }}. {{ ex.exercise_type }}</h3>
-          </div>
-
-          <div class="exercise-card-body">
-            <p class="instructions">
-              <strong>Instructions:</strong> {{ ex.instructions }}
-            </p>
-
-            <div class="exercise-item" *ngFor="let item of ex.items; let i = index">
-              <p>
-                <strong>{{ i + 1 }}.</strong> {{ item.question }}
+            <div class="generate-exam-exercise__body">
+              <p class="instructions">
+                <strong>Instructions:</strong> {{ ex.instructions }}
               </p>
-            </div>
 
-            <div class="answers" *ngIf="showAnswers">
-              <h4>Answer Key</h4>
-              <ol>
-                <li *ngFor="let item of ex.items">
-                  {{ item.answer }}
-                </li>
-              </ol>
-            </div>
+              <div class="exercise-item" *ngFor="let item of ex.items; let i = index">
+                <p>
+                  <strong>{{ i + 1 }}.</strong> {{ item.question }}
+                </p>
+              </div>
 
-          </div>
+              <div class="answers" *ngIf="showAnswers">
+                <h4>Answer Key</h4>
+                <ol>
+                  <li *ngFor="let item of ex.items">
+                    {{ item.answer }}
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </article>
         </div>
+
       </div>
-    </div>
+    </ng-container>
 
     <!-- ================= ITERATION ================= -->
-    <div class="content" *ngIf="step === 'edit'">
-      <div class="edit-header">
-        <h2>Request changes</h2>
-        <p>Describe what should be adjusted and regenerate the exam.</p>
-      </div>
+    <div class="generate-exam-content" *ngIf="step === 'edit'">
+      <section class="generate-exam-panel generate-exam-panel--narrow">
+        <div class="generate-exam-panel__header">
+          <h3>Request changes</h3>
+          <p>Describe what should be adjusted and regenerate the exam draft.</p>
+        </div>
 
-      <div class="form-group">
-        <label for="changeRequest">Change request</label>
-        <textarea
-          id="changeRequest"
-          class="form-input"
-          rows="7"
-          [formControl]="changeRequest"
-          placeholder="E.g., make it harder, change topic, focus on vocabulary, reduce options..."
-          [ngClass]="{ 'input-error': changeRequest.touched && changeRequest.invalid }"
-        ></textarea>
-        <span class="field-error" *ngIf="changeRequest.touched && changeRequest.invalid">
-          Please describe the requested changes.
-        </span>
-      </div>
+        <div class="form-group">
+          <label for="changeRequest">Change request</label>
+          <textarea
+            id="changeRequest"
+            class="app-input generate-exam-textarea generate-exam-textarea--edit"
+            rows="7"
+            [formControl]="changeRequest"
+            placeholder="E.g. make it harder, change topic, focus on vocabulary, reduce options..."
+            [ngClass]="{ 'app-input--error': changeRequest.touched && changeRequest.invalid }"
+          ></textarea>
 
-      <div class="edit-actions">
-        <button
-          type="button"
-          class="btn-add btn-with-spinner"
-          (click)="applyChanges()"
-          [disabled]="changeRequest.invalid"
-        >
-          Regenerate
-        </button>
+          <span class="field-error" *ngIf="changeRequest.touched && changeRequest.invalid">
+            Please describe the requested changes.
+          </span>
+        </div>
 
-        <button type="button" class="btn-secondary" (click)="step = 'preview'">
-          Back
-        </button>
-      </div>
+        <div class="generate-exam-edit__actions">
+          <button
+            type="button"
+            class="btn-primary btn-rounded btn-with-spinner"
+            (click)="applyChanges()"
+            [disabled]="changeRequest.invalid"
+          >
+            Regenerate
+          </button>
+
+          <button type="button" class="btn-outline btn-rounded" (click)="step = 'preview'">
+            Back
+          </button>
+        </div>
+      </section>
     </div>
 
     <!-- Stats -->
-    <div class="stats-bar" *ngIf="generatedExam as exam">
-      <div class="stat-item">
-        <span class="stat-label">Exercises:</span>
-        <span class="stat-value">{{ exam.exercises.length || 0 }}</span>
+    <div class="app-stats-bar generate-exam-stats" *ngIf="generatedExam as exam">
+      <div class="app-stat">
+        <span class="app-stat__label">Exercises</span>
+        <span class="app-stat__value">{{ exam.exercises.length || 0 }}</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-label">Exam ID:</span>
-        <span class="stat-value">{{ exam.id }}</span>
+
+      <div class="app-stat">
+        <span class="app-stat__label">Exam ID</span>
+        <span class="app-stat__value">{{ exam.id }}</span>
+      </div>
+
+      <div class="app-stat">
+        <span class="app-stat__label">Status</span>
+        <span class="app-stat__value">{{ exam.status }}</span>
       </div>
     </div>
 
-  </div>
+  </section>
 </div>
