@@ -17,6 +17,7 @@ import { ExamsComponent } from './components/exams/exams.component';
 import { ExamReviewComponent } from './components/exam-review/exam-review.component';
 import { UserType } from './interfaces/user.interface';
 import { ExamReviseComponent } from './exam-revise/exam-revise.component';
+import { ExamResolveComponent } from './exam-resolve/exam-resolve.component';
 
 export const routes: Routes = [
   {
@@ -65,6 +66,12 @@ export const routes: Routes = [
         component: ExamReviseComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.TEACHER] }
+      },
+      {
+        path: 'exam-resolve/:id',
+        component: ExamResolveComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.STUDENT] }
       }
     ]
   },

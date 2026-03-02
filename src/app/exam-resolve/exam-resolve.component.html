@@ -1,0 +1,161 @@
+<div class="app-page app-page--gradient resolve-exam-page">
+  <div class="app-card app-card--xl resolve-exam">
+
+    <div class="resolve-exam__topbar">
+      <button class="btn-outline btn-rounded" type="button">
+        ← Back to exams
+      </button>
+
+      <div class="resolve-exam__topbar-right">
+        <span class="resolve-exam__mode-pill">Practice mode</span>
+        <span class="resolve-exam__status">
+          <span class="resolve-exam__status-dot"></span>
+          {{ exam.status }}
+        </span>
+      </div>
+    </div>
+
+    <header class="app-header app-header--left resolve-exam__header">
+      <p class="resolve-exam__eyebrow">Student practice workspace</p>
+      <h1 class="app-header__title">Resolve Exam #{{ exam.id }}</h1>
+      <p class="app-header__subtitle">
+        Complete each exercise and finish the exam when you are ready.
+      </p>
+    </header>
+
+    <section class="resolve-exam__meta-grid">
+      <div class="resolve-exam__meta-card">
+        <span class="resolve-exam__meta-label">Class</span>
+        <span class="resolve-exam__meta-value">{{ exam.class_description }}</span>
+      </div>
+
+      <div class="resolve-exam__meta-card">
+        <span class="resolve-exam__meta-label">Student</span>
+        <span class="resolve-exam__meta-value">{{ studentName }}</span>
+      </div>
+
+      <div class="resolve-exam__meta-card">
+        <span class="resolve-exam__meta-label">Created on</span>
+        <span class="resolve-exam__meta-value">{{ createdAtLabel }}</span>
+      </div>
+    </section>
+
+    <section class="resolve-exam__layout">
+      <div class="resolve-exam__main">
+        <div class="resolve-exam__panel resolve-exam__panel--context">
+          <div class="resolve-exam__panel-header">
+            <div>
+              <h2 class="resolve-exam__panel-title">Context</h2>
+              <p class="resolve-exam__panel-subtitle">
+                Read the base text carefully before answering the exercises.
+              </p>
+            </div>
+          </div>
+
+          <div class="resolve-exam__read-box">
+            {{ exam.context }}
+          </div>
+        </div>
+
+        <div class="resolve-exam__panel">
+          <div class="resolve-exam__panel-header">
+            <div>
+              <h2 class="resolve-exam__panel-title">Exam Content</h2>
+              <p class="resolve-exam__panel-subtitle">
+                Write your answers directly in the blanks below.
+              </p>
+            </div>
+
+            <div class="resolve-exam__panel-pills">
+              <span class="resolve-exam__pill">{{ exerciseViews.length }} exercise types</span>
+              <span class="resolve-exam__pill">{{ totalItems }} total items</span>
+            </div>
+          </div>
+
+          <div
+            *ngFor="let exercise of exerciseViews; let i = index"
+            class="resolve-exam__section"
+          >
+            <div class="resolve-exam__section-bar">
+              <div class="resolve-exam__section-index">{{ i + 1 }}</div>
+
+              <div class="resolve-exam__section-heading">
+                <h3>{{ exercise.exercise_type }}</h3>
+              </div>
+            </div>
+
+            <p class="resolve-exam__section-instructions">
+              {{ exercise.instructions }}
+            </p>
+
+            <div class="resolve-exam__questions">
+              <article
+                *ngFor="let item of exercise.items; let j = index"
+                class="resolve-exam__question"
+              >
+                <div class="resolve-exam__question-index">{{ j + 1 }}</div>
+
+                <div class="resolve-exam__question-body">
+                  <label class="resolve-exam__field-label">Question</label>
+
+                  <div class="resolve-exam__student-line">
+                    <span class="resolve-exam__line-text" *ngIf="item.promptBefore">
+                      {{ item.promptBefore }}
+                    </span>
+
+                    <input
+                      class="app-input resolve-exam__inline-blank"
+                      type="text"
+                      [(ngModel)]="item.studentAnswer"
+                      placeholder="Write your answer"
+                    />
+
+                    <span class="resolve-exam__line-text" *ngIf="item.promptAfter">
+                      {{ item.promptAfter }}
+                    </span>
+
+                    <span class="resolve-exam__keyword" *ngIf="item.keyword">
+                      {{ item.keyword }}
+                    </span>
+                  </div>
+
+                  <div class="resolve-exam__options" *ngIf="item.options.length > 0">
+                    <span
+                      class="resolve-exam__option"
+                      *ngFor="let option of item.options"
+                    >
+                      {{ option }}
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="resolve-exam__sidebar">
+        <div class="resolve-exam__side-card">
+          <div class="resolve-exam__side-header">
+            <h3>Actions</h3>
+          </div>
+
+          <div class="resolve-exam__progress-box">
+            <span class="resolve-exam__progress-label">Answered</span>
+            <span class="resolve-exam__progress-value">
+              {{ answeredItems }} / {{ totalItems }}
+            </span>
+          </div>
+          <div class="resolve-exam__actions">
+            <button class="btn-outline btn-rounded" type="button">
+              Cancel
+            </button>
+            <button class="btn-primary btn-rounded" type="button">
+              Finish Exam
+            </button>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+</div>
