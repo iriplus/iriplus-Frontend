@@ -34,7 +34,8 @@ export class ExamService {
   }
 
   refineExam(id: number, feedback: string): Observable<any> {
-    return this.http.post(`${this.EXAM_URL}/${id}/refine`, feedback, {withCredentials: true});
+    console.log("Refining exam with ID:", id, "and feedback:", feedback);
+    return this.http.post(`${this.EXAM_URL}/${id}/refine`, {feedback}, {withCredentials: true});
   }
 
   sendToReview(examId: number): Observable<any> {
@@ -42,7 +43,7 @@ export class ExamService {
   }
 
   deleteExam(examId: number): Observable<any> {
-    return this.http.delete<any>(`${this.EXAM_URL}/${examId}`);
+    return this.http.delete<any>(`${this.EXAM_URL}/${examId}`, { withCredentials: true });
   }
 
   leaveReview(examId: number): Observable<any> {

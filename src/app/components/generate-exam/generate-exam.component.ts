@@ -131,7 +131,7 @@ export class GenerateExamComponent implements OnInit {
 
     const changed_data = {
       exam_id: this.generatedExam.id,
-      feedback: changeRequestValue
+      feedback: changeRequestValue,
     }
 
     this.examService.refineExam(changed_data.exam_id, changed_data.feedback).subscribe({

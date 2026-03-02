@@ -79,7 +79,7 @@ interface CoordinatorStats {
 
 
 export class HomeComponent {
-  userType: UserType = 'TEACHER';
+  userType: UserType = 'STUDENT';
 
   leaderboardScope: LeaderboardScope = 'COURSE';
 
