@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamService } from '../../services/exam.service';
 import { FormsModule } from '@angular/forms';
-
-type Status = 'Pending Review' | 'On Review' | 'Accepted' | 'Pending Correction' | string;
+import { Status } from '../../interfaces/exam.interface';
 
 @Component({
   selector: 'app-exam-review',

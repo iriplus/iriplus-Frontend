@@ -1,3 +1,10 @@
+export enum Status {
+  PENDING_REVIEW = 'Pending Review',
+  ON_REVIEW = 'On Review',
+  ACCEPTED = 'Accepted',
+  PENDING_CORRECTION = 'Pending Correction'
+}
+
 export interface ExamItemDTO {
   question: string;
   answer: string;
