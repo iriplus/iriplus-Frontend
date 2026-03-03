@@ -28,6 +28,7 @@ interface ExamListItem {
   templateUrl: './exams.component.html',
   styleUrl: './exams.component.css'
 })
+
 export class ExamsComponent implements OnInit {
   exams: ExamListItem[] = [];
   filteredExams: ExamListItem[] = [];
@@ -131,6 +132,12 @@ export class ExamsComponent implements OnInit {
     return scores.length ? Math.max(...scores) : 0;
   }
 
+  get tableColspan(): number {
+    if (this.isStudent) return 6;
+    if (this.isTeacher) return 7;
+    return 7;
+  }
+
   private normalizeUserType(value: unknown): UserType {
     const normalized = String(value ?? '').trim().toUpperCase();
 
@@ -173,12 +180,12 @@ export class ExamsComponent implements OnInit {
     }
 
     if (this.isTeacher) {
-      this.loadTeacherMockExams();
+      this.loadTeacherExams();
       return;
     }
 
     if (this.isStudent) {
-      this.loadStudentMockExams();
+      this.loadStudentExams();
       return;
     }
 
@@ -214,128 +221,60 @@ export class ExamsComponent implements OnInit {
     });
   }
 
-  loadTeacherMockExams(): void {
-    this.exams = [
-      {
-        id: 1,
-        context: 'Unit 3 grammar and reading comprehension assessment',
-        class_description: 'English 2A',
-        coordinator_full_name: null,
-        coordinator_id: null,
-        date_created: '2026-02-26T09:15:00',
-        status: 'Pending Review'
-      },
-      {
-        id: 2,
-        context: 'Past simple vs present perfect writing test',
-        class_description: 'English 3B',
-        coordinator_full_name: 'Emily Carter',
-        coordinator_id: 5,
-        date_created: '2026-02-24T14:40:00',
-        status: 'On Review'
-      },
-      {
-        id: 3,
-        context: 'Listening exam about travel situations and airport vocabulary',
-        class_description: 'English 1C',
-        coordinator_full_name: 'Sophia Mitchell',
-        coordinator_id: 7,
-        date_created: '2026-02-22T11:05:00',
-        status: 'Pending Correction'
-      },
-      {
-        id: 4,
-        context: 'Midterm test with mixed grammar and vocabulary exercises',
-        class_description: 'English 4A',
-        coordinator_full_name: 'Olivia Turner',
-        coordinator_id: 8,
-        date_created: '2026-02-20T16:20:00',
-        status: 'Accepted'
-      },
-      {
-        id: 5,
-        context: 'Reading comprehension exam based on environmental issues',
-        class_description: 'English 2B',
-        coordinator_full_name: 'Emily Carter',
-        coordinator_id: 5,
-        date_created: '2026-02-18T10:10:00',
-        status: 'On Correction'
-      },
-      {
-        id: 6,
-        context: 'Short diagnostic test for speaking support material',
-        class_description: 'English 1A',
-        coordinator_full_name: null,
-        coordinator_id: null,
-        date_created: '2026-02-16T08:30:00',
-        status: 'Test Exam'
-      }
-    ];
+  loadTeacherExams(): void {
+    this.examService.getTeacherExams().subscribe({
+      next: (data) => {
+        this.exams = data.map((exam: any) => ({
+          id: exam.id,
+          context: exam.context ?? null,
+          class_description: exam.class_description ?? null,
+          teacher_full_name: exam.teacher_full_name ?? null,
+          coordinator_full_name: exam.coordinator_full_name ?? null,
+          coordinator_id: exam.coordinator_id ?? null,
+          score: exam.score ?? null,
+          exp_gained: exam.exp_gained ?? null,
+          date_created: exam.date_created,
+          status: exam.status
+        }));
 
-    this.buildClasses();
-    this.applyFilters();
+        this.buildClasses();
+        this.applyFilters();
+      },
+      error: (err) => {
+        console.error('Error loading teacher exams:', err);
+        this.errorMessage = 'Error loading exams.';
+      }
+    });
   }
 
-  loadStudentMockExams(): void {
-    this.exams = [
-      {
-        id: 101,
-        context: 'Grammar challenge: present perfect and simple past',
-        class_description: 'English 2A',
-        date_created: '2026-02-27T10:00:00',
-        score: 87,
-        exp_gained: 120,
-        status: 'Completed'
-      },
-      {
-        id: 102,
-        context: 'Reading comprehension: technology and communication',
-        class_description: 'English 2A',
-        date_created: '2026-02-24T15:30:00',
-        score: 93,
-        exp_gained: 145,
-        status: 'Completed'
-      },
-      {
-        id: 103,
-        context: 'Vocabulary quiz: travel and holidays',
-        class_description: 'English 1C',
-        date_created: '2026-02-22T09:45:00',
-        score: 76,
-        exp_gained: 90,
-        status: 'Completed'
-      },
-      {
-        id: 104,
-        context: 'Listening practice exam: daily routines and habits',
-        class_description: 'English 1C',
-        date_created: '2026-02-20T11:20:00',
-        score: 81,
-        exp_gained: 105,
-        status: 'Completed'
-      },
-      {
-        id: 105,
-        context: 'Mixed skills exam: writing, grammar and vocabulary',
-        class_description: 'English 3B',
-        date_created: '2026-02-18T13:10:00',
-        score: 95,
-        exp_gained: 160,
-        status: 'Completed'
-      },
-      {
-        id: 106,
-        context: 'Reading and use of English: environment and science',
-        class_description: 'English 3B',
-        date_created: '2026-02-15T08:50:00',
-        score: 89,
-        exp_gained: 130,
-        status: 'Completed'
-      }
-    ];
+  loadStudentExams(): void {
+    this.examService.getStudentExams().subscribe({
+      next: (data) => {
+        this.exams = data.map((exam: any) => ({
+          id: exam.id,
+          context: exam.context ?? null,
+          class_description: exam.class_description ?? null,
+          teacher_full_name: exam.teacher_full_name ?? null,
+          coordinator_full_name: exam.coordinator_full_name ?? null,
+          coordinator_id: exam.coordinator_id ?? null,
+          score: exam.score ?? null,
+          exp_gained: exam.exp_gained ?? null,
+          date_created: exam.date_created,
+          status: exam.status
+        }));
 
-    this.buildClasses();
-    this.applyFilters();
+        this.buildClasses();
+        this.applyFilters();
+      },
+      error: (err) => {
+        console.error('Error loading student exams:', err);
+        this.errorMessage = 'Error loading exams.';
+      }
+    });
+  }
+
+  viewExam(examId: number): void {
+    this.router.navigate([`/view-exam/${examId}`]);
   }
 
   buildClasses(): void {
@@ -436,11 +375,15 @@ export class ExamsComponent implements OnInit {
   }
 
   openTeacherExam(exam: ExamListItem): void {
-    console.log(this.getTeacherActionLabel(exam), exam.id);
+    if (exam.status === 'Pending Correction') {
+      this.router.navigate([`/exam-revise/${exam.id}`]);
+      return;
+    }
+    this.router.navigate([`/view-exam/${exam.id}`]);
   }
 
   openStudentExam(exam: ExamListItem): void {
-    console.log('View Exam', exam.id);
+    this.router.navigate([`/view-exam/${exam.id}`]);
   }
 
   startNewExam(): void {

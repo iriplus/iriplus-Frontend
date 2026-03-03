@@ -14,7 +14,15 @@ export class ExamService {
   constructor(private http: HttpClient) {}
 
   getAllExams(): Observable<ExamDTO[]> {
-    return this.http.get<ExamDTO[]>(`${this.EXAM_URL}`, { withCredentials: true });
+    return this.http.get<ExamDTO[]>(`${this.EXAM_URL}/coordinator`, { withCredentials: true });
+  }
+
+  getTeacherExams(): Observable<ExamDTO[]> {
+    return this.http.get<ExamDTO[]>(`${this.EXAM_URL}/teacher`, { withCredentials: true });
+  }
+
+  getStudentExams(): Observable<ExamDTO[]> {
+    return this.http.get<ExamDTO[]>(`${this.EXAM_URL}/student`, { withCredentials: true });
   }
 
   getTeacherClasses(): Observable<any> {

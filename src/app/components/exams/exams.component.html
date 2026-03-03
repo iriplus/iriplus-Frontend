@@ -369,26 +369,21 @@
             <td>
               <div class="exams-actions" *ngIf="isCoordinator">
                 <button
-                  *ngIf="exam.status === 'Pending Review' && !exam.coordinator_id"
+                  *ngIf="exam.status === 'Pending Review' && (!exam.coordinator_id || exam.coordinator_id === currentUserId)"
                   class="btn-action btn-review"
                   (click)="assignExam(exam.id)"
                 >
-                  Review
+                  {{ exam.coordinator_id === currentUserId ? 'Continue Review' : 'Review' }}
                 </button>
 
                 <button
-                  *ngIf="exam.status === 'Pending Review' && exam.coordinator_id === currentUserId"
-                  class="btn-action btn-review"
-                  (click)="continueReview(exam.id)"
+                  *ngIf="exam.status !== 'Pending Review'"
+                  class="btn-action btn-view"
+                  (click)="viewExam(exam.id)"
                 >
-                  Continue Review
+                  View Exam
                 </button>
-
-                <ng-container *ngIf="exam.status === 'On Review'">
-                  <span class="status-info">On review</span>
-                </ng-container>
               </div>
-
               <div class="exams-actions" *ngIf="isTeacher">
                 <button
                   class="btn-action"
@@ -411,7 +406,7 @@
           </tr>
 
           <tr *ngIf="!filteredExams.length">
-            <td [attr.colspan]="6" class="empty-state">
+            <td [attr.colspan]="tableColspan" class="empty-state">
               <div class="empty-content">
                 <p>No exams found</p>
                 <span *ngIf="searchText">No results for "{{ searchText }}"</span>
