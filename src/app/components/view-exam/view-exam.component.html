@@ -1,0 +1,240 @@
+<div class="app-page app-page--gradient view-exam-page">
+  <div class="app-card app-card--xl view-exam">
+
+    <ng-container *ngIf="loading">
+      <div class="view-exam__state">
+        <div class="app-spinner"></div>
+        <p class="view-exam__state-text">Loading exam...</p>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!loading && error">
+      <div class="view-exam__state">
+        <div class="app-error">
+          {{ error }}
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!loading && !error && exam">
+      <div class="view-exam__topbar">
+        <button class="btn-outline btn-rounded" type="button" (click)="goBack()">
+          ← Back to exams
+        </button>
+
+        <div class="view-exam__topbar-right">
+          <span class="view-exam__mode-pill">Read-only mode</span>
+
+          <span class="view-exam__status" *ngIf="showStatus">
+            <span class="view-exam__status-dot"></span>
+            {{ exam.status }}
+          </span>
+        </div>
+      </div>
+
+      <header class="app-header app-header--left view-exam__header">
+        <p class="view-exam__eyebrow">{{ pageEyebrow }}</p>
+        <h1 class="app-header__title">View Exam #{{ exam.id }}</h1>
+        <p class="app-header__subtitle">
+          {{ pageSubtitle }}
+        </p>
+      </header>
+
+      <section class="view-exam__meta-grid">
+        <div class="view-exam__meta-card">
+          <span class="view-exam__meta-label">Class</span>
+          <span class="view-exam__meta-value">{{ exam.class_description || 'Not available' }}</span>
+        </div>
+
+        <div class="view-exam__meta-card">
+          <span class="view-exam__meta-label">Teacher</span>
+          <span class="view-exam__meta-value">{{ teacherDisplayName }}</span>
+        </div>
+
+        <div class="view-exam__meta-card">
+          <span class="view-exam__meta-label">Coordinator</span>
+          <span class="view-exam__meta-value">{{ coordinatorDisplayName }}</span>
+        </div>
+
+        <div class="view-exam__meta-card">
+          <span class="view-exam__meta-label">Created on</span>
+          <span class="view-exam__meta-value">{{ createdAtLabel }}</span>
+        </div>
+
+        <div class="view-exam__meta-card" *ngIf="isStudent">
+          <span class="view-exam__meta-label">Score</span>
+          <span class="view-exam__meta-value">{{ scoreLabel }}</span>
+        </div>
+
+        <div class="view-exam__meta-card" *ngIf="isStudent">
+          <span class="view-exam__meta-label">EXP gained</span>
+          <span class="view-exam__meta-value">{{ expGainedLabel }}</span>
+        </div>
+      </section>
+
+      <section class="view-exam__layout">
+        <div class="view-exam__main">
+          <div class="view-exam__panel view-exam__panel--context">
+            <div class="view-exam__panel-header">
+              <div>
+                <h2 class="view-exam__panel-title">Context</h2>
+                <p class="view-exam__panel-subtitle">
+                  Base text used to build the exam.
+                </p>
+              </div>
+            </div>
+
+            <div class="view-exam__content view-exam__content--context">
+              {{ exam.context || 'No context available.' }}
+            </div>
+          </div>
+
+          <div class="view-exam__panel">
+            <div class="view-exam__panel-header">
+              <div>
+                <h2 class="view-exam__panel-title">Exam Content</h2>
+                <p class="view-exam__panel-subtitle">
+                  All questions are displayed in read-only mode.
+                </p>
+              </div>
+
+              <div class="view-exam__panel-pills">
+                <span class="view-exam__pill">{{ exam.exercises.length }} exercise types</span>
+                <span class="view-exam__pill">{{ totalItems }} total items</span>
+              </div>
+            </div>
+
+            <div
+              *ngFor="let exercise of exam.exercises; let i = index; trackBy: trackByIndex"
+              class="view-exam__section"
+            >
+              <div class="view-exam__section-bar">
+                <div class="view-exam__section-index">{{ i + 1 }}</div>
+
+                <div class="view-exam__section-heading">
+                  <h3>{{ exercise.exercise_type }}</h3>
+                </div>
+              </div>
+
+              <p class="view-exam__section-instructions">
+                {{ exercise.instructions }}
+              </p>
+
+              <div class="view-exam__questions">
+                <article
+                  *ngFor="let item of exercise.items; let j = index; trackBy: trackByIndex"
+                  class="view-exam__question"
+                >
+                  <div class="view-exam__question-index">{{ j + 1 }}</div>
+
+                  <div class="view-exam__question-body">
+                    <label class="view-exam__field-label">Question</label>
+                    <div class="view-exam__content">
+                      {{ item.question }}
+                    </div>
+
+                    <label class="view-exam__field-label view-exam__field-label--answer">
+                      {{ answerLabel }}
+                    </label>
+
+                    <div
+                      class="view-exam__content view-exam__content--answer"
+                      [class.view-exam__content--placeholder]="!hasDisplayedAnswer(item)"
+                    >
+                      {{ getDisplayedAnswer(item) || answerPlaceholder }}
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="view-exam__sidebar">
+          <div class="view-exam__side-card" *ngIf="isStudent">
+            <div class="view-exam__side-header">
+              <h3>Performance</h3>
+            </div>
+
+            <div class="view-exam__summary-list">
+              <div class="view-exam__summary-row">
+                <span class="view-exam__summary-label">Score</span>
+                <span class="view-exam__summary-value">{{ scoreLabel }}</span>
+              </div>
+
+              <div class="view-exam__summary-row">
+                <span class="view-exam__summary-label">EXP gained</span>
+                <span class="view-exam__summary-value">{{ expGainedLabel }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="view-exam__side-card view-exam__side-card--notes" *ngIf="showNotesCard">
+            <div class="view-exam__side-header">
+              <h3>Notes</h3>
+              <span class="view-exam__note-badge">Internal</span>
+            </div>
+
+            <p class="view-exam__notes-text">
+              {{ exam.notes }}
+            </p>
+          </div>
+
+          <div class="view-exam__side-card" *ngIf="showActionsCard">
+            <div class="view-exam__side-header">
+              <h3>Actions</h3>
+            </div>
+
+            <div class="view-exam__actions">
+              <button
+                *ngIf="canRevise"
+                class="btn-primary btn-rounded"
+                type="button"
+                (click)="onReviseExam()"
+              >
+                Revise Exam
+              </button>
+
+              <button
+                *ngIf="canReview"
+                class="btn-primary btn-rounded"
+                type="button"
+                (click)="onReviewExam()"
+              >
+                Review Exam
+              </button>
+
+              <div class="view-exam__export" *ngIf="canExport">
+                <button
+                  class="btn-outline btn-rounded view-exam__export-trigger"
+                  type="button"
+                  (click)="toggleExportMenu()"
+                >
+                  Export
+                </button>
+
+                <div class="view-exam__export-menu" *ngIf="exportMenuOpen">
+                  <button
+                    class="view-exam__export-option"
+                    type="button"
+                    (click)="onExport('pdf')"
+                  >
+                    Export to PDF
+                  </button>
+
+                  <button
+                    class="view-exam__export-option"
+                    type="button"
+                    (click)="onExport('docx')"
+                  >
+                    Export to DOCX
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </ng-container>
+  </div>
+</div>

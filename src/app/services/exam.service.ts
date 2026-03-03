@@ -29,8 +29,8 @@ export class ExamService {
     return this.http.post(`${this.EXAM_URL}/generate`, exam_data, {withCredentials: true});
   }
 
-  getFullExam(id: number): Observable<any> {
-    return this.http.get<any>(`${this.EXAM_URL}/${id}/full`, {withCredentials: true})
+  getFullExam(id: number): Observable<ExamDTO> {
+    return this.http.get<ExamDTO>(`${this.EXAM_URL}/${id}/full`, {withCredentials: true})
   }
 
   refineExam(id: number, feedback: string): Observable<any> {

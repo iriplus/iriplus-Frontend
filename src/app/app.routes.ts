@@ -16,8 +16,9 @@ import { GenerateExamComponent } from './components/generate-exam/generate-exam.
 import { ExamsComponent } from './components/exams/exams.component';
 import { ExamReviewComponent } from './components/exam-review/exam-review.component';
 import { UserType } from './interfaces/user.interface';
-import { ExamReviseComponent } from './exam-revise/exam-revise.component';
-import { ExamResolveComponent } from './exam-resolve/exam-resolve.component';
+import { ExamReviseComponent } from './components/exam-revise/exam-revise.component';
+import { ExamResolveComponent } from './components/exam-resolve/exam-resolve.component';
+import { ViewExamComponent } from './components/view-exam/view-exam.component';
 
 export const routes: Routes = [
   {
@@ -72,6 +73,12 @@ export const routes: Routes = [
         component: ExamResolveComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.STUDENT] }
+      },
+      {
+        path: 'view-exam/:id',
+        component: ViewExamComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.STUDENT, UserType.TEACHER, UserType.COORDINATOR] }
       }
     ]
   },

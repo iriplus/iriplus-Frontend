@@ -1,6 +1,7 @@
 export interface ExamItemDTO {
   question: string;
   answer: string;
+  student_answer?: string | null;
 }
 
 export interface ExamExerciseInstanceDTO {
@@ -20,7 +21,11 @@ export interface ExamDTO {
   class_description?: string;
   user_id: number;
   teacher_full_name?: string;
-  coordinator_id?:number; 
+  coordinator_full_name?: string | null;
+  coordinator_id?: number | null;
+  notes?: string | null;
+  score?: number | null;
+  exp_gained?: number | null;
 }
 
 export interface ExerciseTypeDTO {
