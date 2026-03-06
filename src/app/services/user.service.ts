@@ -38,6 +38,18 @@ export class UserService {
     );
   }
 
+  getStudents(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.USER_URL}/student`, {withCredentials: true}).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  getMyStudents(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.USER_URL}/student/my`, {withCredentials: true}).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
   createTeacher(user: User): Observable<User> {
    return this.http.post<User>(`${this.USER_URL}/teacher`, user, {withCredentials: true}).pipe(
     catchError(err => throwError(() => err))

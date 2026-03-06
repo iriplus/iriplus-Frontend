@@ -1,0 +1,148 @@
+<div class="app-page app-page--gradient">
+  <div class="app-card app-card--xl students">
+
+    <!-- Header -->
+    <header class="app-header app-header--center">
+      <div class="app-header__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-4-4h-1"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+
+      <h1 class="app-header__title">Student Management</h1>
+      <p class="app-header__subtitle">Manage system students</p>
+    </header>
+
+    <!-- Actions Bar -->
+    <div class="app-actions-bar">
+      <div class="students__search">
+        <svg class="students__search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+
+        <input
+          type="text"
+          class="app-input app-input--icon-left"
+          placeholder="Search by first name, last name or DNI..."
+          [(ngModel)]="searchTerm"
+          (input)="filterStudents()"
+        />
+
+        <button
+          *ngIf="searchTerm"
+          type="button"
+          class="app-icon-btn students__clear-btn"
+          (click)="clearSearch()"
+          aria-label="Clear search"
+          title="Clear"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading / Error -->
+    <div *ngIf="loading" class="students__state">Loading students...</div>
+    <div *ngIf="!loading && errorMessage" class="app-error">{{ errorMessage }}</div>
+
+    <!-- Table -->
+    <div class="app-table-container" *ngIf="!loading && !errorMessage">
+      <table class="app-table app-table--wide">
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>DNI</th>
+            <th>Class</th>
+            <th>Level</th>
+            <th class="students__th-actions">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let student of filteredStudents; trackBy: trackByUserId">
+            <td>
+              <div class="students__avatar">
+                <ng-container *ngIf="student.profile_picture && !isAvatarBroken(student.id); else avatarFallback">
+                  <img
+                    class="students__avatar-img"
+                    [src]="student.profile_picture"
+                    [alt]="student.name + ' ' + student.surname + ' profile photo'"
+                    (error)="onAvatarError(student.id)"
+                  />
+                </ng-container>
+
+                <ng-template #avatarFallback>
+                  <span class="students__avatar-text" aria-hidden="true">
+                    {{ student.name.charAt(0) }}{{ student.surname.charAt(0) }}
+                  </span>
+                </ng-template>
+              </div>
+            </td>
+
+            <td>{{ student.name }}</td>
+            <td>{{ student.surname }}</td>
+
+            <td><span class="students__email">{{ student.email }}</span></td>
+
+            <td>{{ student.dni }}</td>
+
+            <td>{{ student.student_class?.description || student.class_code || '—' }}</td>
+
+            <td>{{ student.student_level?.description || '—' }}</td>
+
+            <td>
+              <div class="app-actions-cell">
+                <button
+                  type="button"
+                  class="app-icon-btn app-icon-btn--danger"
+                  (click)="disableStudent(student.id)"
+                  aria-label="Disable student"
+                  title="Disable"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredStudents.length === 0">
+            <td colspan="8" class="students__empty">
+              No students found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Stats -->
+    <div class="app-stats-bar" *ngIf="!loading && !errorMessage">
+      <div class="app-stat">
+        <span class="app-stat__label">Total students:</span>
+        <span class="app-stat__value">{{ students.length }}</span>
+      </div>
+
+      <div class="app-stat">
+        <span class="app-stat__label">Showing:</span>
+        <span class="app-stat__value">{{ filteredStudents.length }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>

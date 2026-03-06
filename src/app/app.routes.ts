@@ -19,6 +19,7 @@ import { UserType } from './interfaces/user.interface';
 import { ExamReviseComponent } from './components/exam-revise/exam-revise.component';
 import { ExamResolveComponent } from './components/exam-resolve/exam-resolve.component';
 import { ViewExamComponent } from './components/view-exam/view-exam.component';
+import { StudentsComponent } from './components/students/students.component';
 
 export const routes: Routes = [
   {
@@ -79,6 +80,12 @@ export const routes: Routes = [
         component: ViewExamComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.STUDENT, UserType.TEACHER, UserType.COORDINATOR] }
+      },
+      {
+        path: 'students',
+        component: StudentsComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.COORDINATOR, UserType.TEACHER] }
       }
     ]
   },
