@@ -19,6 +19,7 @@
 
     <!-- Actions Bar -->
     <div class="app-actions-bar">
+      <!-- Search -->
       <div class="students__search">
         <svg class="students__search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -49,6 +50,36 @@
           </svg>
         </button>
       </div>
+      <!-- Filters -->
+      <div class="students__filters">
+        <div class="students__filter">
+          <label class="students__filter-label" for="studentsClassFilter">Class</label>
+          <select
+            id="studentsClassFilter"
+            class="app-input"
+            [(ngModel)]="selectedClassId"
+            (change)="filterStudents()"
+          >
+            <option value="all">All classes</option>
+            <option *ngIf="hasUnassignedClass" value="none">Unassigned</option>
+            <option *ngFor="let c of classOptions" [value]="c.id">{{ c.label }}</option>
+          </select>
+        </div>
+
+        <div class="students__filter">
+          <label class="students__filter-label" for="studentsLevelFilter">Level</label>
+          <select
+            id="studentsLevelFilter"
+            class="app-input"
+            [(ngModel)]="selectedLevelId"
+            (change)="filterStudents()"
+          >
+            <option value="all">All levels</option>
+            <option *ngIf="hasUnassignedLevel" value="none">Unassigned</option>
+            <option *ngFor="let l of levelOptions" [value]="l.id">{{ l.label }}</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <!-- Loading / Error -->
@@ -67,7 +98,7 @@
             <th>DNI</th>
             <th>Class</th>
             <th>Level</th>
-            <th class="students__th-actions">Actions</th>
+            <th *ngIf="canDisableStudents" class="students__th-actions">Actions</th>
           </tr>
         </thead>
 
@@ -103,7 +134,7 @@
 
             <td>{{ student.student_level?.description || '—' }}</td>
 
-            <td>
+            <td *ngIf="canDisableStudents">
               <div class="app-actions-cell">
                 <button
                   type="button"
@@ -123,7 +154,7 @@
           </tr>
 
           <tr *ngIf="filteredStudents.length === 0">
-            <td colspan="8" class="students__empty">
+            <td [attr.colspan]="canDisableStudents ? 8 : 7" class="students__empty">
               No students found
             </td>
           </tr>

@@ -84,3 +84,28 @@
     width: 86px;
   }
 }
+
+.students__filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.students__filter {
+  min-width: 200px;
+}
+
+.students__filter-label {
+  display: block;
+  margin: 0 0 6px 2px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 768px) {
+  .students__filter {
+    min-width: 100%;
+  }
+}
