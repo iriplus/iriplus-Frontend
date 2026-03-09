@@ -9,6 +9,7 @@ export interface ExamItemDTO {
   question: string;
   answer: string;
   student_answer?: string | null;
+  options?: string[];
 }
 
 export interface ExamExerciseInstanceDTO {
@@ -24,7 +25,7 @@ export interface ExamDTO {
   class_id: number;
   exercises: ExamExerciseInstanceDTO[];
   generated_exercises: ExamExerciseInstanceDTO[];
-  date_created: Date;
+  date_created: string | Date;
   class_description?: string;
   user_id: number;
   teacher_full_name?: string;

@@ -1,30 +1,8 @@
-import { Component } from '@angular/core';
-import{ CommonModule } from '@angular/common';
-
-interface ExamItem {
-  answer: string;
-  question: string;
-}
-
-interface ExamExercise {
-  exercise_type: string;
-  instructions: string;
-  items: ExamItem[];
-}
-
-interface ExamMock {
-  class_description: string;
-  class_id: number;
-  context: string;
-  coordinator_full_name: string | null;
-  coordinator_id: number | null;
-  date_created: string;
-  exercises: ExamExercise[];
-  id: number;
-  notes: string | null;
-  status: string;
-  teacher_full_name: string | null;
-}
+import { Component, OnInit } from '@angular/core';
+import { Location, CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { ExamDTO, Status } from '../../interfaces/exam.interface';
+import { ExamService } from '../../services/exam.service';
 
 @Component({
   selector: 'app-exam-revise',
@@ -33,156 +11,227 @@ interface ExamMock {
   styleUrl: './exam-revise.component.css'
 })
 
-export class ExamReviseComponent {
-  exam: ExamMock = {
-    class_description: 'FCE',
-    class_id: 13,
-    context:
-      `Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. Additionally, the integration of "green spaces," such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. However, critics argue that these eco-friendly developments can lead to higher property prices, potentially making city centers unaffordable for many people. Balancing environmental progress with social equality remains one of the most significant hurdles for future architects and local governments.`,
-    coordinator_full_name: 'Mozzi Feliciano',
-    coordinator_id: 1,
-    date_created: 'Sun, 01 Mar 2026 21:57:37 GMT',
-    exercises: [
-      {
-        exercise_type: 'Word Formation',
-        instructions:
-          'Use the word given in capitals at the end of each line to form a word that fits in the same line.',
-        items: [
-          {
-            answer: 'planning',
-            question:
-              'Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. PLAN'
-          },
-          {
-            answer: 'reducing',
-            question:
-              'Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. REDUCE'
-          },
-          {
-            answer: 'supporting',
-            question:
-              `Additionally, the integration of 'green spaces,' such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. SUPPORT`
-          },
-          {
-            answer: 'unaffordability',
-            question:
-              'However, critics argue that these eco-friendly developments can lead to higher property prices, potentially making city centers unaffordable for many people. UNAFFORDABLE'
-          },
-          {
-            answer: 'remaining',
-            question:
-              'Balancing environmental progress with social equality remains one of the most significant hurdles for future architects and local governments. REMAINING'
-          }
-        ]
-      },
-      {
-        exercise_type: 'Key word transformation',
-        instructions:
-          'Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. Do not change the word given. You must use between two and five words, including the word given.',
-        items: [
-          {
-            answer: 'took a break',
-            question:
-              'He read, he took a rest and then he carried on studying. TAKE'
-          },
-          {
-            answer: 'take time to reach',
-            question:
-              'Reaching a decision will take us ages. TO'
-          },
-          {
-            answer: 'don’t forget',
-            question:
-              'My secretary made me remember I had to post my application form. FORGET'
-          },
-          {
-            answer: 'used to find',
-            question:
-              'It’s getting easier for me to do the writing tasks. USED'
-          },
-          {
-            answer: 'found a solution',
-            question:
-              'We managed to solve the problem yesterday. FOUND'
-          }
-        ]
-      },
-      {
-        exercise_type: 'Cloze test with options',
-        instructions:
-          'Complete each gap in the text with one suitable word from the options given.',
-        items: [
-          {
-            answer: 'planning',
-            question:
-              'Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. PLAN (A) plans (B) planning (C) planned'
-          },
-          {
-            answer: 'reducing',
-            question:
-              'Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. REDUCE (A) reduces (B) reducing (C) reduced'
-          },
-          {
-            answer: 'supporting',
-            question:
-              `Additionally, the integration of 'green spaces,' such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. SUPPORT (A) supports (B) support (C) supported`
-          }
-        ]
-      },
-      {
-        exercise_type: 'Open cloze test',
-        instructions:
-          'Complete each gap in the text with one suitable word.',
-        items: [
-          {
-            answer: 'planning',
-            question:
-              'Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. PLAN ( )'
-          },
-          {
-            answer: 'reducing',
-            question:
-              'Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. REDUCE ( )'
-          },
-          {
-            answer: 'supporting',
-            question:
-              `Additionally, the integration of 'green spaces,' such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. SUPPORT ( )`
-          }
-        ]
-      }
-    ],
-    id: 41,
-    notes: 'Please review the wording in the transformation items and verify whether the cloze distractors feel balanced for an FCE-level student.',
-    status: 'Generating',
-    teacher_full_name: 'Mozzi Feliciano'
-  };
+export class ExamReviseComponent implements OnInit {
+  exam: ExamDTO | null = null;
+  private originalExam: ExamDTO | null = null;
+
+  loading = true;
+  saving = false;
+  loadError = '';
+  saveError = '';
+  successMessage = '';
+
+  readonly Status = Status;
+
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly examService: ExamService,
+    private readonly location: Location
+  ) {}
+
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const examId = Number(idParam);
+
+    if (!idParam || Number.isNaN(examId) || examId <= 0) {
+      this.loading = false;
+      this.loadError = 'Invalid exam id.';
+      return;
+    }
+
+    this.loadExam(examId);
+  }
 
   get totalItems(): number {
-    return this.exam.exercises.reduce((acc, exercise) => acc + exercise.items.length, 0);
+    return (
+      this.exam?.exercises.reduce(
+        (total, exercise) => total + exercise.items.length,
+        0
+      ) ?? 0
+    );
   }
 
   get teacherDisplayName(): string {
-    return this.exam.teacher_full_name ?? 'Unassigned';
+    return this.exam?.teacher_full_name?.trim() || 'Not assigned';
   }
 
   get coordinatorDisplayName(): string {
-    return this.exam.coordinator_full_name ?? 'Unassigned';
+    return this.exam?.coordinator_full_name?.trim() || 'Not assigned';
   }
 
   get createdAtLabel(): string {
-    const date = new Date(this.exam.date_created);
-
-    if (Number.isNaN(date.getTime())) {
-      return this.exam.date_created;
+    if (!this.exam?.date_created) {
+      return '—';
     }
 
-    return date.toLocaleString('en-US', {
+    const parsedDate = new Date(this.exam.date_created);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return String(this.exam.date_created);
+    }
+
+    return parsedDate.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: 'short',
       year: 'numeric',
-      month: 'long',
-      day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  get isEditable(): boolean {
+    return this.exam?.status === Status.PENDING_CORRECTION;
+  }
+
+  get modeLabel(): string {
+    return this.isEditable ? 'Editable mode' : 'Read-only mode';
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
+
+  discardChanges(): void {
+    if (!this.originalExam || !this.isEditable) {
+      return;
+    }
+
+    this.exam = this.cloneExam(this.originalExam);
+    this.saveError = '';
+    this.successMessage = '';
+    this.location.back();
+  }
+
+  onContextChange(event: Event): void {
+    if (!this.exam || !this.isEditable) {
+      return;
+    }
+
+    this.exam.context = this.readEditableContent(event);
+  }
+
+  onQuestionChange(
+    exerciseIndex: number,
+    itemIndex: number,
+    event: Event
+  ): void {
+    if (!this.exam || !this.isEditable) {
+      return;
+    }
+
+    this.exam.exercises[exerciseIndex].items[itemIndex].question =
+      this.readEditableContent(event);
+  }
+
+  onAnswerChange(
+    exerciseIndex: number,
+    itemIndex: number,
+    event: Event
+  ): void {
+    if (!this.exam || !this.isEditable) {
+      return;
+    }
+
+    this.exam.exercises[exerciseIndex].items[itemIndex].answer =
+      this.readEditableContent(event);
+  }
+
+  saveChanges(): void {
+    if (!this.exam || !this.isEditable || this.saving) {
+      return;
+    }
+
+    if (!this.validateEditableContent()) {
+      return;
+    }
+
+    this.saving = true;
+    this.saveError = '';
+    this.successMessage = '';
+
+    this.examService.submitTeacherCorrection(this.exam.id, {
+      context: this.exam.context,
+      exercises: this.exam.exercises
+    }).subscribe({
+      next: () => {
+        if (!this.exam) {
+          this.saving = false;
+          return;
+        }
+
+        this.exam.status = Status.PENDING_REVIEW;
+        this.originalExam = this.cloneExam(this.exam);
+        this.successMessage = 'Exam updated and sent back to review.';
+        this.saving = false;
+      },
+      error: (error) => {
+        this.saveError =
+          error?.error?.message ||
+          error?.error?.error ||
+          'The exam could not be saved.';
+        this.saving = false;
+      }
+    });
+  }
+
+  private loadExam(examId: number): void {
+    this.loading = true;
+    this.loadError = '';
+
+    this.examService.getFullExam(examId).subscribe({
+      next: (exam) => {
+        this.exam = this.cloneExam(exam);
+        this.originalExam = this.cloneExam(exam);
+        this.loading = false;
+      },
+      error: (error) => {
+        this.loadError =
+          error?.error?.message ||
+          error?.error?.error ||
+          'The exam could not be loaded.';
+        this.loading = false;
+      }
+    });
+  }
+
+  private validateEditableContent(): boolean {
+    if (!this.exam) {
+      this.saveError = 'Exam not loaded.';
+      return false;
+    }
+
+    if (!this.exam.context.trim()) {
+      this.saveError = 'Context cannot be empty.';
+      return false;
+    }
+
+    for (let exerciseIndex = 0; exerciseIndex < this.exam.exercises.length; exerciseIndex += 1) {
+      const exercise = this.exam.exercises[exerciseIndex];
+
+      for (let itemIndex = 0; itemIndex < exercise.items.length; itemIndex += 1) {
+        const item = exercise.items[itemIndex];
+
+        if (!item.question.trim()) {
+          this.saveError = `Question ${itemIndex + 1} in "${exercise.exercise_type}" cannot be empty.`;
+          return false;
+        }
+
+        if (!item.answer.trim()) {
+          this.saveError = `Answer ${itemIndex + 1} in "${exercise.exercise_type}" cannot be empty.`;
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private readEditableContent(event: Event): string {
+    const target = event.target as HTMLElement | null;
+    return (target?.innerText ?? '').replace(/\u00A0/g, ' ');
+  }
+
+  private cloneExam(exam: ExamDTO): ExamDTO {
+    return JSON.parse(JSON.stringify(exam)) as ExamDTO;
   }
 }

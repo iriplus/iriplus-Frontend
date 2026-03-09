@@ -14,7 +14,7 @@ export class ExamService {
   constructor(private http: HttpClient) {}
 
   getAllExams(): Observable<ExamDTO[]> {
-    return this.http.get<ExamDTO[]>(`${this.EXAM_URL}/coordinator`, { withCredentials: true });
+    return this.http.get<ExamDTO[]>(`${this.EXAM_URL}`, { withCredentials: true });
   }
 
   getTeacherExams(): Observable<ExamDTO[]> {
@@ -72,5 +72,9 @@ export class ExamService {
 
   sendToCorrection(examId: number, notes: string): Observable<any> {
     return this.http.patch(`${this.EXAM_URL}/${examId}/send-to-correction`,{ notes },{ withCredentials: true });
+  }
+
+  submitTeacherCorrection(examId: number, payload: Pick<ExamDTO, 'context' | 'exercises'>): Observable<number> {
+    return this.http.patch<number>(`${this.EXAM_URL}/${examId}/submit-correction`, payload, { withCredentials: true });
   }
 }

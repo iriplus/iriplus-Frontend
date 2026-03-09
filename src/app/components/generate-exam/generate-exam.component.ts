@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ExamService } from '../../services/exam.service';
 import { Class } from '../../interfaces/class.interface';
-import { ExamDTO, ExamExerciseInstanceDTO, ExerciseTypeDTO } from '../../interfaces/exam.interface';
+import { ExamDTO, ExerciseTypeDTO } from '../../interfaces/exam.interface';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../services/auth.service';
 import { UserType } from '../../interfaces/user.interface';
+import { Router } from '@angular/router';
 
 
 type Step = 'form' | 'loading' | 'preview' | 'edit';
@@ -31,7 +32,7 @@ export class GenerateExamComponent implements OnInit {
 
   changeRequest: FormControl<string | null>;
 
-  constructor(private fb: FormBuilder, private examService: ExamService, private authService: AuthService, private exerciseService: ExerciseService) {
+  constructor(private fb: FormBuilder, private examService: ExamService, private authService: AuthService, private exerciseService: ExerciseService, private router: Router) {
     this.form = this.fb.group({
       classId: ['', Validators.required],
       context: ['', Validators.required],
@@ -186,5 +187,6 @@ export class GenerateExamComponent implements OnInit {
     this.showAnswers = false;
     this.form.reset();
     this.changeRequest.reset();
+    this.router.navigate(['/exam']);
   }
 }

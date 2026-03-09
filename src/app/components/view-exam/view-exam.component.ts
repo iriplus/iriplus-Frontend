@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ExamService } from '../../services/exam.service';
+import { AuthService } from '../../services/auth.service';
 import { ExamDTO, ExamItemDTO } from '../../interfaces/exam.interface';
-
-type UserType = 'STUDENT' | 'TEACHER' | 'COORDINATOR';
+import { UserType } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-view-exam',
@@ -12,24 +12,42 @@ type UserType = 'STUDENT' | 'TEACHER' | 'COORDINATOR';
   styleUrls: ['./view-exam.component.css'],
   imports: [ CommonModule]
 })
+
 export class ViewExamComponent implements OnInit {
   exam: ExamDTO | null = null;
 
   loading = true;
   error = '';
   exportMenuOpen = false;
-
-  // Replace later with your real auth/session source
-  userType: UserType = 'TEACHER';
+  userType: UserType = UserType.STUDENT;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly examService: ExamService
+    private readonly examService: ExamService,
+    private readonly authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.loadCurrentUser();
     this.loadExam();
+  }
+
+  loadCurrentUser(): void {
+    this.authService.loadMe().subscribe({
+      next: (user) => {
+        if (!user) {
+          this.error = 'Unable to load current user.';
+          return;
+        }
+
+        this.userType = this.normalizeUserType(user.type);
+      },
+      error: (err) => {
+        console.error('Error loading current user:', err);
+        this.error = 'Error loading current user.';
+      }
+    });
   }
 
   loadExam(): void {
@@ -66,15 +84,15 @@ export class ViewExamComponent implements OnInit {
   }
 
   get isStudent(): boolean {
-    return this.userType === 'STUDENT';
+    return this.userType === UserType.STUDENT;
   }
 
   get isTeacher(): boolean {
-    return this.userType === 'TEACHER';
+    return this.userType === UserType.TEACHER;
   }
 
   get isCoordinator(): boolean {
-    return this.userType === 'COORDINATOR';
+    return this.userType === UserType.COORDINATOR;
   }
 
   get showStatus(): boolean {
@@ -215,5 +233,14 @@ export class ViewExamComponent implements OnInit {
 
   private normalizeStatus(status: string | undefined): string {
     return (status || '').trim().toLowerCase();
+  }
+
+  private normalizeUserType(value: unknown): UserType {
+    const normalized = String(value ?? '').trim().toUpperCase();
+
+    if (normalized === 'COORDINATOR') return UserType.COORDINATOR;
+    if (normalized === 'TEACHER') return UserType.TEACHER;
+    
+    return UserType.STUDENT;
   }
 }

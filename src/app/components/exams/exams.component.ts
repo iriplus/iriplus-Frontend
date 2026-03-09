@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { UserType } from '../../interfaces/user.interface';
 import { ExamService } from '../../services/exam.service';
 import { AuthService } from '../../services/auth.service';
-
-type UserType = 'COORDINATOR' | 'TEACHER' | 'STUDENT' | null;
 
 interface ExamListItem {
   id: number;
@@ -41,7 +39,7 @@ export class ExamsComponent implements OnInit {
   classes: { id: number; description: string }[] = [];
 
   currentUserId: number | null = null;
-  currentUserType: UserType = null;
+  currentUserType: UserType = UserType.STUDENT;
 
   constructor(
     private examService: ExamService,
@@ -54,15 +52,15 @@ export class ExamsComponent implements OnInit {
   }
 
   get isCoordinator(): boolean {
-    return this.currentUserType === 'COORDINATOR';
+    return this.currentUserType === UserType.COORDINATOR;
   }
 
   get isTeacher(): boolean {
-    return this.currentUserType === 'TEACHER';
+    return this.currentUserType === UserType.TEACHER;
   }
 
   get isStudent(): boolean {
-    return this.currentUserType === 'STUDENT';
+    return this.currentUserType === UserType.STUDENT;
   }
 
   get pageTitle(): string {
@@ -141,11 +139,10 @@ export class ExamsComponent implements OnInit {
   private normalizeUserType(value: unknown): UserType {
     const normalized = String(value ?? '').trim().toUpperCase();
 
-    if (normalized === 'COORDINATOR') return 'COORDINATOR';
-    if (normalized === 'TEACHER') return 'TEACHER';
-    if (normalized === 'STUDENT') return 'STUDENT';
-
-    return null;
+    if (normalized === 'COORDINATOR') return UserType.COORDINATOR;
+    if (normalized === 'TEACHER') return UserType.TEACHER;
+    
+    return UserType.STUDENT;
   }
 
   loadCurrentUser(): void {
@@ -409,5 +406,9 @@ export class ExamsComponent implements OnInit {
       default:
         return 'status-default';
     }
+  }
+
+  goToGenerateExam(): void {
+    this.router.navigate(['/generate-exam']);
   }
 }
