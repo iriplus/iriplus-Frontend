@@ -436,3 +436,16 @@
     align-items: flex-start;
   }
 }
+
+.revise-exam__state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+
+.revise-exam__helper-text--success {
+  margin-top: 14px;
+  color: var(--color-slate);
+  font-weight: 600;
+}

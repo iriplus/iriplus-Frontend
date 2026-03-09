@@ -1,171 +1,214 @@
 <div class="app-page app-page--gradient revise-exam-page">
   <div class="app-card app-card--xl revise-exam">
 
-    <div class="revise-exam__topbar">
-      <button class="btn-outline btn-rounded" type="button">
-        ← Back to exams
-      </button>
-
-      <div class="revise-exam__topbar-right">
-        <span class="revise-exam__mode-pill">Editable mode</span>
-        <span class="revise-exam__status">
-          <span class="revise-exam__status-dot"></span>
-          {{ exam.status }}a
-        </span>
-      </div>
+    <div *ngIf="loading" class="revise-exam__state">
+      Loading exam...
     </div>
 
-    <header class="app-header app-header--left revise-exam__header">
-      <p class="revise-exam__eyebrow">Teacher revision workspace</p>
-      <h1 class="app-header__title">Revise Exam #{{ exam.id }}</h1>
-      <p class="app-header__subtitle">
-        Edit the exam content directly in place before saving the final version.
-      </p>
-    </header>
+    <div *ngIf="!loading && loadError" class="app-error">
+      {{ loadError }}
+    </div>
 
-    <section class="revise-exam__meta-grid">
-      <div class="revise-exam__meta-card">
-        <span class="revise-exam__meta-label">Class</span>
-        <span class="revise-exam__meta-value">{{ exam.class_description }}</span>
+    <ng-container *ngIf="!loading && !loadError && exam">
+
+      <div class="revise-exam__topbar">
+        <button class="btn-outline btn-rounded" type="button" (click)="goBack()">
+          ← Back to exams
+        </button>
+
+        <div class="revise-exam__topbar-right">
+          <span class="revise-exam__mode-pill">{{ modeLabel }}</span>
+          <span class="revise-exam__status">
+            <span class="revise-exam__status-dot"></span>
+            {{ exam.status }}
+          </span>
+        </div>
       </div>
 
-      <div class="revise-exam__meta-card">
-        <span class="revise-exam__meta-label">Teacher</span>
-        <span class="revise-exam__meta-value">{{ teacherDisplayName }}</span>
-      </div>
+      <header class="app-header app-header--left revise-exam__header">
+        <p class="revise-exam__eyebrow">Teacher revision workspace</p>
+        <h1 class="app-header__title">Revise Exam #{{ exam.id }}</h1>
+        <p class="app-header__subtitle">
+          Edit the exam content directly in place before saving the final version.
+        </p>
+      </header>
 
-      <div class="revise-exam__meta-card">
-        <span class="revise-exam__meta-label">Coordinator</span>
-        <span class="revise-exam__meta-value">{{ coordinatorDisplayName }}</span>
-      </div>
-
-      <div class="revise-exam__meta-card">
-        <span class="revise-exam__meta-label">Created on</span>
-        <span class="revise-exam__meta-value">{{ createdAtLabel }}</span>
-      </div>
-    </section>
-
-    <section class="revise-exam__layout">
-      <div class="revise-exam__main">
-        <div class="revise-exam__panel revise-exam__panel--context">
-          <div class="revise-exam__panel-header">
-            <div>
-              <h2 class="revise-exam__panel-title">Context</h2>
-              <p class="revise-exam__panel-subtitle">
-                Base text used to build the exercises.
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="revise-exam__editable revise-exam__editable--context"
-            contenteditable="true"
-            spellcheck="true"
-            role="textbox"
-            aria-multiline="true"
-            [textContent]="exam.context"
-          ></div>
+      <section class="revise-exam__meta-grid">
+        <div class="revise-exam__meta-card">
+          <span class="revise-exam__meta-label">Class</span>
+          <span class="revise-exam__meta-value">{{ exam.class_description }}</span>
         </div>
 
-        <div class="revise-exam__panel">
-          <div class="revise-exam__panel-header">
-            <div>
-              <h2 class="revise-exam__panel-title">Exam Content</h2>
-              <p class="revise-exam__panel-subtitle">
-                Click on any question or answer to simulate inline editing.
-              </p>
-            </div>
+        <div class="revise-exam__meta-card">
+          <span class="revise-exam__meta-label">Teacher</span>
+          <span class="revise-exam__meta-value">{{ teacherDisplayName }}</span>
+        </div>
 
-            <div class="revise-exam__panel-pills">
-              <span class="revise-exam__pill">{{ exam.exercises.length }} exercise types</span>
-              <span class="revise-exam__pill">{{ totalItems }} total items</span>
-            </div>
-          </div>
+        <div class="revise-exam__meta-card">
+          <span class="revise-exam__meta-label">Coordinator</span>
+          <span class="revise-exam__meta-value">{{ coordinatorDisplayName }}</span>
+        </div>
 
-          <div
-            *ngFor="let exercise of exam.exercises; let i = index"
-            class="revise-exam__section"
-          >
-            <div class="revise-exam__section-bar">
-              <div class="revise-exam__section-index">{{ i + 1 }}</div>
+        <div class="revise-exam__meta-card">
+          <span class="revise-exam__meta-label">Created on</span>
+          <span class="revise-exam__meta-value">{{ createdAtLabel }}</span>
+        </div>
+      </section>
 
-              <div class="revise-exam__section-heading">
-                <h3>{{ exercise.exercise_type }}</h3>
+      <section class="revise-exam__layout">
+        <div class="revise-exam__main">
+          <div class="revise-exam__panel revise-exam__panel--context">
+            <div class="revise-exam__panel-header">
+              <div>
+                <h2 class="revise-exam__panel-title">Context</h2>
+                <p class="revise-exam__panel-subtitle">
+                  Base text used to build the exercises.
+                </p>
               </div>
             </div>
 
-            <p class="revise-exam__section-instructions">
-              {{ exercise.instructions }}
+            <div
+              class="revise-exam__editable revise-exam__editable--context"
+              [attr.contenteditable]="isEditable ? 'true' : 'false'"
+              spellcheck="true"
+              role="textbox"
+              aria-multiline="true"
+              [textContent]="exam.context"
+              (blur)="onContextChange($event)"
+            ></div>
+          </div>
+
+          <div class="revise-exam__panel">
+            <div class="revise-exam__panel-header">
+              <div>
+                <h2 class="revise-exam__panel-title">Exam Content</h2>
+                <p class="revise-exam__panel-subtitle">
+                  Click on any question or answer to edit it directly.
+                </p>
+              </div>
+
+              <div class="revise-exam__panel-pills">
+                <span class="revise-exam__pill">{{ exam.exercises.length }} exercise types</span>
+                <span class="revise-exam__pill">{{ totalItems }} total items</span>
+              </div>
+            </div>
+
+            <div
+              *ngFor="let exercise of exam.exercises; let i = index"
+              class="revise-exam__section"
+            >
+              <div class="revise-exam__section-bar">
+                <div class="revise-exam__section-index">{{ i + 1 }}</div>
+
+                <div class="revise-exam__section-heading">
+                  <h3>{{ exercise.exercise_type }}</h3>
+                </div>
+              </div>
+
+              <p class="revise-exam__section-instructions">
+                {{ exercise.instructions }}
+              </p>
+
+              <div class="revise-exam__questions">
+                <article
+                  *ngFor="let item of exercise.items; let j = index"
+                  class="revise-exam__question"
+                >
+                  <div class="revise-exam__question-index">{{ j + 1 }}</div>
+
+                  <div class="revise-exam__question-body">
+                    <label class="revise-exam__field-label">Question</label>
+                    <div
+                      class="revise-exam__editable"
+                      [attr.contenteditable]="isEditable ? 'true' : 'false'"
+                      spellcheck="true"
+                      role="textbox"
+                      aria-multiline="true"
+                      [textContent]="item.question"
+                      (blur)="onQuestionChange(i, j, $event)"
+                    ></div>
+
+                    <label class="revise-exam__field-label revise-exam__field-label--answer">
+                      Correct answer
+                    </label>
+                    <div
+                      class="revise-exam__editable revise-exam__editable--answer"
+                      [attr.contenteditable]="isEditable ? 'true' : 'false'"
+                      spellcheck="true"
+                      role="textbox"
+                      aria-multiline="true"
+                      [textContent]="item.answer"
+                      (blur)="onAnswerChange(i, j, $event)"
+                    ></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="revise-exam__sidebar">
+          <div class="revise-exam__side-card revise-exam__side-card--notes">
+            <div class="revise-exam__side-header">
+              <h3>Coordinator Notes</h3>
+              <span class="revise-exam__note-badge">Internal</span>
+            </div>
+
+            <p class="revise-exam__notes-text" *ngIf="exam.notes; else emptyNotes">
+              {{ exam.notes }}
             </p>
 
-            <div class="revise-exam__questions">
-              <article
-                *ngFor="let item of exercise.items; let j = index"
-                class="revise-exam__question"
+            <ng-template #emptyNotes>
+              <div class="revise-exam__empty-notes">
+                No coordinator notes available for this exam yet.
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="revise-exam__side-card">
+            <div class="revise-exam__side-header">
+              <h3>Actions</h3>
+            </div>
+
+            <p class="revise-exam__helper-text" *ngIf="!isEditable">
+              This exam is no longer editable because its current status is {{ exam.status }}.
+            </p>
+
+            <div class="revise-exam__actions">
+              <button
+                class="btn-outline btn-rounded"
+                type="button"
+                (click)="discardChanges()"
+                [disabled]="saving || !isEditable"
               >
-                <div class="revise-exam__question-index">{{ j + 1 }}</div>
+                Discard changes
+              </button>
 
-                <div class="revise-exam__question-body">
-                  <label class="revise-exam__field-label">Question</label>
-                  <div
-                    class="revise-exam__editable"
-                    contenteditable="true"
-                    spellcheck="true"
-                    role="textbox"
-                    aria-multiline="true"
-                    [textContent]="item.question"
-                  ></div>
+              <button
+                class="btn-primary btn-rounded btn-with-spinner"
+                type="button"
+                (click)="saveChanges()"
+                [disabled]="saving || !isEditable"
+                [class.btn-loading]="saving"
+              >
+                <span *ngIf="saving" class="app-spinner"></span>
+                <span>{{ saving ? 'Saving...' : 'Save and send to review' }}</span>
+              </button>
+            </div>
 
-                  <label class="revise-exam__field-label revise-exam__field-label--answer">
-                    Correct answer
-                  </label>
-                  <div
-                    class="revise-exam__editable revise-exam__editable--answer"
-                    contenteditable="true"
-                    spellcheck="true"
-                    role="textbox"
-                    aria-multiline="true"
-                    [textContent]="item.answer"
-                  ></div>
-                </div>
-              </article>
+            <p
+              *ngIf="successMessage"
+              class="revise-exam__helper-text revise-exam__helper-text--success"
+            >
+              {{ successMessage }}
+            </p>
+
+            <div *ngIf="saveError" class="app-error">
+              {{ saveError }}
             </div>
           </div>
-        </div>
-      </div>
-
-      <aside class="revise-exam__sidebar">
-        <div class="revise-exam__side-card revise-exam__side-card--notes">
-          <div class="revise-exam__side-header">
-            <h3>Coordinator Notes</h3>
-            <span class="revise-exam__note-badge">Internal</span>
-          </div>
-
-          <p class="revise-exam__notes-text" *ngIf="exam.notes; else emptyNotes">
-            {{ exam.notes }}
-          </p>
-
-          <ng-template #emptyNotes>
-            <div class="revise-exam__empty-notes">
-              No coordinator notes available for this exam yet.
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="revise-exam__side-card">
-          <div class="revise-exam__side-header">
-            <h3>Actions</h3>
-          </div>
-          <div class="revise-exam__actions">
-            <button class="btn-outline btn-rounded" type="button">
-              Discard
-            </button>
-            <button class="btn-primary btn-rounded" type="button">
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </aside>
-    </section>
+        </aside>
+      </section>
+    </ng-container>
   </div>
 </div>

@@ -65,4 +65,8 @@ export class ExamService {
   sendToCorrection(examId: number, notes: string): Observable<any> {
     return this.http.patch(`${this.EXAM_URL}/${examId}/send-to-correction`,{ notes },{ withCredentials: true });
   }
+
+  submitTeacherCorrection(examId: number, payload: Pick<ExamDTO, 'context' | 'exercises'>): Observable<number> {
+    return this.http.patch<number>(`${this.EXAM_URL}/${examId}/submit-correction`, payload, { withCredentials: true });
+  }
 }
