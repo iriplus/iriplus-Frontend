@@ -2,7 +2,9 @@ export enum Status {
   PENDING_REVIEW = 'Pending Review',
   ON_REVIEW = 'On Review',
   ACCEPTED = 'Accepted',
-  PENDING_CORRECTION = 'Pending Correction'
+  PENDING_CORRECTION = 'Pending Correction',
+  ON_CORRECTION = 'On Correction',
+  STUDENT_EXAM = 'Student Exam'
 }
 
 export interface ExamItemDTO {

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { UserType } from '../../interfaces/user.interface';
 import { ExamService } from '../../services/exam.service';
 import { AuthService } from '../../services/auth.service';
+import { Status } from '../../interfaces/exam.interface';
 
 interface ExamListItem {
   id: number;
@@ -356,7 +357,7 @@ export class ExamsComponent implements OnInit {
   }
 
   assignExam(id: number): void {
-    this.examService.sendToReview(id).subscribe({
+    this.examService.setOnReview(id).subscribe({
       next: () => {
         this.router.navigate(['/exam-review', id]);
       },
@@ -372,8 +373,12 @@ export class ExamsComponent implements OnInit {
   }
 
   openTeacherExam(exam: ExamListItem): void {
-    if (exam.status === 'Pending Correction') {
-      this.router.navigate([`/exam-revise/${exam.id}`]);
+    if (exam.status === Status.PENDING_CORRECTION) {
+      this.examService.setOnCorrection(exam.id).subscribe({
+        next: () => {
+          this.router.navigate([`/exam-revise/${exam.id}`]);
+        }
+      });
       return;
     }
     this.router.navigate([`/view-exam/${exam.id}`]);

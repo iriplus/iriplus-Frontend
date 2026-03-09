@@ -45,6 +45,14 @@ export class ExamService {
     return this.http.post(`${this.EXAM_URL}/${id}/refine`, {feedback}, {withCredentials: true});
   }
 
+  setOnReview(examId: number): Observable<any> {
+    return this.http.patch(`${this.EXAM_URL}/${examId}/set-on-review`,{}, {withCredentials: true});
+  }
+
+  setOnCorrection(examId: number): Observable<any> {
+    return this.http.patch(`${this.EXAM_URL}/${examId}/set-on-correction`,{}, {withCredentials: true});
+  }
+
   sendToReview(examId: number): Observable<any> {
     return this.http.patch(`${this.EXAM_URL}/${examId}/send-to-review`,{}, {withCredentials: true});
   }
@@ -55,6 +63,10 @@ export class ExamService {
 
   leaveReview(examId: number): Observable<any> {
   return this.http.patch(`${this.EXAM_URL}/${examId}/leave-review`,{},{ withCredentials: true });
+  }
+
+  leaveCorrection(examId: number): Observable<any> {
+    return this.http.patch(`${this.EXAM_URL}/${examId}/leave-correction`,{},{ withCredentials: true });
   }
 
   acceptExam(examId: number): Observable<any> {
@@ -68,5 +80,9 @@ export class ExamService {
 
   submitTeacherCorrection(examId: number, payload: Pick<ExamDTO, 'context' | 'exercises'>): Observable<number> {
     return this.http.patch<number>(`${this.EXAM_URL}/${examId}/submit-correction`, payload, { withCredentials: true });
+  }
+
+  exportExam(examId: number, format: string): Observable<Blob> {
+    return this.http.get(`${this.EXAM_URL}/${examId}/export/${format}`, { responseType: 'blob', withCredentials: true });
   }
 }

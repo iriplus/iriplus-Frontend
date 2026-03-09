@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Location, CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ExamDTO, Status } from '../../interfaces/exam.interface';
 import { ExamService } from '../../services/exam.service';
 
@@ -14,7 +14,7 @@ import { ExamService } from '../../services/exam.service';
 export class ExamReviseComponent implements OnInit {
   exam: ExamDTO | null = null;
   private originalExam: ExamDTO | null = null;
-
+  examId = 0;
   loading = true;
   saving = false;
   loadError = '';
@@ -26,12 +26,14 @@ export class ExamReviseComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly examService: ExamService,
-    private readonly location: Location
+    private readonly location: Location,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     const examId = Number(idParam);
+    this.examId = examId;
 
     if (!idParam || Number.isNaN(examId) || examId <= 0) {
       this.loading = false;
@@ -80,7 +82,7 @@ export class ExamReviseComponent implements OnInit {
   }
 
   get isEditable(): boolean {
-    return this.exam?.status === Status.PENDING_CORRECTION;
+    return this.exam?.status === Status.ON_CORRECTION;
   }
 
   get modeLabel(): string {
@@ -88,7 +90,11 @@ export class ExamReviseComponent implements OnInit {
   }
 
   goBack(): void {
-    this.location.back();
+    this.examService.leaveCorrection(this.examId).subscribe({
+      next: () => {
+        this.location.back();
+      }
+    });
   }
 
   discardChanges(): void {
@@ -163,6 +169,7 @@ export class ExamReviseComponent implements OnInit {
         this.originalExam = this.cloneExam(this.exam);
         this.successMessage = 'Exam updated and sent back to review.';
         this.saving = false;
+        this.router.navigate(['/exam']);
       },
       error: (error) => {
         this.saveError =

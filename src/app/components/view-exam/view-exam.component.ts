@@ -220,7 +220,18 @@ export class ViewExamComponent implements OnInit {
 
   onExport(format: 'pdf' | 'docx'): void {
     this.exportMenuOpen = false;
-    console.log(`Export clicked: ${format}`);
+    this.examService.exportExam(this.exam!.id, format).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `exam-${this.exam!.id}.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+    });
   }
 
   goBack(): void {
