@@ -37,6 +37,14 @@ export class ExamService {
     return this.http.post(`${this.EXAM_URL}/generate`, exam_data, {withCredentials: true});
   }
 
+  generateStudentExam(exam_data: { class_id: number; exercise_type_ids: number[] }): Observable<{ exam_id: number }> {
+    return this.http.post<{ exam_id: number }>(
+      `${this.EXAM_URL}/generate_student`,
+      exam_data,
+      { withCredentials: true }
+    );
+  }
+
   getFullExam(id: number): Observable<ExamDTO> {
     return this.http.get<ExamDTO>(`${this.EXAM_URL}/${id}/full`, {withCredentials: true})
   }

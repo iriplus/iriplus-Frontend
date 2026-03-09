@@ -13,6 +13,7 @@ import { TeachersComponent } from './components/teachers/teachers.component';
 import { ClassesComponent } from './components/classes/classes.component';
 import { LevelsComponent } from './components/levels/levels.component';
 import { GenerateExamComponent } from './components/generate-exam/generate-exam.component';
+import { GenerateExamStudentComponent } from './components/generate-exam-student/generate-exam-student.component';
 import { ExamsComponent } from './components/exams/exams.component';
 import { ExamReviewComponent } from './components/exam-review/exam-review.component';
 import { UserType } from './interfaces/user.interface';
@@ -37,6 +38,12 @@ export const routes: Routes = [
         component: GenerateExamComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.TEACHER, UserType.COORDINATOR] }
+      },
+      {
+        path: 'generate-exam-student',
+        component: GenerateExamStudentComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.STUDENT] }
       },
 
       {
