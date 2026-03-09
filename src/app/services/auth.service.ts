@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, of, Observable, tap } from 'rxjs';
+import { catchError, map, of, Observable, tap, shareReplay, finalize } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Login, LoginResponse } from '../interfaces/login.interface';
 import { User, UserType } from '../interfaces/user.interface';
@@ -10,6 +10,8 @@ export class AuthService {
   private authenticated: boolean | null = null;
   private currentUser: User | null = null;
   private userType: UserType | null = null;
+
+  private meRequest$: Observable<User | null> | null = null;
 
   private resetPasswordUntil: number | null = null;
   private readonly RESET_PASSWORD_TTL_MS = 60 * 60 * 1000;
@@ -84,25 +86,21 @@ export class AuthService {
   }
 
   loadMe(force = false): Observable<User | null> {
-    console.log('step 1');
     if (!force && this.currentUser) {
       return of(this.currentUser);
     }
-
-    console.log('step 2');
 
     if (!force && this.authenticated === false) {
       return of(null);
     }
 
-    console.log('step 3');
+    if (!force && this.meRequest$) {
+      return this.meRequest$;
+    }
 
-    return this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
+    const request$ = this.http.get<User>(this.ME_URL, { withCredentials: true }).pipe(
       map((rawUser) => {
-        console.log('Raw user data from /me:', rawUser);
         const user = this.normalizeMeResponse(rawUser);
-
-        console.log('Normalized user data:', user);
 
         if (!user) {
           this.clearAuthState();
@@ -116,8 +114,15 @@ export class AuthService {
         console.log('Error fetching /me:', err);
         this.clearAuthState();
         return of(null);
-      })
+      }),
+      finalize(() => {
+        this.meRequest$ = null;
+      }),
+      shareReplay(1)
     );
+
+    this.meRequest$ = request$;
+    return request$;
   }
 
   setAuthenticated(value: boolean): void {
@@ -168,7 +173,10 @@ export class AuthService {
 
   logout() {
     return this.http.post(this.LOGOUT_URL, {}, { withCredentials: true }).pipe(
-      tap(() => this.clearAuthState())
+      tap(() => {
+        this.meRequest$ = null;
+        this.clearAuthState()
+      })
     );
   }
 

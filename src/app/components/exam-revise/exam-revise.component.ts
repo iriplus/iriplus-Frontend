@@ -99,6 +99,7 @@ export class ExamReviseComponent implements OnInit {
     this.exam = this.cloneExam(this.originalExam);
     this.saveError = '';
     this.successMessage = '';
+    this.location.back();
   }
 
   onContextChange(event: Event): void {
