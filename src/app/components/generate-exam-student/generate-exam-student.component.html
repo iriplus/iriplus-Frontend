@@ -1,0 +1,101 @@
+<div class="app-page app-page--background generate-exam-page">
+  <section class="app-card app-card--xl app-card--elevated generate-exam-card">
+
+    <div class="app-header app-header--center generate-exam-header">
+      <div class="app-header__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <path d="M14 2v6h6"></path>
+          <path d="M8 13h8"></path>
+          <path d="M8 17h8"></path>
+          <path d="M8 9h2"></path>
+        </svg>
+      </div>
+
+      <h1 class="app-header__title">New Exam</h1>
+      <p class="app-header__subtitle">
+        Select the exercise types you want to practice. Your exam will be generated based on your course.
+      </p>
+    </div>
+
+    <div class="app-actions-bar generate-exam-toolbar" *ngIf="step === 'form'">
+      <div class="generate-exam-toolbar__info">
+        <h2>Preferences</h2>
+        <p>Choose the exercise types you want to include in your exam.</p>
+      </div>
+
+      <div class="generate-exam-toolbar__actions">
+        <button type="button" class="btn-outline btn-rounded btn-lg" (click)="cancel()">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary btn-rounded btn-lg"
+          (click)="generateExam()"
+          [disabled]="!classId"
+        >
+          Generate
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="app-error generate-exam-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- ================= FORM ================= -->
+    <div class="generate-exam-content" *ngIf="step === 'form'">
+      <form [formGroup]="form" class="generate-exam-form">
+
+        <section class="generate-exam-panel">
+          <div class="generate-exam-panel__header">
+            <h3>Exercise types</h3>
+            <p>Select at least one type to include in your exam.</p>
+          </div>
+
+          <div
+            class="exercise-types-box"
+            [ngClass]="{ 'exercise-types-error': form.get('exerciseTypeIds')?.touched && form.get('exerciseTypeIds')?.invalid }"
+          >
+            <label class="exercise-type-item" *ngFor="let type of exerciseTypes">
+              <input
+                type="checkbox"
+                [checked]="form.get('exerciseTypeIds')?.value?.includes(type.id)"
+                (change)="onExerciseToggle($event, type.id)"
+              />
+              <span>{{ type.name }}</span>
+            </label>
+          </div>
+
+          <span class="field-error" *ngIf="form.get('exerciseTypeIds')?.touched && form.get('exerciseTypeIds')?.invalid">
+            Select at least one exercise type.
+          </span>
+        </section>
+
+      </form>
+    </div>
+
+    <!-- ================= LOADING ================= -->
+    <div class="generate-exam-content" *ngIf="step === 'loading'">
+      <div class="generate-exam-loading">
+        <div class="generate-exam-loading__icon">
+          <span class="app-spinner"></span>
+        </div>
+
+        <h2>Generating exam</h2>
+        <p>This may take a moment while your exam is being prepared.</p>
+
+        <div class="progress-bar" aria-label="Loading">
+          <div class="progress-bar-fill"></div>
+        </div>
+
+        <div class="loading-inline">
+          <span>Working on your exam...</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>

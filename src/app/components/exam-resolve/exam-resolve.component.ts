@@ -1,31 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
-interface ExamItem {
-  answer: string;
-  question: string;
-}
-
-interface ExamExercise {
-  exercise_type: string;
-  instructions: string;
-  items: ExamItem[];
-}
-
-interface ExamMock {
-  class_description: string;
-  class_id: number;
-  context: string;
-  coordinator_full_name: string | null;
-  coordinator_id: number | null;
-  date_created: string;
-  exercises: ExamExercise[];
-  id: number;
-  notes: string | null;
-  status: string;
-  teacher_full_name: string | null;
-}
+import { ExamService } from '../../services/exam.service';
+import { AuthService } from '../../services/auth.service';
+import { ExamDTO, ExamExerciseInstanceDTO, ExamItemDTO } from '../../interfaces/exam.interface';
 
 interface ResolveItemView {
   promptBefore: string;
@@ -43,143 +23,80 @@ interface ResolveExerciseView {
 
 @Component({
   selector: 'app-exam-resolve',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './exam-resolve.component.html',
   styleUrl: './exam-resolve.component.css'
 })
+export class ExamResolveComponent implements OnInit {
+  studentName = '';
+  exam: ExamDTO | null = null;
+  exerciseViews: ResolveExerciseView[] = [];
+  loading = true;
+  errorMessage = '';
 
-export class ExamResolveComponent {
-  studentName = 'Emma Carter';
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private examService: ExamService,
+    private authService: AuthService
+  ) {}
 
-  exam: ExamMock = {
-    class_description: 'FCE',
-    class_id: 13,
-    context:
-      `Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. Additionally, the integration of "green spaces," such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. However, critics argue that these eco-friendly developments can lead to higher property prices, potentially making city centers unaffordable for many people. Balancing environmental progress with social equality remains one of the most significant hurdles for future architects and local governments.`,
-    coordinator_full_name: null,
-    coordinator_id: null,
-    date_created: 'Sun, 01 Mar 2026 21:57:37 GMT',
-    exercises: [
-      {
-        exercise_type: 'Word Formation',
-        instructions:
-          'Use the word given in capitals at the end of each line to form a word that fits in the same line.',
-        items: [
-          {
-            answer: 'planning',
-            question:
-              'Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. PLAN'
-          },
-          {
-            answer: 'reducing',
-            question:
-              'Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. REDUCE'
-          },
-          {
-            answer: 'supporting',
-            question:
-              `Additionally, the integration of 'green spaces,' such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. SUPPORT`
-          },
-          {
-            answer: 'unaffordability',
-            question:
-              'However, critics argue that these eco-friendly developments can lead to higher property prices, potentially making city centers unaffordable for many people. UNAFFORDABLE'
-          },
-          {
-            answer: 'remaining',
-            question:
-              'Balancing environmental progress with social equality remains one of the most significant hurdles for future architects and local governments. REMAINING'
-          }
-        ]
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.studentName = [user.name, user.surname].filter(Boolean).join(' ') || 'Student';
+    } else {
+      this.authService.loadMe().subscribe((u) => {
+        if (u) {
+          this.studentName = [u.name, u.surname].filter(Boolean).join(' ') || 'Student';
+        }
+      });
+    }
+
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const examId = idParam ? parseInt(idParam, 10) : null;
+
+    if (examId == null || isNaN(examId)) {
+      this.errorMessage = 'Invalid exam ID.';
+      this.loading = false;
+      return;
+    }
+
+    // #region agent log
+    fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:subscribe-start',message:'getFullExam subscribe called',data:{examId},hypothesisId:'H2',timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    this.examService.getFullExam(examId).subscribe({
+      next: (exam) => {
+        // #region agent log
+        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:next-start',message:'getFullExam next received',data:{hasExercises:!!exam?.exercises?.length,hasGenerated:!!(exam as any)?.generated_exercises?.length,exerciseCount:exam?.exercises?.length ?? 0},hypothesisId:'H2',timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        this.exam = exam;
+        const exercises = exam.exercises?.length
+          ? exam.exercises
+          : (exam as { generated_exercises?: ExamExerciseInstanceDTO[] }).generated_exercises ?? [];
+        // #region agent log
+        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:before-map',message:'before exercises map',data:{exerciseCount:exercises.length,firstItemHasAnswer:exercises[0]?.items?.[0]?.['answer']!==undefined},hypothesisId:'H1,H4',timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        this.exerciseViews = exercises.map((exercise) => ({
+          exercise_type: exercise.exercise_type,
+          instructions: exercise.instructions,
+          items: exercise.items.map((item) => this.buildResolveItem(item))
+        }));
+        this.loading = false;
+        // #region agent log
+        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:next-done',message:'loading=false set',data:{},hypothesisId:'H5',timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
       },
-      {
-        exercise_type: 'Key word transformation',
-        instructions:
-          'Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. Do not change the word given. You must use between two and five words, including the word given.',
-        items: [
-          {
-            answer: 'took a break',
-            question:
-              'He read, he took a rest and then he carried on studying. TAKE'
-          },
-          {
-            answer: 'take time to reach',
-            question:
-              'Reaching a decision will take us ages. TO'
-          },
-          {
-            answer: "don't forget",
-            question:
-              'My secretary made me remember I had to post my application form. FORGET'
-          },
-          {
-            answer: 'used to find',
-            question:
-              "It's getting easier for me to do the writing tasks. USED"
-          },
-          {
-            answer: 'found a solution',
-            question:
-              'We managed to solve the problem yesterday. FOUND'
-          }
-        ]
-      },
-      {
-        exercise_type: 'Cloze test with options',
-        instructions:
-          'Complete each gap in the text with one suitable word from the options given.',
-        items: [
-          {
-            answer: 'planning',
-            question:
-              'Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. PLAN (A) plans (B) planning (C) planned'
-          },
-          {
-            answer: 'reducing',
-            question:
-              'Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. REDUCE (A) reduces (B) reducing (C) reduced'
-          },
-          {
-            answer: 'supporting',
-            question:
-              `Additionally, the integration of 'green spaces,' such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. SUPPORT (A) supports (B) support (C) supported`
-          }
-        ]
-      },
-      {
-        exercise_type: 'Open cloze test',
-        instructions:
-          'Complete each gap in the text with one suitable word.',
-        items: [
-          {
-            answer: 'planning',
-            question:
-              'Modern urban planning is shifting its focus toward sustainable living to combat the challenges of climate change and rapid population growth. PLAN ( )'
-          },
-          {
-            answer: 'reducing',
-            question:
-              'Many cities are now investing in extensive public transport networks and dedicated cycling lanes to reduce the number of cars on the road, which helps lower carbon emissions and improves air quality. REDUCE ( )'
-          },
-          {
-            answer: 'supporting',
-            question:
-              `Additionally, the integration of 'green spaces,' such as rooftop gardens and community parks, provides residents with a much-needed escape from the concrete environment while supporting local biodiversity. SUPPORT ( )`
-          }
-        ]
+      error: (err) => {
+        // #region agent log
+        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:error',message:'getFullExam error',data:{err:''+err},hypothesisId:'H3',timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        this.errorMessage = 'Error loading exam.';
+        this.loading = false;
       }
-    ],
-    id: 41,
-    notes: null,
-    status: 'In Progress',
-    teacher_full_name: null
-  };
-
-  exerciseViews: ResolveExerciseView[] = this.exam.exercises.map((exercise) => ({
-    exercise_type: exercise.exercise_type,
-    instructions: exercise.instructions,
-    items: exercise.items.map((item) => this.buildResolveItem(item))
-  }));
+    });
+  }
 
   get totalItems(): number {
     return this.exerciseViews.reduce((acc, exercise) => acc + exercise.items.length, 0);
@@ -188,17 +105,21 @@ export class ExamResolveComponent {
   get answeredItems(): number {
     return this.exerciseViews.reduce(
       (acc, exercise) =>
-        acc +
-        exercise.items.filter((item) => item.studentAnswer.trim().length > 0).length,
+        acc + exercise.items.filter((item) => item.studentAnswer.trim().length > 0).length,
       0
     );
   }
 
   get createdAtLabel(): string {
-    const date = new Date(this.exam.date_created);
+    if (!this.exam?.date_created) return '';
+
+    const date =
+      typeof this.exam.date_created === 'string'
+        ? new Date(this.exam.date_created)
+        : this.exam.date_created;
 
     if (Number.isNaN(date.getTime())) {
-      return this.exam.date_created;
+      return String(this.exam.date_created);
     }
 
     return date.toLocaleString('en-US', {
@@ -210,7 +131,19 @@ export class ExamResolveComponent {
     });
   }
 
-  private buildResolveItem(item: ExamItem): ResolveItemView {
+  goBackToExams(): void {
+    this.router.navigate(['/exam']);
+  }
+
+  cancel(): void {
+    this.router.navigate(['/exam']);
+  }
+
+  finishExam(): void {
+    this.router.navigate(['/exam']);
+  }
+
+  private buildResolveItem(item: ExamItemDTO): ResolveItemView {
     const options = this.extractOptions(item.question);
     let cleanedQuestion = this.removeOptions(item.question).replace(/\(\s*\)\s*$/, '').trim();
 
@@ -227,11 +160,17 @@ export class ExamResolveComponent {
       promptAfter: promptParts.after,
       keyword,
       options,
-      studentAnswer: ''
+      studentAnswer: item.student_answer?.trim() ?? ''
     };
   }
 
   private splitAroundAnswer(question: string, answer: string): { before: string; after: string } {
+    // #region agent log
+    if (answer == null || typeof answer !== 'string') { fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:splitAroundAnswer',message:'answer null/undefined handled',data:{answerType:typeof answer},hypothesisId:'H1-fix',runId:'post-fix',timestamp:Date.now()})}).catch(()=>{}); }
+    // #endregion
+    if (answer == null || typeof answer !== 'string') {
+      return { before: question, after: '' };
+    }
     const escapedAnswer = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(escapedAnswer, 'i');
     const match = question.match(regex);

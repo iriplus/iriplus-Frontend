@@ -6,6 +6,32 @@
   color: var(--color-text);
 }
 
+.resolve-exam__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.resolve-exam__loading .app-spinner {
+  width: 32px;
+  height: 32px;
+}
+
+.resolve-exam__error {
+  padding: 32px;
+  text-align: center;
+}
+
+.resolve-exam__error p {
+  margin: 0 0 16px;
+  color: var(--color-text-muted);
+}
+
 .resolve-exam__topbar {
   display: flex;
   align-items: center;

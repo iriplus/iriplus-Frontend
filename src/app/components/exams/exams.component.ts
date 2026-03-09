@@ -387,7 +387,7 @@ export class ExamsComponent implements OnInit {
   }
 
   startNewExam(): void {
-    console.log('New Exam');
+    this.router.navigate(['/generate-exam-student']);
   }
 
   getStatusClass(status: string): string {
