@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ExamDTO } from '../interfaces/exam.interface';
+import { ExamDTO, SubmitStudentExamPayload, SubmitStudentExamResponse } from '../interfaces/exam.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -92,5 +92,13 @@ export class ExamService {
 
   exportExam(examId: number, format: string): Observable<Blob> {
     return this.http.get(`${this.EXAM_URL}/${examId}/export/${format}`, { responseType: 'blob', withCredentials: true });
+  }
+
+  submitStudentExam(examId: number, payload: SubmitStudentExamPayload): Observable<SubmitStudentExamResponse> {
+    return this.http.post<SubmitStudentExamResponse>(
+      `${this.EXAM_URL}/${examId}/submit`,
+      payload,
+      { withCredentials: true }
+    );
   }
 }

@@ -163,8 +163,13 @@
               <button class="btn-outline btn-rounded" type="button" (click)="cancel()">
                 Cancel
               </button>
-              <button class="btn-primary btn-rounded" type="button" (click)="finishExam()">
-                Finish Exam
+              <button
+                class="btn-primary btn-rounded"
+                type="button"
+                (click)="finishExam()"
+                [disabled]="submitting"
+              >
+                {{ submitting ? 'Submitting...' : 'Finish Exam' }}
               </button>
             </div>
           </div>

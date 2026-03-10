@@ -5,7 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { ExamService } from '../../services/exam.service';
 import { AuthService } from '../../services/auth.service';
-import { ExamDTO, ExamExerciseInstanceDTO, ExamItemDTO } from '../../interfaces/exam.interface';
+import {
+  ExamDTO,
+  ExamExerciseInstanceDTO,
+  ExamItemDTO,
+  SubmitStudentExamPayload
+} from '../../interfaces/exam.interface';
 
 interface ResolveItemView {
   promptBefore: string;
@@ -16,6 +21,7 @@ interface ResolveItemView {
 }
 
 interface ResolveExerciseView {
+  examExerciseInstanceId: number;
   exercise_type: string;
   instructions: string;
   items: ResolveItemView[];
@@ -31,8 +37,10 @@ interface ResolveExerciseView {
 export class ExamResolveComponent implements OnInit {
   studentName = '';
   exam: ExamDTO | null = null;
+  examId: number | null = null;
   exerciseViews: ResolveExerciseView[] = [];
   loading = true;
+  submitting = false;
   errorMessage = '';
 
   constructor(
@@ -63,35 +71,28 @@ export class ExamResolveComponent implements OnInit {
       return;
     }
 
-    // #region agent log
-    fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:subscribe-start',message:'getFullExam subscribe called',data:{examId},hypothesisId:'H2',timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
+    this.examId = examId;
     this.examService.getFullExam(examId).subscribe({
       next: (exam) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:next-start',message:'getFullExam next received',data:{hasExercises:!!exam?.exercises?.length,hasGenerated:!!(exam as any)?.generated_exercises?.length,exerciseCount:exam?.exercises?.length ?? 0},hypothesisId:'H2',timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         this.exam = exam;
         const exercises = exam.exercises?.length
           ? exam.exercises
           : (exam as { generated_exercises?: ExamExerciseInstanceDTO[] }).generated_exercises ?? [];
-        // #region agent log
-        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:before-map',message:'before exercises map',data:{exerciseCount:exercises.length,firstItemHasAnswer:exercises[0]?.items?.[0]?.['answer']!==undefined},hypothesisId:'H1,H4',timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        this.exerciseViews = exercises.map((exercise) => ({
-          exercise_type: exercise.exercise_type,
-          instructions: exercise.instructions,
-          items: exercise.items.map((item) => this.buildResolveItem(item))
-        }));
+        this.exerciseViews = exercises.map((exercise) => {
+          const instanceId =
+            exercise.exam_exercise_instance_id ??
+            (exercise as { id?: number }).id ??
+            0;
+          return {
+            examExerciseInstanceId: instanceId,
+            exercise_type: exercise.exercise_type,
+            instructions: exercise.instructions,
+            items: exercise.items.map((item) => this.buildResolveItem(item))
+          };
+        });
         this.loading = false;
-        // #region agent log
-        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:next-done',message:'loading=false set',data:{},hypothesisId:'H5',timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
       },
-      error: (err) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:error',message:'getFullExam error',data:{err:''+err},hypothesisId:'H3',timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
+      error: () => {
         this.errorMessage = 'Error loading exam.';
         this.loading = false;
       }
@@ -140,7 +141,29 @@ export class ExamResolveComponent implements OnInit {
   }
 
   finishExam(): void {
-    this.router.navigate(['/exam']);
+    if (this.submitting || this.examId == null || !this.exam) return;
+
+    const payload: SubmitStudentExamPayload = {
+      exercises: this.exerciseViews.map((ex) => ({
+        exam_exercise_instance_id: ex.examExerciseInstanceId,
+        items: ex.items.map((item) => ({
+          student_answer: item.studentAnswer?.trim() ?? ''
+        }))
+      }))
+    };
+
+    this.errorMessage = '';
+    this.submitting = true;
+    this.examService.submitStudentExam(this.examId, payload).subscribe({
+      next: () => {
+        this.router.navigate(['/exam']);
+      },
+      error: (err) => {
+        this.errorMessage =
+          err?.error?.message ?? 'Error submitting exam. Please try again.';
+        this.submitting = false;
+      }
+    });
   }
 
   private buildResolveItem(item: ExamItemDTO): ResolveItemView {
@@ -165,9 +188,6 @@ export class ExamResolveComponent implements OnInit {
   }
 
   private splitAroundAnswer(question: string, answer: string): { before: string; after: string } {
-    // #region agent log
-    if (answer == null || typeof answer !== 'string') { fetch('http://127.0.0.1:7616/ingest/78e6dadf-8d14-44be-a2f6-7fc5fe32ec43',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3ca96'},body:JSON.stringify({sessionId:'e3ca96',location:'exam-resolve.component.ts:splitAroundAnswer',message:'answer null/undefined handled',data:{answerType:typeof answer},hypothesisId:'H1-fix',runId:'post-fix',timestamp:Date.now()})}).catch(()=>{}); }
-    // #endregion
     if (answer == null || typeof answer !== 'string') {
       return { before: question, after: '' };
     }
