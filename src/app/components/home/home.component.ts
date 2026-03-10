@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from "@angular/router";
 import { CommonModule, NgIf } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { UserType } from '../../interfaces/user.interface';
 
-type UserType = 'STUDENT' | 'TEACHER' | 'COORDINATOR' | null;
 type LeaderboardScope = 'COURSE' | 'GLOBAL';
 
 interface StudentCourseSummary {
@@ -78,8 +79,46 @@ interface CoordinatorStats {
 })
 
 
-export class HomeComponent {
-  userType: UserType = 'STUDENT';
+export class HomeComponent implements OnInit {
+  errorMessage = '';
+  userType: UserType = UserType.STUDENT;
+
+  constructor (
+    private readonly authService: AuthService,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCurrentUser();
+  }
+
+  loadCurrentUser(): void {
+    this.authService.loadMe().subscribe({
+      next: (user) => {
+        if (!user) {
+          this.errorMessage = 'Unable to load current user.';
+          return;
+        }
+
+        this.userType = user.type
+      },
+      error: (err) => {
+        console.error('Error loading current user:', err);
+        this.errorMessage = 'Error loading current user.';
+      }
+    });
+  }
+
+  get isStudent(): boolean {
+    return this.userType === UserType.STUDENT;
+  }
+
+  get isTeacher(): boolean {
+    return this.userType === UserType.TEACHER;
+  }
+
+  get isCoordinator(): boolean {
+    return this.userType === UserType.COORDINATOR;
+  }
 
   leaderboardScope: LeaderboardScope = 'COURSE';
 

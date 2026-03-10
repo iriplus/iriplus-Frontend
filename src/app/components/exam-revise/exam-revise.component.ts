@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Location, CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExamDTO, Status } from '../../interfaces/exam.interface';
 import { ExamService } from '../../services/exam.service';
 
 @Component({
   selector: 'app-exam-revise',
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './exam-revise.component.html',
   styleUrl: './exam-revise.component.css'
 })
@@ -17,11 +18,19 @@ export class ExamReviseComponent implements OnInit {
   examId = 0;
   loading = true;
   saving = false;
+  refining = false;
+  showAiRequest = false;
   loadError = '';
   saveError = '';
+  refineError = '';
   successMessage = '';
 
   readonly Status = Status;
+
+  changeRequest = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required]
+  });
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -98,14 +107,94 @@ export class ExamReviseComponent implements OnInit {
   }
 
   discardChanges(): void {
-    if (!this.originalExam || !this.isEditable) {
+    if (!this.originalExam || !this.isEditable || this.refining) {
       return;
     }
 
     this.exam = this.cloneExam(this.originalExam);
+    
+    this.examService.leaveCorrection(this.examId).subscribe({
+      next: () => {
+        this.saveError = '';
+        this.refineError = '';
+        this.successMessage = '';
+        this.location.back();
+      }
+    })
+  }
+
+  openAiRequest(): void {
+    if (!this.isEditable || this.saving || this.refining) {
+      return;
+    }
+
+    this.showAiRequest = true;
+    this.refineError = '';
     this.saveError = '';
     this.successMessage = '';
-    this.location.back();
+  }
+
+  cancelAiRequest(): void {
+    if (this.refining) {
+      return;
+    }
+
+    this.showAiRequest = false;
+    this.refineError = '';
+    this.changeRequest.setValue('');
+    this.changeRequest.markAsPristine();
+    this.changeRequest.markAsUntouched();
+  }
+
+  requestAiChanges(): void {
+    if (!this.exam || !this.isEditable || this.saving || this.refining) {
+      return;
+    }
+
+    const feedback = this.changeRequest.value.trim();
+
+    if (!feedback) {
+      this.changeRequest.markAsTouched();
+      return;
+    }
+
+    this.refining = true;
+    this.refineError = '';
+    this.saveError = '';
+    this.successMessage = '';
+
+    this.examService.refineExam(this.exam.id, feedback).subscribe({
+      next: (response) => {
+        const updatedExamId = this.resolveExamIdFromResponse(response, this.exam!.id);
+
+        this.examService.getFullExam(updatedExamId).subscribe({
+          next: (updatedExam) => {
+            this.exam = this.cloneExam(updatedExam);
+            this.originalExam = this.cloneExam(updatedExam);
+            this.refining = false;
+            this.showAiRequest = false;
+            this.changeRequest.setValue('');
+            this.changeRequest.markAsPristine();
+            this.changeRequest.markAsUntouched();
+            this.successMessage = 'AI changes applied. Review the updated exam before saving.';
+          },
+          error: (error) => {
+            this.refineError =
+              error?.error?.message ||
+              error?.error?.error ||
+              'The updated exam could not be loaded.';
+            this.refining = false;
+          }
+        });
+      },
+      error: (error) => {
+        this.refineError =
+          error?.error?.message ||
+          error?.error?.error ||
+          'The AI changes could not be requested.';
+        this.refining = false;
+      }
+    });
   }
 
   onContextChange(event: Event): void {
@@ -143,7 +232,7 @@ export class ExamReviseComponent implements OnInit {
   }
 
   saveChanges(): void {
-    if (!this.exam || !this.isEditable || this.saving) {
+    if (!this.exam || !this.isEditable || this.saving || this.refining) {
       return;
     }
 
@@ -153,6 +242,7 @@ export class ExamReviseComponent implements OnInit {
 
     this.saving = true;
     this.saveError = '';
+    this.refineError = '';
     this.successMessage = '';
 
     this.examService.submitTeacherCorrection(this.exam.id, {
@@ -236,6 +326,26 @@ export class ExamReviseComponent implements OnInit {
   private readEditableContent(event: Event): string {
     const target = event.target as HTMLElement | null;
     return (target?.innerText ?? '').replace(/\u00A0/g, ' ');
+  }
+
+  private resolveExamIdFromResponse(response: unknown, fallbackExamId: number): number {
+    if (typeof response === 'number' && response > 0) {
+      return response;
+    }
+
+    if (response && typeof response === 'object') {
+      const candidate = response as { exam_id?: unknown; id?: unknown };
+
+      if (typeof candidate.exam_id === 'number' && candidate.exam_id > 0) {
+        return candidate.exam_id;
+      }
+
+      if (typeof candidate.id === 'number' && candidate.id > 0) {
+        return candidate.id;
+      }
+    }
+
+    return fallbackExamId;
   }
 
   private cloneExam(exam: ExamDTO): ExamDTO {

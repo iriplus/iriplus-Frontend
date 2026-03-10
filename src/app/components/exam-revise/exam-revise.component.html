@@ -183,6 +183,15 @@
               >
                 Discard changes
               </button>
+              
+              <button
+                class="btn-outline btn-rounded"
+                type="button"
+                (click)="openAiRequest()"
+                [disabled]="saving || refining || !isEditable"
+              >
+                Revise with AI
+              </button>
 
               <button
                 class="btn-primary btn-rounded btn-with-spinner"
@@ -196,6 +205,55 @@
               </button>
             </div>
 
+            <div *ngIf="showAiRequest && isEditable" class="revise-exam__ai-box">
+              <label for="aiChangeRequest" class="revise-exam__ai-label">
+                AI change request
+              </label>
+
+              <p class="revise-exam__ai-hint">
+                Ask the AI for your desired changes. This will reload the exam from the server and replace any unsaved manual edits.
+              </p>
+
+              <textarea
+                id="aiChangeRequest"
+                class="app-input revise-exam__ai-textarea"
+                rows="7"
+                [formControl]="changeRequest"
+                placeholder="Ask the AI for your desired changes ..."
+                [ngClass]="{ 'app-input--error': changeRequest.touched && changeRequest.invalid }"
+              ></textarea>
+
+              <span class="field-error" *ngIf="changeRequest.touched && changeRequest.invalid">
+                Please describe the requested changes.
+              </span>
+
+              <div class="revise-exam__ai-actions">
+                <button
+                  class="btn-outline btn-rounded"
+                  type="button"
+                  (click)="cancelAiRequest()"
+                  [disabled]="refining"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  class="btn-primary btn-rounded btn-with-spinner"
+                  type="button"
+                  (click)="requestAiChanges()"
+                  [disabled]="saving || refining || !isEditable"
+                  [class.btn-loading]="refining"
+                >
+                  <span *ngIf="refining" class="app-spinner"></span>
+                  <span>{{ refining ? 'Requesting changes...' : 'Request Changes' }}</span>
+                </button>
+              </div>
+
+              <div *ngIf="refineError" class="app-error">
+                {{ refineError }}
+              </div>
+
+            </div>
             <p
               *ngIf="successMessage"
               class="revise-exam__helper-text revise-exam__helper-text--success"

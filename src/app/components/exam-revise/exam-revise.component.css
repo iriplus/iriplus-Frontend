@@ -449,3 +449,51 @@
   color: var(--color-slate);
   font-weight: 600;
 }
+
+.revise-exam__ai-box {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface-soft);
+}
+
+.revise-exam__ai-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-label);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.revise-exam__ai-hint {
+  margin: 0 0 12px 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.revise-exam__ai-textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.revise-exam__ai-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.revise-exam__ai-actions .btn-outline,
+.revise-exam__ai-actions .btn-primary {
+  flex: 1;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .revise-exam__ai-actions {
+    flex-direction: column;
+  }
+}
