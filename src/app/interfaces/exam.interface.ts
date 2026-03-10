@@ -13,9 +13,24 @@ export interface ExamItemDTO {
 }
 
 export interface ExamExerciseInstanceDTO {
+  exam_exercise_instance_id?: number;
   exercise_type: string;
   instructions: string;
   items: ExamItemDTO[];
+}
+
+export interface SubmitStudentExamPayload {
+  exercises: {
+    exam_exercise_instance_id: number;
+    items: { student_answer: string }[];
+  }[];
+}
+
+export interface SubmitStudentExamResponse {
+  message: string;
+  exam_id: number;
+  score: number;
+  xp_gained?: number;
 }
 
 export interface ExamDTO {

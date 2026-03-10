@@ -364,13 +364,13 @@
 
             <td *ngIf="isStudent">
               <span class="score-badge">
-                {{ exam.score ?? 0 }}/100
+                {{ exam.score != null ? exam.score + '/100' : '—' }}
               </span>
             </td>
 
             <td *ngIf="isStudent">
               <span class="exp-badge">
-                +{{ exam.exp_gained ?? 0 }} EXP
+                {{ exam.exp_gained != null ? '+' + exam.exp_gained + ' EXP' : '—' }}
               </span>
             </td>
 

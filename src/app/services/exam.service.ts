@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ExamDTO } from '../interfaces/exam.interface';
+import { ExamDTO, SubmitStudentExamPayload, SubmitStudentExamResponse } from '../interfaces/exam.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -76,5 +76,13 @@ export class ExamService {
 
   submitTeacherCorrection(examId: number, payload: Pick<ExamDTO, 'context' | 'exercises'>): Observable<number> {
     return this.http.patch<number>(`${this.EXAM_URL}/${examId}/submit-correction`, payload, { withCredentials: true });
+  }
+
+  submitStudentExam(examId: number, payload: SubmitStudentExamPayload): Observable<SubmitStudentExamResponse> {
+    return this.http.post<SubmitStudentExamResponse>(
+      `${this.EXAM_URL}/${examId}/submit`,
+      payload,
+      { withCredentials: true }
+    );
   }
 }

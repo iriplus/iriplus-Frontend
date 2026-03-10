@@ -255,7 +255,7 @@ export class ExamsComponent implements OnInit {
           coordinator_full_name: exam.coordinator_full_name ?? null,
           coordinator_id: exam.coordinator_id ?? null,
           score: exam.score ?? null,
-          exp_gained: exam.exp_gained ?? null,
+          exp_gained: exam.xp_gained ?? exam.exp_gained ?? null,
           date_created: exam.date_created,
           status: exam.status
         }));
