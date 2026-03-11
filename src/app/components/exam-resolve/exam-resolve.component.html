@@ -160,17 +160,25 @@
               </span>
             </div>
             <div class="resolve-exam__actions">
-              <button class="btn-outline btn-rounded" type="button" (click)="cancel()">
+              <button class="btn-outline btn-rounded" type="button" (click)="cancel()" [disabled]="submitting">
                 Cancel
               </button>
               <button
-                class="btn-primary btn-rounded"
+                class="btn-primary btn-rounded resolve-exam__submit-btn"
                 type="button"
                 (click)="finishExam()"
                 [disabled]="submitting"
               >
-                {{ submitting ? 'Submitting...' : 'Finish Exam' }}
+                <span class="resolve-exam__submit-spinner" *ngIf="submitting">
+                  <span class="app-spinner"></span>
+                </span>
+                <span class="resolve-exam__submit-text">
+                  {{ submitting ? 'Correcting with AI...' : 'Finish Exam' }}
+                </span>
               </button>
+              <p class="resolve-exam__ai-message" *ngIf="submitting">
+                Your exam is being automatically corrected by AI. This may take a moment.
+              </p>
             </div>
           </div>
         </aside>

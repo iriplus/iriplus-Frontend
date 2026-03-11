@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ExamService } from '../../services/exam.service';
 import { AuthService } from '../../services/auth.service';
-import { ExamDTO, ExamItemDTO } from '../../interfaces/exam.interface';
+import { ExamDTO, ExamItemDTO, ExamReviewDTO } from '../../interfaces/exam.interface';
 import { UserType } from '../../interfaces/user.interface';
 
 @Component({
@@ -15,6 +15,7 @@ import { UserType } from '../../interfaces/user.interface';
 
 export class ViewExamComponent implements OnInit {
   exam: ExamDTO | null = null;
+  examReview: ExamReviewDTO | null = null;
 
   loading = true;
   error = '';
@@ -62,25 +63,36 @@ export class ViewExamComponent implements OnInit {
 
     this.loading = true;
     this.error = '';
+    this.exam = null;
+    this.examReview = null;
 
-    console.log('examService instance:', this.examService);
-    console.log('typeof getFullExam:', typeof this.examService.getFullExam);
+    const examStatus = history.state?.['examStatus'] as string | undefined;
 
-    console.log('examService injected =>', this.examService);
-    console.log('keys =>', Object.keys(this.examService ?? {}));
-    console.log('constructor =>', this.examService?.constructor?.name);
-
-    this.examService.getFullExam(examId).subscribe({
-      next: (response: ExamDTO) => {
-        this.exam = response;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error loading full exam:', err);
-        this.error = 'We could not load the exam. Please try again.';
-        this.loading = false;
-      }
-    });
+    if (examStatus === 'Solved') {
+      this.examService.getExamReview(examId).subscribe({
+        next: (response: ExamReviewDTO) => {
+          this.examReview = response;
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error loading exam review:', err);
+          this.error = 'We could not load the exam correction. Please try again.';
+          this.loading = false;
+        }
+      });
+    } else {
+      this.examService.getFullExam(examId).subscribe({
+        next: (response: ExamDTO) => {
+          this.exam = response;
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error loading full exam:', err);
+          this.error = 'We could not load the exam. Please try again.';
+          this.loading = false;
+        }
+      });
+    }
   }
 
   get isStudent(): boolean {
@@ -95,8 +107,12 @@ export class ViewExamComponent implements OnInit {
     return this.userType === UserType.COORDINATOR;
   }
 
+  get isReviewMode(): boolean {
+    return this.isStudent && !!this.examReview;
+  }
+
   get showStatus(): boolean {
-    return !this.isStudent && !!this.exam?.status;
+    return !this.isStudent && !!(this.exam?.status ?? this.examReview?.status);
   }
 
   get showNotesCard(): boolean {
@@ -108,20 +124,23 @@ export class ViewExamComponent implements OnInit {
   }
 
   get canRevise(): boolean {
-    return this.isTeacher && this.normalizeStatus(this.exam?.status) === 'pending correction';
+    const status = this.exam?.status ?? this.examReview?.status;
+    return this.isTeacher && this.normalizeStatus(status) === 'pending correction';
   }
 
   get canReview(): boolean {
-    return this.isCoordinator && this.normalizeStatus(this.exam?.status) === 'pending review';
+    const status = this.exam?.status ?? this.examReview?.status;
+    return this.isCoordinator && this.normalizeStatus(status) === 'pending review';
   }
 
   get canExport(): boolean {
-    return !this.isStudent && this.normalizeStatus(this.exam?.status) === 'accepted';
+    const status = this.exam?.status ?? this.examReview?.status;
+    return !this.isStudent && this.normalizeStatus(status) === 'accepted';
   }
 
   get pageEyebrow(): string {
     if (this.isStudent) {
-      return 'Student exam view';
+      return this.isReviewMode ? 'Exam correction' : 'Student exam view';
     }
 
     if (this.isCoordinator) {
@@ -133,7 +152,9 @@ export class ViewExamComponent implements OnInit {
 
   get pageSubtitle(): string {
     if (this.isStudent) {
-      return 'Review the full exam content together with your submitted answers and current results.';
+      return this.isReviewMode
+        ? 'Review your answers, the correct solutions, and feedback for each question.'
+        : 'Review the full exam content together with your submitted answers and current results.';
     }
 
     if (this.isCoordinator) {
@@ -152,14 +173,15 @@ export class ViewExamComponent implements OnInit {
   }
 
   get createdAtLabel(): string {
-    if (!this.exam?.date_created) {
+    const dateCreated = this.exam?.date_created ?? this.examReview?.date_created;
+    if (!dateCreated) {
       return 'Not available';
     }
 
-    const parsedDate = new Date(this.exam.date_created);
+    const parsedDate = new Date(dateCreated);
 
     if (Number.isNaN(parsedDate.getTime())) {
-      return String(this.exam.date_created);
+      return String(dateCreated);
     }
 
     return new Intl.DateTimeFormat('en-GB', {
@@ -169,21 +191,25 @@ export class ViewExamComponent implements OnInit {
   }
 
   get totalItems(): number {
+    if (this.examReview?.exercises?.length) {
+      return this.examReview.exercises.reduce((total, ex) => total + ex.items.length, 0);
+    }
     if (!this.exam?.exercises?.length) {
       return 0;
     }
-
     return this.exam.exercises.reduce((total, exercise) => {
       return total + exercise.items.length;
     }, 0);
   }
 
   get scoreLabel(): string {
+    if (typeof this.examReview?.score === 'number') return `${this.examReview.score}`;
     return typeof this.exam?.score === 'number' ? `${this.exam.score}` : '—';
   }
 
   get expGainedLabel(): string {
-    return typeof this.exam?.exp_gained === 'number' ? `${this.exam.exp_gained}` : '—';
+    const xp = this.examReview?.xp_gained ?? this.exam?.exp_gained;
+    return typeof xp === 'number' ? `${xp}` : '—';
   }
 
   get answerLabel(): string {
@@ -218,14 +244,18 @@ export class ViewExamComponent implements OnInit {
     console.log('Review Exam clicked');
   }
 
+  get exportExamId(): number {
+    return (this.exam ?? this.examReview)!.id;
+  }
+
   onExport(format: 'pdf' | 'docx'): void {
     this.exportMenuOpen = false;
-    this.examService.exportExam(this.exam!.id, format).subscribe({
+    this.examService.exportExam(this.exportExamId, format).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `exam-${this.exam!.id}.${format}`;
+        a.download = `exam-${this.exportExamId}.${format}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

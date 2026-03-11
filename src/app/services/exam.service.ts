@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ExamDTO, SubmitStudentExamPayload, SubmitStudentExamResponse } from '../interfaces/exam.interface';
+import { ExamDTO, ExamReviewDTO, SubmitStudentExamPayload, SubmitStudentExamResponse } from '../interfaces/exam.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +46,11 @@ export class ExamService {
   }
 
   getFullExam(id: number): Observable<ExamDTO> {
-    return this.http.get<ExamDTO>(`${this.EXAM_URL}/${id}/full`, {withCredentials: true})
+    return this.http.get<ExamDTO>(`${this.EXAM_URL}/${id}/full`, {withCredentials: true});
+  }
+
+  getExamReview(id: number): Observable<ExamReviewDTO> {
+    return this.http.get<ExamReviewDTO>(`${this.EXAM_URL}/${id}/review`, { withCredentials: true });
   }
 
   refineExam(id: number, feedback: string): Observable<any> {

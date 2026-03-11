@@ -413,7 +413,7 @@
                   class="btn-action btn-view"
                   (click)="openStudentExam(exam)"
                 >
-                  View Exam
+                  {{ exam.status === 'Solved' ? 'View Correction' : 'View Exam' }}
                 </button>
               </div>
             </td>

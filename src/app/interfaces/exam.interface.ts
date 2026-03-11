@@ -58,3 +58,61 @@ export interface ExerciseTypeDTO {
   name: string;
   content_description: string;
 }
+
+// Exam Review (correction view for students)
+export interface ExamReviewItemDTO {
+  question: string;
+  student_answer: string;
+  correct_answer: string;
+  feedback: string;
+  is_correct: boolean;
+  has_blank?: boolean;
+}
+
+export interface ExamReviewExerciseDTO {
+  exam_exercise_instance_id: number;
+  exercise_type: string;
+  instructions: string;
+  items: ExamReviewItemDTO[];
+  correct_count: number;
+  total_count: number;
+  feedback: string;
+}
+
+export interface ExamReviewScoreDetailItemDTO {
+  item_index: number;
+  student_answer: string;
+  correct_answer: string;
+  feedback: string;
+  is_correct: boolean;
+}
+
+export interface ExamReviewScoreDetailExerciseDTO {
+  exam_exercise_instance_id: number;
+  exercise_type: string;
+  items: ExamReviewScoreDetailItemDTO[];
+  correct_count: number;
+  total_count: number;
+  feedback: string;
+}
+
+export interface ExamReviewScoreDetailDTO {
+  exercises: ExamReviewScoreDetailExerciseDTO[];
+  general_feedback?: string;
+}
+
+export interface ExamReviewDTO {
+  id: number;
+  status: string;
+  score: number;
+  xp_gained?: number;
+  context: string;
+  class_id: number;
+  class_description?: string;
+  date_created: string | Date;
+  notes?: string | null;
+  exercises: ExamReviewExerciseDTO[];
+  score_detail: ExamReviewScoreDetailDTO;
+  student_id?: number;
+  student_full_name?: string;
+}

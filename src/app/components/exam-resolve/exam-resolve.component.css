@@ -423,6 +423,31 @@
   justify-content: center;
 }
 
+.resolve-exam__submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+}
+
+.resolve-exam__submit-spinner .app-spinner {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.resolve-exam__ai-message {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(var(--color-slate-rgb), 0.06);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 @media (max-width: 1100px) {
   .resolve-exam__layout {
     grid-template-columns: 1fr;

@@ -385,7 +385,7 @@ export class ExamsComponent implements OnInit {
   }
 
   openStudentExam(exam: ExamListItem): void {
-    this.router.navigate([`/view-exam/${exam.id}`]);
+    this.router.navigate([`/view-exam/${exam.id}`], { state: { examStatus: exam.status } });
   }
 
   startNewExam(): void {

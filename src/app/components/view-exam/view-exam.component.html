@@ -16,7 +16,7 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="!loading && !error && exam">
+    <ng-container *ngIf="!loading && !error && (exam || examReview)">
       <div class="view-exam__topbar">
         <button class="btn-outline btn-rounded" type="button" (click)="goBack()">
           ← Back to exams
@@ -27,14 +27,14 @@
 
           <span class="view-exam__status" *ngIf="showStatus">
             <span class="view-exam__status-dot"></span>
-            {{ exam.status }}
+            {{ (exam ?? examReview)?.status }}
           </span>
         </div>
       </div>
 
       <header class="app-header app-header--left view-exam__header">
         <p class="view-exam__eyebrow">{{ pageEyebrow }}</p>
-        <h1 class="app-header__title">View Exam #{{ exam.id }}</h1>
+        <h1 class="app-header__title">View Exam #{{ (exam ?? examReview)?.id }}</h1>
         <p class="app-header__subtitle">
           {{ pageSubtitle }}
         </p>
@@ -43,15 +43,15 @@
       <section class="view-exam__meta-grid">
         <div class="view-exam__meta-card">
           <span class="view-exam__meta-label">Class</span>
-          <span class="view-exam__meta-value">{{ exam.class_description || 'Not available' }}</span>
+          <span class="view-exam__meta-value">{{ (exam ?? examReview)?.class_description || 'Not available' }}</span>
         </div>
 
-        <div class="view-exam__meta-card">
+        <div class="view-exam__meta-card" *ngIf="!isStudent">
           <span class="view-exam__meta-label">Teacher</span>
           <span class="view-exam__meta-value">{{ teacherDisplayName }}</span>
         </div>
 
-        <div class="view-exam__meta-card">
+        <div class="view-exam__meta-card" *ngIf="!isStudent">
           <span class="view-exam__meta-label">Coordinator</span>
           <span class="view-exam__meta-value">{{ coordinatorDisplayName }}</span>
         </div>
@@ -74,80 +74,172 @@
 
       <section class="view-exam__layout">
         <div class="view-exam__main">
-          <div class="view-exam__panel view-exam__panel--context">
-            <div class="view-exam__panel-header">
-              <div>
-                <h2 class="view-exam__panel-title">Context</h2>
-                <p class="view-exam__panel-subtitle">
-                  Base text used to build the exam.
-                </p>
-              </div>
-            </div>
-
-            <div class="view-exam__content view-exam__content--context">
-              {{ exam.context || 'No context available.' }}
-            </div>
-          </div>
-
-          <div class="view-exam__panel">
-            <div class="view-exam__panel-header">
-              <div>
-                <h2 class="view-exam__panel-title">Exam Content</h2>
-                <p class="view-exam__panel-subtitle">
-                  All questions are displayed in read-only mode.
-                </p>
-              </div>
-
-              <div class="view-exam__panel-pills">
-                <span class="view-exam__pill">{{ exam.exercises.length }} exercise types</span>
-                <span class="view-exam__pill">{{ totalItems }} total items</span>
-              </div>
-            </div>
-
-            <div
-              *ngFor="let exercise of exam.exercises; let i = index; trackBy: trackByIndex"
-              class="view-exam__section"
-            >
-              <div class="view-exam__section-bar">
-                <div class="view-exam__section-index">{{ i + 1 }}</div>
-
-                <div class="view-exam__section-heading">
-                  <h3>{{ exercise.exercise_type }}</h3>
+          <!-- Review mode: correction with feedback -->
+          <ng-container *ngIf="isReviewMode && examReview">
+            <div class="view-exam__panel view-exam__panel--context">
+              <div class="view-exam__panel-header">
+                <div>
+                  <h2 class="view-exam__panel-title">Context</h2>
+                  <p class="view-exam__panel-subtitle">
+                    Base text used to build the exam.
+                  </p>
                 </div>
               </div>
 
-              <p class="view-exam__section-instructions">
-                {{ exercise.instructions }}
-              </p>
-
-              <div class="view-exam__questions">
-                <article
-                  *ngFor="let item of exercise.items; let j = index; trackBy: trackByIndex"
-                  class="view-exam__question"
-                >
-                  <div class="view-exam__question-index">{{ j + 1 }}</div>
-
-                  <div class="view-exam__question-body">
-                    <label class="view-exam__field-label">Question</label>
-                    <div class="view-exam__content">
-                      {{ item.question }}
-                    </div>
-
-                    <label class="view-exam__field-label view-exam__field-label--answer">
-                      {{ answerLabel }}
-                    </label>
-
-                    <div
-                      class="view-exam__content view-exam__content--answer"
-                      [class.view-exam__content--placeholder]="!hasDisplayedAnswer(item)"
-                    >
-                      {{ getDisplayedAnswer(item) || answerPlaceholder }}
-                    </div>
-                  </div>
-                </article>
+              <div class="view-exam__content view-exam__content--context">
+                {{ examReview.context || 'No context available.' }}
               </div>
             </div>
-          </div>
+
+            <div class="view-exam__panel">
+              <div class="view-exam__panel-header">
+                <div>
+                  <h2 class="view-exam__panel-title">Exam Correction</h2>
+                  <p class="view-exam__panel-subtitle">
+                    Your answers with correct solutions and feedback.
+                  </p>
+                </div>
+
+                <div class="view-exam__panel-pills">
+                  <span class="view-exam__pill">{{ examReview.exercises.length }} exercise types</span>
+                  <span class="view-exam__pill">{{ totalItems }} total items</span>
+                </div>
+              </div>
+
+              <div
+                *ngFor="let exercise of examReview.exercises; let i = index; trackBy: trackByIndex"
+                class="view-exam__section"
+              >
+                <div class="view-exam__section-bar">
+                  <div class="view-exam__section-index">{{ i + 1 }}</div>
+
+                  <div class="view-exam__section-heading">
+                    <h3>{{ exercise.exercise_type }}</h3>
+                    <span class="view-exam__section-score">{{ exercise.correct_count }}/{{ exercise.total_count }}</span>
+                  </div>
+                </div>
+
+                <p class="view-exam__section-instructions">
+                  {{ exercise.instructions }}
+                </p>
+
+                <p class="view-exam__section-feedback" *ngIf="exercise.feedback">
+                  {{ exercise.feedback }}
+                </p>
+
+                <div class="view-exam__questions">
+                  <article
+                    *ngFor="let item of exercise.items; let j = index; trackBy: trackByIndex"
+                    class="view-exam__question"
+                    [class.view-exam__question--correct]="item.is_correct"
+                    [class.view-exam__question--incorrect]="!item.is_correct"
+                  >
+                    <div class="view-exam__question-index">{{ j + 1 }}</div>
+
+                    <div class="view-exam__question-body">
+                      <label class="view-exam__field-label">Question</label>
+                      <div class="view-exam__content">
+                        {{ item.question }}
+                      </div>
+
+                      <label class="view-exam__field-label view-exam__field-label--answer">Your answer</label>
+                      <div class="view-exam__content view-exam__content--answer" [class.view-exam__content--correct]="item.is_correct" [class.view-exam__content--incorrect]="!item.is_correct">
+                        {{ item.student_answer || '—' }}
+                      </div>
+
+                      <label class="view-exam__field-label view-exam__field-label--answer">Correct answer</label>
+                      <div class="view-exam__content view-exam__content--correct-answer">
+                        {{ item.correct_answer }}
+                      </div>
+
+                      <label class="view-exam__field-label view-exam__field-label--answer">Feedback</label>
+                      <div class="view-exam__content view-exam__content--feedback">
+                        {{ item.feedback }}
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Standard mode: full exam view -->
+          <ng-container *ngIf="exam && !isReviewMode">
+            <div class="view-exam__panel view-exam__panel--context">
+              <div class="view-exam__panel-header">
+                <div>
+                  <h2 class="view-exam__panel-title">Context</h2>
+                  <p class="view-exam__panel-subtitle">
+                    Base text used to build the exam.
+                  </p>
+                </div>
+              </div>
+
+              <div class="view-exam__content view-exam__content--context">
+                {{ exam.context || 'No context available.' }}
+              </div>
+            </div>
+
+            <div class="view-exam__panel">
+              <div class="view-exam__panel-header">
+                <div>
+                  <h2 class="view-exam__panel-title">Exam Content</h2>
+                  <p class="view-exam__panel-subtitle">
+                    All questions are displayed in read-only mode.
+                  </p>
+                </div>
+
+                <div class="view-exam__panel-pills">
+                  <span class="view-exam__pill">{{ exam.exercises.length }} exercise types</span>
+                  <span class="view-exam__pill">{{ totalItems }} total items</span>
+                </div>
+              </div>
+
+              <div
+                *ngFor="let exercise of exam.exercises; let i = index; trackBy: trackByIndex"
+                class="view-exam__section"
+              >
+                <div class="view-exam__section-bar">
+                  <div class="view-exam__section-index">{{ i + 1 }}</div>
+
+                  <div class="view-exam__section-heading">
+                    <h3>{{ exercise.exercise_type }}</h3>
+                  </div>
+                </div>
+
+                <p class="view-exam__section-instructions">
+                  {{ exercise.instructions }}
+                </p>
+
+                <div class="view-exam__questions">
+                  <article
+                    *ngFor="let item of exercise.items; let j = index; trackBy: trackByIndex"
+                    class="view-exam__question"
+                  >
+                    <div class="view-exam__question-index">{{ j + 1 }}</div>
+
+                    <div class="view-exam__question-body">
+                      <label class="view-exam__field-label">Question</label>
+                      <div class="view-exam__content">
+                        {{ item.question }}
+                      </div>
+
+                      <label class="view-exam__field-label view-exam__field-label--answer">
+                        {{ answerLabel }}
+                      </label>
+
+                      <div
+                        class="view-exam__content view-exam__content--answer"
+                        [class.view-exam__content--placeholder]="!hasDisplayedAnswer(item)"
+                      >
+                        {{ getDisplayedAnswer(item) || answerPlaceholder }}
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </ng-container>
         </div>
 
         <aside class="view-exam__sidebar">
@@ -169,6 +261,13 @@
             </div>
           </div>
 
+          <div class="view-exam__side-card view-exam__side-card--feedback" *ngIf="isReviewMode && examReview?.score_detail?.general_feedback">
+            <div class="view-exam__side-header">
+              <h3>General feedback</h3>
+            </div>
+            <p class="view-exam__feedback-text">{{ examReview?.score_detail?.general_feedback }}</p>
+          </div>
+
           <div class="view-exam__side-card view-exam__side-card--notes" *ngIf="showNotesCard">
             <div class="view-exam__side-header">
               <h3>Notes</h3>
@@ -176,7 +275,7 @@
             </div>
 
             <p class="view-exam__notes-text">
-              {{ exam.notes }}
+              {{ (exam ?? examReview)?.notes }}
             </p>
           </div>
 
