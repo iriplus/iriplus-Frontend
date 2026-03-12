@@ -7,14 +7,15 @@ import { UserService } from '../../services/user.service';
 import { error } from 'console';
 import { ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
-
+import { RecaptchaModule, RecaptchaComponent } from 'ng-recaptcha';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RecaptchaModule],
 })
 export class ForgotPasswordComponent implements OnInit {
   email = '';
@@ -28,7 +29,21 @@ export class ForgotPasswordComponent implements OnInit {
   errorMessage = "";
   mode: 'forgot' | 'change' = 'forgot';
 
+  @ViewChild(RecaptchaComponent)
+  captcha?: RecaptchaComponent;
   
+  captchaToken: string | null = null;
+  siteKey = environment.recaptchaSiteKey;
+  
+  resolvedCaptcha(token: string | null) {
+    this.captchaToken = token;
+  }
+
+  resetCaptcha() {
+    this.captcha?.reset();
+  }
+  
+
   @ViewChildren('input0, input1, input2, input3, input4, input5') codeInputs!: QueryList<ElementRef>;
 
   constructor(
@@ -68,11 +83,16 @@ export class ForgotPasswordComponent implements OnInit {
       this.emailError = "*Email cannot exceed 255 characters.";
     }
 
+    if (!this.captchaToken) {
+      this.errorMessage = "Please complete the captcha.";
+      return;
+    }
+
     if (this.emailError) {
       return;
     } else {
       this.isLoading = true;
-      this.authService.sendResetCode(this.email).subscribe({
+      this.authService.sendResetCode(this.email, this.captchaToken).subscribe({
         next: () => {
           this.notificationService.show({
             type: 'success',
@@ -90,6 +110,7 @@ export class ForgotPasswordComponent implements OnInit {
         },
         error: () => {
           this.isLoading = false;
+          this.resetCaptcha();
           this.errorMessage = 'Somethin went wrong. Please try again later';
         }
       });
@@ -105,6 +126,7 @@ export class ForgotPasswordComponent implements OnInit {
     if (fullCode.length !== 6) {
       this.codeError = "*Please enter the 6-digit code.";
     }
+    
 
     if (this.codeError){
       return;
@@ -118,6 +140,7 @@ export class ForgotPasswordComponent implements OnInit {
         },
         error: () => {
           this.isLoading = false;
+          this.resetCaptcha();
           this.errorMessage = 'Invalid or expired code';
         }
       });
@@ -128,7 +151,7 @@ export class ForgotPasswordComponent implements OnInit {
     this.errorMessage = "";
     this.isLoading = true;
 
-    this.authService.sendResetCode(this.email).subscribe({
+    this.authService.sendResetCode(this.email, this.captchaToken).subscribe({
       next: () => {
         this.notificationService.show({
           type: 'success',
@@ -145,6 +168,7 @@ export class ForgotPasswordComponent implements OnInit {
       },
       error: err => {
         this.isLoading = false;
+        this.resetCaptcha();
         this.errorMessage = err.error?.msg || 'Error sending new code';
       }
     });

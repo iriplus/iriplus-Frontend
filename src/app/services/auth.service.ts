@@ -71,8 +71,8 @@ export class AuthService {
     );
   }
 
-  register(userData: User) {
-    return this.http.post(this.REGISTER_URL, userData);
+  register(data: { user: User; captcha: string | null }) {
+    return this.http.post(this.REGISTER_URL, data);
   }
 
   checkAuth(force = false): Observable<boolean> {
@@ -180,8 +180,8 @@ export class AuthService {
     );
   }
 
-  sendResetCode(email: string) {
-    return this.http.post(`${this.FORGOT_PASSWORD_URL}/send`, { email });
+  sendResetCode(email: string , captcha: string | null) {
+    return this.http.post(`${this.FORGOT_PASSWORD_URL}/send`, { email, captcha });
   }
 
   verifyResetCode(email: string, code: string) {

@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const backendUrl = process.env.BACKEND_URL_DEV;
+const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY;
 
 if (!backendUrl) {
   console.error('ERROR: BACKEND_URL_DEV is not defined');
@@ -19,7 +20,8 @@ const filePath = path.join(dir, 'environment.ts');
 const content = `
 export const environment = {
   production: false,
-  backendUrl: '${backendUrl}'
+  backendUrl: '${backendUrl}',
+  recaptchaSiteKey: '${recaptchaSiteKey}'
 };
 `;
 

@@ -172,6 +172,13 @@
     <div *ngIf="termsError" class="field-error">{{ termsError }}</div>
   </div>
 
+  <div class="form-group">
+   <re-captcha
+    [siteKey]="siteKey"
+    (resolved)="resolvedCaptcha($event)">
+  </re-captcha>
+  </div>
+
   <div *ngIf="errorMessage" class="app-error">{{ errorMessage }}</div>
   <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" [disabled]="isLoading || !isFormValid"(click)="validateParams()">
     <span *ngIf="isLoading" class="app-spinner"></span>

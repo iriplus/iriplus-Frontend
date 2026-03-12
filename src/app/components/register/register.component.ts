@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { Class } from '../../interfaces/class.interface';
 import { User, UserType } from '../../interfaces/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
+import { RecaptchaModule, RecaptchaComponent } from 'ng-recaptcha';
 
 @Component({
   selector: 'app-register',
@@ -16,6 +17,7 @@ import { NotificationService } from '../../services/notification.service';
   imports: [
     CommonModule,
     FormsModule,
+    RecaptchaModule
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
@@ -56,6 +58,21 @@ export class RegisterComponent {
   classCodeError = "";
   termsError = "";
   errorMessage = "";
+
+  @ViewChild(RecaptchaComponent)
+  captcha?: RecaptchaComponent;
+
+  captchaToken: string | null = null;
+  siteKey = environment.recaptchaSiteKey;
+
+  resolvedCaptcha(token: string | null) {
+    this.captchaToken = token;
+  }
+
+  resetCaptcha() {
+    this.captcha?.reset();
+  }
+
 
   togglePasswordVisibility(): void {
     this.showPasswd = !this.showPasswd;
@@ -142,6 +159,10 @@ validateParams(): void {
   ) {
     return;
   }
+  if (!this.captchaToken) {
+    this.errorMessage = "Please complete the captcha.";
+    return;
+  }
 
   this.register();
 }
@@ -162,7 +183,7 @@ validateParams(): void {
       profile_picture:'',
     };
 
-    this.authService.register(userData).subscribe({
+    this.authService.register({user:userData,captcha: this.captchaToken}).subscribe({
       next: () => {
         this.isLoading = false;
         this.notificationService.show({
@@ -175,6 +196,7 @@ validateParams(): void {
       },
       error: (err) => {
         this.isLoading = false;
+        this.resetCaptcha();
         switch (err.status) {
           case 400:
             this.errorMessage = "Invalid registration data";

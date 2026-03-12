@@ -1,17 +1,19 @@
-import { Component } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { finalize, switchMap } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { Login } from "../../interfaces/login.interface";
+import { environment } from "../../../environments/environment";
+import { RecaptchaModule, RecaptchaComponent } from "ng-recaptcha";
 
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.css"],
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RecaptchaModule],
 })
 
 export class LoginComponent {
@@ -28,6 +30,12 @@ export class LoginComponent {
   emailError = "";
   passwordError = "";
 
+  @ViewChild(RecaptchaComponent)
+  captcha?: RecaptchaComponent;
+
+  captchaToken: string | null = null;
+  siteKey = environment.recaptchaSiteKey;
+
   private returnUrl = '/home';
 
   constructor(
@@ -35,6 +43,14 @@ export class LoginComponent {
     private route: ActivatedRoute,
     private authService: AuthService
   ) {}
+
+  resolvedCaptcha(token: string | null) {
+    this.captchaToken = token;
+  }
+
+  resetCaptcha() {
+    this.captcha?.reset();
+  }
 
   ngOnInit(): void {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
@@ -69,6 +85,11 @@ export class LoginComponent {
         this.passwordError = "*Password cannot exceed 255 characters.";
     }
 
+    if (!this.captchaToken) {
+      this.errorMessage = "Please complete the captcha.";
+      return;
+    }
+
     if (this.emailError || this.passwordError) {
         return;
     }
@@ -78,6 +99,7 @@ export class LoginComponent {
     const credentials: Login = {
       email: this.email,
       password: this.password,
+      captcha: this.captchaToken
     };
 
     this.authService.login(credentials).pipe(
@@ -96,12 +118,15 @@ export class LoginComponent {
       },
       error: (err) => {
         this.isLoading = false;
+        this.resetCaptcha();
 
         if (err.status === 403) {
           this.errorMessage = 'Your account is not verified. Please check your email for the verification link.';
           return;
         } else if (err.status === 401) {
           this.errorMessage = 'Wrong email or password';
+        } else if (err.status === 400) {
+          this.errorMessage = 'Captcha verification failed';
         } else {
           this.errorMessage = 'An error occurred during login. Please try again later.';
         }

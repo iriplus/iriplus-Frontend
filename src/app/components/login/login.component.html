@@ -54,6 +54,11 @@
     <button type="button" class="link-button" (click)="goToForgotPassword()">Forgot password?</button>
   </div>
 
+  <re-captcha
+    [siteKey]="siteKey"
+    (resolved)="resolvedCaptcha($event)">
+  </re-captcha>
+
   <div *ngIf="errorMessage" class="app-error">
     {{ errorMessage }}
   </div>
