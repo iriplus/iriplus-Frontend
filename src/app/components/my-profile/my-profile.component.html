@@ -1,7 +1,5 @@
 <div *ngIf="user" class="app-page app-page--gradient">
   <div class="app-card app-card--xl profile">
-
-    <!-- Header -->
     <header class="app-header app-header--center">
       <div class="app-header__icon profile__avatar">
         <img
@@ -20,340 +18,350 @@
       </div>
 
       <h1 class="app-header__title">My Profile</h1>
-      <p class="app-header__subtitle">View and update your personal information</p>
+      <p class="app-header__subtitle">
+        {{ user.name }} {{ user.surname }} - {{ user.email || 'No email available' }}
+      </p>
     </header>
 
-    <!-- PROFILE FORM -->
-    <form class="profile__form" (ngSubmit)="onSubmit($event)">
-
-      <div class="profile__grid">
-        <div class="profile__field">
-          <label for="firstName" class="profile__label">First Name</label>
-          <div class="profile__input-wrap">
-            <svg class="profile__input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              [(ngModel)]="user.name"
-              class="app-input app-input--icon-left"
-              placeholder="First Name"
-              [disabled]="!isEditing"
-            />
-          </div>
+    <section class="profile__panel">
+      <div class="profile__panel-header">
+        <div class="profile__panel-text">
+          <h2 class="profile__panel-title">Personal Information</h2>
+          <p class="profile__panel-subtitle">Keep your personal data up to date.</p>
         </div>
 
-        <div class="profile__field">
-          <label for="lastName" class="profile__label">Last Name</label>
-          <div class="profile__input-wrap">
-            <svg class="profile__input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              [(ngModel)]="user.surname"
-              class="app-input app-input--icon-left"
-              placeholder="Last Name"
-              [disabled]="!isEditing"
-            />
-          </div>
-        </div>
-
-        <div class="profile__field">
-          <label for="email" class="profile__label">Email</label>
-          <div class="profile__input-wrap">
-            <svg class="profile__input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              [(ngModel)]="user.email"
-              class="app-input app-input--icon-left"
-              placeholder="you@example.com"
-              [disabled]="!isEditing"
-            />
-          </div>
-        </div>
-
-        <div class="profile__field">
-          <label for="dni" class="profile__label">DNI</label>
-          <div class="profile__input-wrap">
-            <svg class="profile__input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-              <line x1="10" y1="9" x2="8" y2="9" />
-            </svg>
-            <input
-              type="text"
-              id="dni"
-              name="dni"
-              [(ngModel)]="user.dni"
-              class="app-input app-input--icon-left"
-              placeholder="DNI"
-              [disabled]="true"
-            />
-          </div>
+        <div class="profile__badges">
+          <span class="profile__badge" *ngIf="isStudent">Student</span>
+          <span class="profile__badge" *ngIf="isTeacher">Teacher</span>
         </div>
       </div>
 
-      <!-- Actions -->
-      <div class="profile__actions">
-        <button
-          *ngIf="!isEditing"
-          type="button"
-          class="btn-primary btn-lg profile__btn-full"
-          (click)="enableEdit()"
-        >
-          <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-          Edit Profile
-        </button>
+      <form class="profile__form" (ngSubmit)="onSubmit($event)">
+        <div class="profile__grid">
+          <div class="profile__field">
+            <label for="firstName" class="profile__label">First Name</label>
+            <div class="profile__input-wrap">
+              <svg class="profile__input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                [(ngModel)]="user.name"
+                class="app-input app-input--icon-left"
+                placeholder="First Name"
+                [disabled]="!isEditing"
+              />
+            </div>
+          </div>
 
-        <div *ngIf="isEditing" class="profile__edit-actions">
-          <button type="submit" class="btn-primary btn-lg">
-            <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            Save Changes
-          </button>
+          <div class="profile__field">
+            <label for="lastName" class="profile__label">Last Name</label>
+            <div class="profile__input-wrap">
+              <svg class="profile__input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                [(ngModel)]="user.surname"
+                class="app-input app-input--icon-left"
+                placeholder="Last Name"
+                [disabled]="!isEditing"
+              />
+            </div>
+          </div>
 
-          <button type="button" class="btn-outline btn-lg" (click)="cancelEdit()">
-            <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-            Cancel
-          </button>
+          <div class="profile__field">
+            <label for="email" class="profile__label">Email</label>
+            <div class="profile__input-wrap">
+              <svg class="profile__input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="user.email"
+                class="app-input app-input--icon-left"
+                placeholder="you@example.com"
+                [disabled]="!isEditing"
+              />
+            </div>
+          </div>
+
+          <div class="profile__field">
+            <label for="dni" class="profile__label">DNI</label>
+            <div class="profile__input-wrap">
+              <svg class="profile__input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <line x1="10" y1="9" x2="8" y2="9" />
+              </svg>
+              <input
+                type="text"
+                id="dni"
+                name="dni"
+                [(ngModel)]="user.dni"
+                class="app-input app-input--icon-left"
+                placeholder="DNI"
+                [disabled]="true"
+              />
+            </div>
+          </div>
         </div>
-      </div>
-    </form>
 
-    <!-- Academic Information - Student -->
-    <div *ngIf="isStudent">
-      <div class="profile__divider"></div>
+        <div class="profile__actions">
+          <button
+            *ngIf="!isEditing"
+            type="button"
+            class="btn-primary btn-lg"
+            (click)="enableEdit()"
+          >
+            <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Edit Profile
+          </button>
 
-      <section class="profile__section">
+          <div *ngIf="isEditing" class="profile__edit-actions">
+            <button type="submit" class="btn-primary btn-lg">
+              <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Save Changes
+            </button>
+
+            <button type="button" class="btn-outline btn-lg" (click)="cancelEdit()">
+              <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section *ngIf="isStudent" class="profile__section">
+      <div class="profile__section-header">
         <h2 class="profile__section-title">Academic Information</h2>
+        <p class="profile__muted">Track your level progress and class details.</p>
+      </div>
 
-        <div class="student-section">
-          <div class="level-card">
-            <div class="level-header">
-              <div class="level-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      <div class="profile__cards-grid">
+        <div class="level-card">
+          <div class="level-header">
+            <div class="level-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <div class="level-info">
+              <span class="level-label">My Level</span>
+              <span class="level-name">{{ currentLevel?.description || 'No nivel' }}</span>
+            </div>
+            <div class="xp-badge">
+              <span class="xp-value">{{ accumulatedXp || 0 }}</span>
+              <span class="xp-label">XP</span>
+            </div>
+          </div>
+
+          <div class="progress-section">
+            <div class="progress-labels">
+              <span class="progress-current">{{ currentLevel?.description || 'Start' }}</span>
+              <span class="progress-next">{{ nextLevel?.description || 'Maximum' }}</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+              <div class="progress-marker" [style.left.%]="progressPercentage">
+                <div class="marker-dot"></div>
+              </div>
+            </div>
+            <div class="progress-xp-info">
+              <span class="xp-current">{{ accumulatedXp || 0 }} XP</span>
+              <span class="xp-needed" *ngIf="nextLevel">{{ nextLevel.min_xp }} XP para {{ nextLevel.description }}</span>
+              <span class="xp-needed" *ngIf="!nextLevel">Maximum level reached</span>
+            </div>
+          </div>
+
+          <div class="level-stats">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  <path d="M12 20v-6M6 20V10M18 20V4" />
                 </svg>
               </div>
-              <div class="level-info">
-                <span class="level-label">My Level</span>
-                <span class="level-name">{{ currentLevel?.description || 'No nivel' }}</span>
-              </div>
-              <div class="xp-badge">
-                <span class="xp-value">{{ accumulatedXp || 0 }}</span>
-                <span class="xp-label">XP</span>
+              <div class="stat-content">
+                <span class="stat-value">{{ xpToNextLevel || 0 }}</span>
+                <span class="stat-label"> XP remaining</span>
               </div>
             </div>
 
-            <div class="progress-section">
-              <div class="progress-labels">
-                <span class="progress-current">{{ currentLevel?.description || 'Start' }}</span>
-                <span class="progress-next">{{ nextLevel?.description || 'Maximum' }}</span>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                  <path d="M4 22h16" />
+                  <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                  <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                </svg>
               </div>
-              <div class="progress-bar-container">
-                <div class="progress-bar" [style.width.%]="progressPercentage"></div>
-                <div class="progress-marker" [style.left.%]="progressPercentage">
-                  <div class="marker-dot"></div>
-                </div>
-              </div>
-              <div class="progress-xp-info">
-                <span class="xp-current">{{ accumulatedXp || 0 }} XP</span>
-                <span class="xp-needed" *ngIf="nextLevel">{{ nextLevel.min_xp }} XP para {{ nextLevel.description }}</span>
-                <span class="xp-needed" *ngIf="!nextLevel">Maximum level reached</span>
+              <div class="stat-content">
+                <span class="stat-value">{{ currentLevelIndex + 1 }}</span>
+                <span class="stat-label"> de {{ totalLevels }} levels</span>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div class="level-stats">
-              <div class="stat-item">
-                <div class="stat-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 20v-6M6 20V10M18 20V4" />
-                  </svg>
-                </div>
-                <div class="stat-content">
-                  <span class="stat-value">{{ xpToNextLevel || 0 }}</span>
-                  <span class="stat-label">XP remaining</span>
+        <div class="class-card">
+          <div class="class-header">
+            <div class="class-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+            <h3 class="class-title">My Class</h3>
+            <button type="button" class="btn-outline profile__btn-sm" (click)="openChangeClassModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                <path d="M16 16h5v5" />
+              </svg>
+              Change class
+            </button>
+          </div>
+
+          <div class="class-content" *ngIf="currentClass; else noClass">
+            <div class="class-code-badge">
+              <span class="code-label">Code</span>
+              <span class="code-value">{{ currentClass.class_code }}</span>
+            </div>
+
+            <div class="class-details">
+              <div class="detail-row">
+                <span class="detail-label">Description</span>
+                <span class="detail-value">{{ currentClass.description || 'No description' }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Suggested Level</span>
+                <span class="detail-value level-pill" [ngClass]="'level-' + currentClass.suggested_level.toLowerCase()">
+                  {{ currentClass.suggested_level || 'Not specified' }}
+                </span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">Capacity</span>
+                <div class="capacity-info">
+                  <div class="capacity-bar-container">
+                    <div class="capacity-bar" [style.width.%]="classCapacityPercentage"></div>
+                  </div>
+                  <span class="capacity-text">
+                    {{ currentClass.students.length || 0 }} / {{ currentClass.max_capacity }} students
+                  </span>
                 </div>
               </div>
 
-              <div class="stat-item">
-                <div class="stat-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                    <path d="M4 22h16" />
-                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                  </svg>
-                </div>
-                <div class="stat-content">
-                  <span class="stat-value">{{ currentLevelIndex + 1 }}</span>
-                  <span class="stat-label">de {{ totalLevels }} levels</span>
-                </div>
+              <div class="detail-row">
+                <span class="detail-label">Teachers</span>
+                <span class="detail-value">
+                  <ng-container *ngFor="let teacher of currentClass.teachers; let i = index">
+                    {{ teacher.name }} {{ teacher.surname }}<span *ngIf="i < currentClass.teachers.length - 1">, </span>
+                  </ng-container>
+                </span>
               </div>
             </div>
           </div>
 
-          <div class="class-card">
-            <div class="class-header">
-              <div class="class-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <ng-template #noClass>
+            <div class="no-class-message">
+              <div class="no-class-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
                   <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                 </svg>
               </div>
-              <h3 class="class-title">My Class</h3>
-              <button type="button" class="btn-outline profile__btn-sm" (click)="openChangeClassModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                  <path d="M3 3v5h5" />
-                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                  <path d="M16 16h5v5" />
+              <p class="no-class-text">You're not enrolled in any class.</p>
+              <button type="button" class="btn-primary btn-lg profile__btn-full" (click)="openChangeClassModal()">
+                <svg class="profile__btn-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14" />
+                  <path d="M12 5v14" />
                 </svg>
-                Change class
+                Sign up for a class
               </button>
             </div>
-
-            <div class="class-content" *ngIf="currentClass; else noClass">
-              <div class="class-code-badge">
-                <span class="code-label">Code</span>
-                <span class="code-value">{{ currentClass.class_code }}</span>
-              </div>
-
-              <div class="class-details">
-                <div class="detail-row">
-                  <span class="detail-label">Description</span>
-                  <span class="detail-value">{{ currentClass.description || 'No description' }}</span>
-                </div>
-
-                <div class="detail-row">
-                  <span class="detail-label">Suggested Level</span>
-                  <span class="detail-value level-pill" [ngClass]="'level-' + currentClass.suggested_level.toLowerCase()">
-                    {{ currentClass.suggested_level || 'Not specified' }}
-                  </span>
-                </div>
-
-                <div class="detail-row">
-                  <span class="detail-label">Capacity</span>
-                  <div class="capacity-info">
-                    <div class="capacity-bar-container">
-                      <div class="capacity-bar" [style.width.%]="classCapacityPercentage"></div>
-                    </div>
-                    <span class="capacity-text">
-                      {{ currentClass.students.length || 0 }} / {{ currentClass.max_capacity }} students
-                    </span>
-                  </div>
-                </div>
-
-                <div class="detail-row">
-                  <span class="detail-label">Teachers</span>
-                  <span class="detail-value">
-                    <ng-container *ngFor="let teacher of currentClass.teachers; let i = index">
-                      {{ teacher.name }} {{ teacher.surname }}<span *ngIf="i < currentClass.teachers.length - 1">, </span>
-                    </ng-container>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <ng-template #noClass>
-              <div class="no-class-message">
-                <div class="no-class-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                       stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                  </svg>
-                </div>
-                <p class="no-class-text">You're not enrolled in any class.</p>
-                <button type="button" class="btn-primary btn-lg profile__btn-full" (click)="openChangeClassModal()">
-                  <svg class="profile__btn-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                       fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14" />
-                    <path d="M12 5v14" />
-                  </svg>
-                  Sign up for a class
-                </button>
-              </div>
-            </ng-template>
-          </div>
+          </ng-template>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
 
-    <!-- Academic Information - Teacher -->
-    <div *ngIf="isTeacher">
-      <div class="profile__divider"></div>
-
-      <section class="profile__section">
+    <section *ngIf="isTeacher" class="profile__section">
+      <div class="profile__section-header">
         <h2 class="profile__section-title">Classes You Teach</h2>
+        <p class="profile__muted">Summary of your assigned classes.</p>
+      </div>
 
-        <div *ngIf="user.teacher_classes?.length; else noTeacherClasses" class="teacher-classes-grid">
-          <div *ngFor="let cls of user.teacher_classes" class="teacher-class-card">
-            <div class="teacher-card-content">
-              <div class="teacher-card-icon">
+      <div *ngIf="user.teacher_classes?.length; else noTeacherClasses" class="teacher-classes-grid">
+        <div *ngFor="let cls of user.teacher_classes" class="teacher-class-card">
+          <div class="teacher-card-content">
+            <div class="teacher-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+
+            <div class="teacher-card-info">
+              <p class="teacher-class-code">{{ cls.class_code }}</p>
+              <p class="teacher-class-description" [title]="cls.description">{{ cls.description }}</p>
+
+              <div class="teacher-class-meta">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-              </div>
-
-              <div class="teacher-card-info">
-                <p class="teacher-class-code">{{ cls.description }}</p>
-                <p class="teacher-class-description" [title]="cls.description">{{ cls.class_code }}</p>
-
-                <div class="teacher-class-meta">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
-                  <span>{{ cls.students_count || 0 }} students</span>
-                </div>
+                <span>{{ cls.students_count || 0 }} students</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <ng-template #noTeacherClasses>
-          <p class="profile__muted">You have no assigned classes.</p>
-        </ng-template>
-      </section>
-    </div>
+      <ng-template #noTeacherClasses>
+        <p class="profile__muted">You have no assigned classes.</p>
+      </ng-template>
+    </section>
 
-    <!-- Change Password -->
-    <div class="profile__divider"></div>
-    <section class="profile__section">
-      <h2 class="profile__section-title">Change Password</h2>
+    <section class="profile__section profile__section--compact">
+      <div class="profile__section-header">
+        <h2 class="profile__section-title">Change Password</h2>
+        <p class="profile__muted">Update your account password.</p>
+      </div>
       <button type="button" class="btn-outline btn-lg profile__btn-full" (click)="changePassword()">
         <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -363,13 +371,13 @@
       </button>
     </section>
 
-    <!-- Danger Zone -->
-    <div class="profile__divider"></div>
-    <section class="profile__section">
-      <h2 class="profile__section-title profile__section-title--danger">Delete Account</h2>
-      <p class="profile__muted">
-        Once you delete your account, there is no going back. Please be sure.
-      </p>
+    <section class="profile__section profile__section--compact">
+      <div class="profile__section-header">
+        <h2 class="profile__section-title profile__section-title--danger">Delete Account</h2>
+        <p class="profile__muted">
+          Once you delete your account, there is no going back. Please be sure.
+        </p>
+      </div>
       <button type="button" class="btn-primary btn-lg profile__btn-full profile__btn-danger" (click)="confirmDeleteAccount()">
         <svg class="profile__btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="3 6 5 6 21 6"></polyline>
@@ -380,7 +388,6 @@
         Delete Account
       </button>
     </section>
-
   </div>
 </div>
 

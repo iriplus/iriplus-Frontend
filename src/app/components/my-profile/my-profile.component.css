@@ -1,24 +1,81 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
 .profile__avatar {
   border-radius: 999px;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .profile__avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* Form layout */
+.profile__panel {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile__panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.profile__panel-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-slate-dark);
+}
+
+.profile__panel-subtitle {
+  margin: 6px 0 0 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.profile__badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profile__badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  background: rgba(var(--color-slate-rgb), 0.12);
+  color: var(--color-slate);
+}
+
 .profile__form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 .profile__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -29,12 +86,11 @@
 }
 
 .profile__label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-label);
 }
 
-/* Icon-left inputs */
 .profile__input-wrap {
   position: relative;
 }
@@ -51,14 +107,17 @@
   z-index: 2;
 }
 
-/* Buttons */
 .profile__actions {
-  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .profile__edit-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .profile__btn-full {
@@ -70,24 +129,28 @@
   height: 18px;
 }
 
-/* Small outline button used in class header */
 .profile__btn-sm {
   padding: 10px 14px;
   border-radius: 12px;
   font-size: 14px;
 }
 
-/* Sections */
-.profile__divider {
-  height: 1px;
-  background: var(--color-border);
-  margin: 22px 0;
-}
-
 .profile__section {
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+.profile__section--compact {
   gap: 12px;
+}
+
+.profile__section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .profile__section-title {
@@ -112,21 +175,20 @@
   text-align: center;
 }
 
-/* Danger button (override sobre btn-primary) */
+.profile__cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .profile__btn-danger {
   background: var(--color-danger);
   box-shadow: 0 10px 24px rgba(var(--color-danger-rgb), 0.22);
 }
+
 .profile__btn-danger:hover {
   filter: brightness(0.95);
   box-shadow: 0 14px 32px rgba(var(--color-danger-rgb), 0.28);
-}
-
-/* Academic cards: re-skin sin tocar lógica */
-.student-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 .level-card,
@@ -136,9 +198,9 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   padding: 18px;
+  height: 100%;
 }
 
-/* Level card */
 .level-header {
   display: flex;
   align-items: center;
@@ -155,6 +217,12 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.level-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .level-label {
@@ -183,6 +251,17 @@
   border: 1px solid var(--color-border);
   color: var(--color-slate);
   font-weight: 900;
+}
+
+.xp-value {
+  font-size: 16px;
+}
+
+.xp-label {
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 .progress-section {
@@ -282,10 +361,10 @@
   font-weight: 700;
 }
 
-/* Class card */
 .class-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--color-border);
@@ -309,6 +388,12 @@
   font-weight: 900;
   color: var(--color-text);
   flex: 1;
+}
+
+.class-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .class-code-badge {
@@ -335,12 +420,18 @@
   letter-spacing: 0.5px;
 }
 
+.class-details {
+  display: flex;
+  flex-direction: column;
+}
+
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid var(--color-border);
+  gap: 12px;
 }
 
 .detail-row:last-child {
@@ -368,6 +459,13 @@
   font-weight: 900;
   background: rgba(var(--color-slate-rgb), 0.12);
   color: var(--color-slate);
+}
+
+.capacity-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 .capacity-bar-container {
@@ -403,7 +501,12 @@
   color: var(--color-text-muted);
 }
 
-/* Teacher cards */
+.no-class-text {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
 .teacher-classes-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -447,6 +550,11 @@
   height: 20px;
 }
 
+.teacher-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .teacher-class-code {
   margin: 0;
   font-size: 15px;
@@ -477,7 +585,6 @@
   height: 16px;
 }
 
-/* Modals */
 .profile-modal-overlay {
   position: fixed;
   inset: 0;
@@ -497,6 +604,10 @@
   box-shadow: var(--shadow-lg);
   border: 1px solid rgba(0, 0, 0, 0.06);
   overflow: hidden;
+}
+
+.profile-modal--danger {
+  border: 1px solid rgba(var(--color-danger-rgb), 0.2);
 }
 
 .profile-modal__header {
@@ -528,6 +639,7 @@
   justify-content: flex-end;
   padding: 16px 18px;
   border-top: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
 }
 
 .profile-danger-icon {
@@ -548,14 +660,27 @@
   height: 28px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .profile__grid {
+@media (max-width: 960px) {
+  .profile__cards-grid {
     grid-template-columns: 1fr;
   }
 
+  .profile__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile__actions,
   .profile__edit-actions {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile__actions > button,
+  .profile__edit-actions > button {
+    width: 100%;
+    justify-content: center;
   }
 
   .profile-modal__actions {
@@ -577,4 +702,8 @@
   .teacher-classes-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.app-header{
+  margin-bottom: 5px;
 }
