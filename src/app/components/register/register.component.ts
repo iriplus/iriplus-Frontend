@@ -8,6 +8,7 @@ import { ClassService } from '../../services/class.service';
 import { Class } from '../../interfaces/class.interface';
 import { User, UserType } from '../../interfaces/user.interface';
 import { UserService } from '../../services/user.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-register',
@@ -26,6 +27,7 @@ export class RegisterComponent {
     private authService: AuthService,
     private classService: ClassService,
     private userService: UserService,
+    private notificationService: NotificationService,
   ) {}
 
   name = '';
@@ -163,7 +165,12 @@ validateParams(): void {
     this.authService.register(userData).subscribe({
       next: () => {
         this.isLoading = false;
-        alert('Verification mail sent succesfully. Please check your inbox.');
+        this.notificationService.show({
+          type: 'success',
+          title: 'Operation Successful',
+          message: 'Verification mail sent successfully. Please check your inbox.',
+          autoCloseMs: 5000,
+        });
         this.router.navigate(['/login']);
       },
       error: (err) => {

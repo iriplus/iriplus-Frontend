@@ -9,6 +9,7 @@ import { Level } from "../../interfaces/level.interface";
 import { Class } from "../../interfaces/class.interface";
 import { LevelService } from "../../services/level.service";
 import { ClassService } from "../../services/class.service";
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
   selector: 'app-my-profile',
@@ -54,7 +55,8 @@ export class MyProfileComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private levelService: LevelService,
-    private classService: ClassService
+    private classService: ClassService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -219,6 +221,12 @@ export class MyProfileComponent implements OnInit {
     this.userService.deleteUser(this.user.id).subscribe({
       next: () => {
         this.showDeleteModal = false;
+        this.notificationService.show({
+          type: 'success',
+          title: 'Operation Successful',
+          message: 'Account deleted successfully.',
+          autoCloseMs: 5000,
+        });
 
         this.authService.logout().subscribe({
           next: () => {
@@ -232,7 +240,12 @@ export class MyProfileComponent implements OnInit {
       },
       error: (err) => {
         console.error('Delete error:', err);
-        alert('Error deleting account. Please try again.');
+        this.notificationService.show({
+          type: 'error',
+          title: 'Operation Failed',
+          message: 'Error deleting account. Please try again.',
+          autoCloseMs: 5000,
+        });
       }
     });
   }

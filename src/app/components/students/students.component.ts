@@ -4,18 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { User } from '../../interfaces/user.interface';
 import { UserService } from '../../services/user.service';
+import { ConfirmDialogComponent } from '../ui/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-students',
   templateUrl: './students.component.html',
   styleUrls: ['./students.component.css'],
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent]
 })
 
 export class StudentsComponent implements OnInit {
   students: User[] = [];
   filteredStudents: User[] = [];
   searchTerm = '';
+  showDisableConfirm = false;
+  studentToDisable: User | null = null;
 
   canDisableStudents = true;
 
@@ -97,13 +100,30 @@ export class StudentsComponent implements OnInit {
   }
 
   disableStudent(studentId: number): void {
-    const confirmed = window.confirm('Disable this student?');
-    if (!confirmed) return;
-
     this.userService.deleteUser(studentId).subscribe({
       next: () => this.loadStudents(),
       error: err => console.error(err)
     });
+  }
+
+  openDisableConfirm(student: User): void {
+    this.studentToDisable = student;
+    this.showDisableConfirm = true;
+  }
+
+  closeDisableConfirm(): void {
+    this.showDisableConfirm = false;
+    this.studentToDisable = null;
+  }
+
+  confirmDisableStudent(): void {
+    if (!this.studentToDisable) {
+      return;
+    }
+
+    const studentId = this.studentToDisable.id;
+    this.closeDisableConfirm();
+    this.disableStudent(studentId);
   }
 
   private loadStudents(): void {

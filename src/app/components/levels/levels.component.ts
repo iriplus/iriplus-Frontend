@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LevelService } from '../../services/level.service';
 import { Level } from '../../interfaces/level.interface';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-levels',
@@ -25,7 +26,10 @@ export class LevelsComponent implements OnInit {
 
   currentLevel: Level = this.createEmptyLevel();
 
-  constructor(private levelService: LevelService) {}
+  constructor(
+    private levelService: LevelService,
+    private notificationService: NotificationService,
+  ) {}
 
   ngOnInit(): void {
     this.loadLevels();
@@ -109,7 +113,12 @@ export class LevelsComponent implements OnInit {
   });
 
   if (duplicated) {
-    alert('There is already a level with the same name or the same minimum experience.');
+    this.notificationService.show({
+      type: 'error',
+      title: 'Operation Failed',
+      message: 'There is already a level with the same name or the same minimum experience.',
+      autoCloseMs: 5000,
+    });
     return;
   }
 
@@ -138,10 +147,6 @@ export class LevelsComponent implements OnInit {
 
 
   deleteLevel(levelId: number): void {
-    if (!confirm('Are you sure you want to delete this level?')) {
-      return;
-    }
-
     this.levelService.deleteLevel(levelId).subscribe({
       next: () => this.loadLevels(),
       error: err => console.error(err)

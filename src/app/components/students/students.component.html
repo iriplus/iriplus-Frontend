@@ -139,7 +139,7 @@
                 <button
                   type="button"
                   class="app-icon-btn app-icon-btn--danger"
-                  (click)="disableStudent(student.id)"
+                  (click)="openDisableConfirm(student)"
                   aria-label="Disable student"
                   title="Disable"
                 >
@@ -177,3 +177,14 @@
 
   </div>
 </div>
+
+<app-confirm-dialog
+  [open]="showDisableConfirm"
+  title="Delete Student"
+  [message]="studentToDisable ? 'Disable ' + studentToDisable.name + ' ' + studentToDisable.surname + '?' : 'Disable this student?'"
+  confirmText="Disable"
+  cancelText="Cancel"
+  variant="danger"
+  (confirmed)="confirmDisableStudent()"
+  (cancelled)="closeDisableConfirm()"
+></app-confirm-dialog>

@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { User } from '../../interfaces/user.interface';
 import { TeacherFormComponent } from '../teacher-form/teacher-form.component';
+import { ConfirmDialogComponent } from '../ui/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-teachers',
-  imports: [CommonModule,  TeacherFormComponent, FormsModule],
+  imports: [CommonModule, TeacherFormComponent, FormsModule, ConfirmDialogComponent],
   templateUrl: './teachers.component.html',
   styleUrls: ['./teachers.component.css']
 })
@@ -18,6 +19,8 @@ export class TeachersComponent implements OnInit {
   errorMessage = '';
   searchTerm = '';
   filteredTeachers: User[] = [];
+  showDeleteConfirm = false;
+  teacherToDelete: User | null = null;
 
 
 constructor(private userService: UserService) {}
@@ -50,9 +53,6 @@ constructor(private userService: UserService) {}
 }
 
   deleteTeacher(id: number): void {
-    const confirmed = confirm('¿Are you sure you want to delete this teacher?');
-    if (!confirmed) return;
-
     this.userService.deleteUser(id).subscribe({
       next: () => {
         this.teachers = this.teachers.filter(t => t.id !== id);
@@ -61,6 +61,26 @@ constructor(private userService: UserService) {}
         this.errorMessage = 'The teacher could not be removed';
       }
     });
+  }
+
+  openDeleteConfirm(teacher: User): void {
+    this.teacherToDelete = teacher;
+    this.showDeleteConfirm = true;
+  }
+
+  closeDeleteConfirm(): void {
+    this.showDeleteConfirm = false;
+    this.teacherToDelete = null;
+  }
+
+  confirmDeleteTeacher(): void {
+    if (!this.teacherToDelete) {
+      return;
+    }
+
+    const teacherId = this.teacherToDelete.id;
+    this.closeDeleteConfirm();
+    this.deleteTeacher(teacherId);
   }
 
   filterTeachers(): void {
@@ -83,3 +103,5 @@ constructor(private userService: UserService) {}
     this.filteredTeachers = this.teachers;
   }
 }
+
+

@@ -130,7 +130,7 @@
                   type="button"
                   class="app-icon-btn app-icon-btn--danger"
                   title="Delete"
-                  (click)="deleteClass(c.id)"
+                  (click)="openDeleteConfirm(c)"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -179,6 +179,17 @@
     </div>
   </div>
 </div>
+
+<app-confirm-dialog
+  [open]="showDeleteConfirm"
+  title="Delete Class"
+  [message]="classToDelete ? 'Are you sure you want to delete class ' + classToDelete.description! + '?' : 'Are you sure you want to delete this class?'"
+  confirmText="Delete"
+  cancelText="Cancel"
+  variant="danger"
+  (confirmed)="confirmDeleteClass()"
+  (cancelled)="closeDeleteConfirm()"
+></app-confirm-dialog>
 
 <div *ngIf="isCoordinator" class="modal fade app-modal" id="newClassModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">

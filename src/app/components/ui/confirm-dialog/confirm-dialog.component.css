@@ -1,0 +1,66 @@
+﻿.app-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 2000;
+}
+
+.app-confirm {
+  width: min(520px, 100%);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.app-confirm__header {
+  padding: 20px 24px 0 24px;
+}
+
+.app-confirm__title {
+  font-size: 20px;
+  color: var(--color-slate);
+  margin: 0;
+}
+
+.app-confirm__body {
+  padding: 12px 24px 18px 24px;
+  color: var(--color-text);
+}
+
+.app-confirm__body p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.app-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px 24px 24px;
+  background: var(--color-surface-soft);
+  border-top: 1px solid var(--color-border);
+}
+
+.app-confirm__btn-danger {
+  background: linear-gradient(135deg, var(--color-danger), #a93226);
+  box-shadow: 0 6px 18px rgba(var(--color-danger-rgb), 0.35);
+}
+
+.app-confirm--danger .app-confirm__title {
+  color: var(--color-danger);
+}
+
+@media (max-width: 640px) {
+  .app-confirm__actions {
+    flex-direction: column;
+  }
+
+  .app-confirm__actions button {
+    width: 100%;
+  }
+}

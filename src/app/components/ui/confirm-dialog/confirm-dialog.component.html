@@ -1,0 +1,31 @@
+﻿<div class="app-confirm-overlay" *ngIf="open" (click)="onCancel()">
+  <div
+    class="app-confirm"
+    [class.app-confirm--danger]="variant === 'danger'"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="app-confirm__header">
+      <h2 class="app-confirm__title">{{ title }}</h2>
+    </div>
+
+    <div class="app-confirm__body">
+      <p>{{ message }}</p>
+    </div>
+
+    <div class="app-confirm__actions">
+      <button type="button" class="btn-outline" (click)="onCancel()">
+        {{ cancelText }}
+      </button>
+      <button
+        type="button"
+        class="btn-primary"
+        [class.app-confirm__btn-danger]="variant === 'danger'"
+        (click)="onConfirm()"
+      >
+        {{ confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

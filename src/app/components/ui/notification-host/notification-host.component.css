@@ -1,0 +1,19 @@
+﻿.app-notice-host {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .app-notice-host {
+    top: 16px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}

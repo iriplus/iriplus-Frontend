@@ -106,7 +106,7 @@
                 <button
                   type="button"
                   class="app-icon-btn teachers__icon-danger"
-                  (click)="deleteTeacher(teacher.id)"
+                  (click)="openDeleteConfirm(teacher)"
                   aria-label="Delete teacher"
                   title="Delete"
                 >
@@ -146,6 +146,17 @@
 
   </div>
 </div>
+
+<app-confirm-dialog
+  [open]="showDeleteConfirm"
+  title="Are you sure?"
+  [message]="teacherToDelete ? 'Are you sure you want to delete ' + teacherToDelete.name + ' ' + teacherToDelete.surname + '?' : 'Are you sure you want to delete this teacher?'"
+  confirmText="Delete"
+  cancelText="Cancel"
+  variant="danger"
+  (confirmed)="confirmDeleteTeacher()"
+  (cancelled)="closeDeleteConfirm()"
+></app-confirm-dialog>
 
 <!-- Modal -->
 <div class="modal fade app-modal" id="newTeacherModal" tabindex="-1">

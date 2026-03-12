@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -29,6 +30,7 @@ export class ResetPasswordComponent {
     private router: Router,
     private authService: AuthService,
     private route: ActivatedRoute,
+    private notificationService: NotificationService,
   ) {}
 
   get isFormValid(): boolean {
@@ -136,7 +138,12 @@ export class ResetPasswordComponent {
       this.isLoading = true;
       this.authService.resetPassword(this.email, this.password).subscribe({
         next: () => {
-          alert('Password has been reset successfully. You can now log in with your new password.');
+          this.notificationService.show({
+            type: 'success',
+            title: 'Operation Successful',
+            message: 'Password has been reset successfully. You can now log in with your new password.',
+            autoCloseMs: 5000,
+          });
           this.isLoading = false;
           this.authService.setIsResettingPassword(false);
           this.router.navigate(['/login']);

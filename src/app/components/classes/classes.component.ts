@@ -6,12 +6,13 @@ import { Class } from '../../interfaces/class.interface';
 import { ClassFormComponent } from '../class-form/class-form.component';
 import { AuthService } from '../../services/auth.service';
 import { UserType } from '../../interfaces/user.interface';
+import { ConfirmDialogComponent } from '../ui/confirm-dialog/confirm-dialog.component';
 
 
 @Component({
   selector: 'app-classes',
   standalone: true,
-  imports: [CommonModule, FormsModule, ClassFormComponent],
+  imports: [CommonModule, FormsModule, ClassFormComponent, ConfirmDialogComponent],
   templateUrl: './classes.component.html',
   styleUrls: ['./classes.component.css']
 })
@@ -22,6 +23,8 @@ export class ClassesComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   searchText = '';
+  showDeleteConfirm = false;
+  classToDelete: Class | null = null;
 
   currentUser: UserType | null = null;
   currentUserId: number | null = null;
@@ -135,9 +138,6 @@ export class ClassesComponent implements OnInit {
       return;
     }
 
-    const confirmed = confirm('Are you sure you want to delete this class?');
-    if (!confirmed) return;
-
     this.classService.deleteClass(id).subscribe({
       next: () => {
         this.classes = this.classes.filter(c => c.id !== id);
@@ -147,6 +147,30 @@ export class ClassesComponent implements OnInit {
         this.errorMessage = 'The class could not be removed';
       }
     });
+  }
+
+  openDeleteConfirm(classData: Class): void {
+    if (!this.isCoordinator) {
+      return;
+    }
+
+    this.classToDelete = classData;
+    this.showDeleteConfirm = true;
+  }
+
+  closeDeleteConfirm(): void {
+    this.showDeleteConfirm = false;
+    this.classToDelete = null;
+  }
+
+  confirmDeleteClass(): void {
+    if (!this.classToDelete) {
+      return;
+    }
+
+    const classId = this.classToDelete.id;
+    this.closeDeleteConfirm();
+    this.deleteClass(classId);
   }
 
   viewClass(classData: Class): void {

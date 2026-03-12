@@ -1,0 +1,10 @@
+﻿<div class="app-notice-host" *ngIf="notice">
+  <app-notification
+    [type]="notice.type"
+    [title]="notice.title || ''"
+    [message]="notice.message"
+    [dismissible]="true"
+    [showIcon]="true"
+    (closed)="close()"
+  ></app-notification>
+</div>

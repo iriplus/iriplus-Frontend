@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { error } from 'console';
 import { ActivatedRoute } from '@angular/router';
+import { NotificationService } from '../../services/notification.service';
 
 
 
@@ -35,6 +36,7 @@ export class ForgotPasswordComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private route: ActivatedRoute,
+    private notificationService: NotificationService,
   ) {}
   ngOnInit(): void {
   this.route.queryParams.subscribe(params => {
@@ -72,7 +74,12 @@ export class ForgotPasswordComponent implements OnInit {
       this.isLoading = true;
       this.authService.sendResetCode(this.email).subscribe({
         next: () => {
-          alert('A verification code has been sent to your email.');
+          this.notificationService.show({
+            type: 'success',
+            title: 'Operation Successful',
+            message: 'A verification code has been sent to your email.',
+            autoCloseMs: 5000,
+          });
           this.isLoading = false;
           this.step = 2;
 
@@ -123,7 +130,12 @@ export class ForgotPasswordComponent implements OnInit {
 
     this.authService.sendResetCode(this.email).subscribe({
       next: () => {
-        alert('A new verification code has been sent to your email.');
+        this.notificationService.show({
+          type: 'success',
+          title: 'Operation Successful',
+          message: 'A new verification code has been sent to your email.',
+          autoCloseMs: 5000,
+        });
         this.isLoading = false;
         this.step = 2;
         setTimeout(() => {

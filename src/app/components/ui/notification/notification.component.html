@@ -1,0 +1,35 @@
+﻿<div class="app-notice app-notice--{{ type }}" role="status" aria-live="polite">
+  <div class="app-notice__icon" *ngIf="showIcon">
+    <ng-container [ngSwitch]="type">
+      <svg *ngSwitchCase="'success'" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9.2 16.2 4.8 11.8 3.4 13.2 9.2 19 21 7.2 19.6 5.8z"></path>
+      </svg>
+      <svg *ngSwitchCase="'error'" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3 10.6 10.6 16.9 4.3z"></path>
+      </svg>
+      <svg *ngSwitchCase="'warning'" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path>
+      </svg>
+      <svg *ngSwitchDefault viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path>
+      </svg>
+    </ng-container>
+  </div>
+
+  <div class="app-notice__content">
+    <div class="app-notice__title">{{ titleText }}</div>
+    <div class="app-notice__message">{{ message }}</div>
+  </div>
+
+  <button
+    *ngIf="dismissible"
+    class="app-notice__close"
+    type="button"
+    aria-label="Close notification"
+    (click)="closed.emit()"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3 10.6 10.6 16.9 4.3z"></path>
+    </svg>
+  </button>
+</div>
