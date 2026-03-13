@@ -21,6 +21,7 @@ import { ExamReviseComponent } from './components/exam-revise/exam-revise.compon
 import { ExamResolveComponent } from './components/exam-resolve/exam-resolve.component';
 import { ViewExamComponent } from './components/view-exam/view-exam.component';
 import { StudentsComponent } from './components/students/students.component';
+import { TuitionsComponent } from './components/tuitions/tuitions.component';
 
 export const routes: Routes = [
   {
@@ -61,6 +62,12 @@ export const routes: Routes = [
       {
         path: 'levels',
         component: LevelsComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.COORDINATOR] }
+      },
+      {
+        path: 'tuitions',
+        component: TuitionsComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.COORDINATOR] }
       },

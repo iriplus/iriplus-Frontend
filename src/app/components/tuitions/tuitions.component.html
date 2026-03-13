@@ -1,0 +1,176 @@
+<div class="app-page app-page--gradient">
+  <div class="app-card app-card--xl tuitions">
+
+    <!-- Header -->
+    <header class="app-header app-header--center">
+      <div class="app-header__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+          <rect x="2" y="3" width="6" height="6" rx="1"></rect>
+          <path d="M19 5h-2"></path>
+          <path d="M19 9h-2"></path>
+        </svg>
+      </div>
+      <h1 class="app-header__title">Tuitions</h1>
+      <p class="app-header__subtitle">Manage and report student tuition status</p>
+    </header>
+
+    <!-- Actions Bar -->
+    <div class="app-actions-bar">
+      <button type="button" class="btn-primary tuitions__upload-btn" (click)="openUploadModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Upload tuitions</span>
+      </button>
+    </div>
+
+    <!-- Mock: Delinquent list (students with more than 3 months overdue) -->
+    <section class="tuitions__section">
+      <h2 class="tuitions__section-title">Students with more than 3 months overdue (mock)</h2>
+      <div class="tuitions__delinquent-list">
+        <div class="tuitions__delinquent-item" *ngFor="let s of mockDelinquentList">
+          <span class="tuitions__delinquent-name">{{ s.name }}</span>
+          <span class="tuitions__delinquent-dni">DNI: {{ s.dni }}</span>
+          <span class="tuitions__delinquent-badge">{{ s.monthsOverdue }} months overdue</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mock: Status distribution (pie chart placeholder) -->
+    <section class="tuitions__section">
+      <h2 class="tuitions__section-title">Student status distribution (mock)</h2>
+      <div class="tuitions__chart">
+        <div class="tuitions__chart-bar" *ngFor="let item of mockStatusDistribution"
+             [style.width.%]="item.percent" [style.background]="item.color">
+          <span class="tuitions__chart-label">{{ item.label }} ({{ item.percent }}%)</span>
+        </div>
+      </div>
+      <div class="tuitions__chart-legend">
+        <span *ngFor="let item of mockStatusDistribution" class="tuitions__legend-item">
+          <span class="tuitions__legend-dot" [style.background]="item.color"></span>
+          {{ item.label }}: {{ item.percent }}%
+        </span>
+      </div>
+    </section>
+
+    <!-- Mock: Table with search -->
+    <section class="tuitions__section">
+      <h2 class="tuitions__section-title">Students tuition status (mock)</h2>
+      <div class="app-actions-bar tuitions__table-actions">
+        <div class="app-search">
+          <svg class="app-search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <input
+            type="text"
+            class="app-input app-input--icon-left app-search__input"
+            placeholder="Search by name, DNI or status..."
+            [(ngModel)]="searchTerm"
+            (input)="filterTable()"
+          />
+          <button
+            *ngIf="searchTerm"
+            type="button"
+            class="app-icon-btn app-icon-btn--ghost app-search__clear"
+            (click)="clearSearch()"
+            aria-label="Clear search"
+            title="Clear"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="app-table-container">
+        <table class="app-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>DNI</th>
+              <th>Status</th>
+              <th>Last paid month</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of filteredTableData">
+              <td>{{ row.name }}</td>
+              <td>{{ row.dni }}</td>
+              <td>
+                <span class="tuitions__badge" [ngClass]="getStatusClass(row.status)">
+                  {{ getStatusLabel(row.status) }}
+                </span>
+              </td>
+              <td>{{ row.lastPaidMonth }}</td>
+            </tr>
+            <tr *ngIf="filteredTableData.length === 0">
+              <td colspan="4" class="tuitions__empty-cell">No results found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="tuitions-modal-overlay" *ngIf="showUploadModal" (click)="closeUploadModal()">
+  <div class="tuitions-modal" (click)="$event.stopPropagation()">
+    <div class="tuitions-modal__header">
+      <h2 class="tuitions-modal__title">Upload tuitions</h2>
+      <button type="button" class="app-close-btn" (click)="closeUploadModal()" [disabled]="isUploading" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="tuitions-modal__body">
+      <p class="tuitions-modal__hint">
+        Upload a CSV or Excel file with columns: <code>dni</code>, <code>last_paid_month</code>, <code>payment_date</code>.
+        Supported formats: .csv, .xls, .xlsx
+      </p>
+      <div class="tuitions-field">
+        <label for="{{ fileInputId }}" class="tuitions-label">Select file</label>
+        <input
+          type="file"
+          [id]="fileInputId"
+          class="app-input"
+          accept=".csv,.xls,.xlsx"
+          (change)="onFileSelected($event)"
+          [disabled]="isUploading"
+        />
+        <span class="tuitions-file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+      </div>
+      <div class="tuitions-modal__actions">
+        <button type="button" class="btn-outline tuitions__btn-cancel" (click)="closeUploadModal()" [disabled]="isUploading">
+          Cancel
+        </button>
+        <button type="button" class="btn-primary tuitions__btn-upload" (click)="submitUpload()" [disabled]="isUploading">
+          <span *ngIf="!isUploading">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Upload
+          </span>
+          <span *ngIf="isUploading">Uploading...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
