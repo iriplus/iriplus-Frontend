@@ -19,9 +19,7 @@ import { NotificationService } from "../../services/notification.service";
   styleUrls: ['./my-profile.component.css']
 })
 export class MyProfileComponent implements OnInit {
-
   user!: User;
-
   originalData: User | null = null;
 
   isEditing = false;
@@ -49,6 +47,12 @@ export class MyProfileComponent implements OnInit {
 
   classCodeInput: string = '';
   classError: string = '';
+
+  errorMessage = '';
+  showProfileConfirmModal = false;
+  profilePassword = '';
+  profilePasswordConfirm = '';
+  confirmProfileError = '';
 
   constructor(
     private authService: AuthService,
@@ -169,7 +173,69 @@ export class MyProfileComponent implements OnInit {
     this.originalData = { ...this.user };
   }
 
+  private hasProfileChanges(): boolean {
+    if (!this.originalData) {
+      return false;
+    }
+
+    return (
+      this.user.name.trim() !== (this.originalData.name ?? '').trim() ||
+      this.user.surname.trim() !== (this.originalData.surname ?? '').trim() ||
+      this.user.email.trim().toLowerCase() !== (this.originalData.email ?? '').trim().toLowerCase() ||
+      this.user.dni.trim() !== (this.originalData.dni ?? '').trim()
+    );
+  }
+
+  private validateProfileForm(): boolean {
+    this.errorMessage = '';
+
+    this.user.name = this.user.name?.trim() ?? '';
+    this.user.surname = this.user.surname?.trim() ?? '';
+    this.user.email = this.user.email?.trim().toLowerCase() ?? '';
+    this.user.dni = this.user.dni?.trim() ?? '';
+
+    if (!this.user.name || !this.user.surname || !this.user.email || !this.user.dni) {
+      this.errorMessage = 'All personal information fields are required.';
+      return false;
+    }
+
+    const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.user.email);
+    if (!emailIsValid) {
+      this.errorMessage = 'Please enter a valid email address.';
+      return false;
+    }
+
+    const dniLength = this.user.dni.length;
+    if (dniLength < 7 || dniLength > 10) {
+      this.errorMessage = 'DNI must contain between 7 and 10 characters.';
+      return false;
+    }
+
+    if (!this.hasProfileChanges()) {
+      this.errorMessage = 'No changes detected.';
+      return false;
+    }
+
+    return true;
+  }
+
+  openProfileConfirmModal(): void {
+    this.confirmProfileError = '';
+    this.profilePassword = '';
+    this.profilePasswordConfirm = '';
+    this.showProfileConfirmModal = true;
+  }
+
+  closeProfileConfirmModal(): void {
+    this.showProfileConfirmModal = false;
+    this.confirmProfileError = '';
+    this.profilePassword = '';
+    this.profilePasswordConfirm = '';
+  }
+
   enableEdit(): void {
+    this.errorMessage = '';
+    this.confirmProfileError = '';
     this.isEditing = true;
   }
 
@@ -177,27 +243,105 @@ export class MyProfileComponent implements OnInit {
     if (this.originalData) {
       this.user = { ...this.originalData };
     }
+
+    this.errorMessage = '';
+    this.closeProfileConfirmModal();
     this.isEditing = false;
   }
 
   onSubmit(event: Event): void {
     event.preventDefault();
 
-    if (!this.user?.id) return;
+    if (!this.user?.id) {
+      return;
+    }
 
-    const updatePayload = {
+    if (!this.validateProfileForm()) {
+      return;
+    }
+
+    this.openProfileConfirmModal();
+  }
+
+  confirmProfileUpdate(): void {
+    if (!this.user?.id) {
+      return;
+    }
+
+    this.confirmProfileError = '';
+
+    if (!this.profilePassword || !this.profilePasswordConfirm) {
+      this.confirmProfileError = 'Please enter your current password in both fields';
+      return;
+    }
+
+    if (this.profilePassword !== this.profilePasswordConfirm) {
+      this.confirmProfileError = 'Passwords do not match';
+      return;
+    }
+
+    const emailChanged = this.user.email.trim().toLowerCase() !== (this.originalData?.email ?? '').trim().toLowerCase();
+
+    const updatePayload: Partial<User> = {
       name: this.user.name,
       surname: this.user.surname,
       email: this.user.email,
-      dni: this.user.dni
+      dni: this.user.dni,
+      passwd: this.profilePassword
     };
 
     this.userService.updateUser(this.user.id, updatePayload).subscribe({
       next: () => {
-        this.loadProfile();
+        this.closeProfileConfirmModal();
         this.isEditing = false;
+        this.errorMessage = '';
+        
+        if (emailChanged) {
+          this.notificationService.show({
+            type: 'success',
+            title: 'Profile Updated',
+            message: 'Your email was updated succesfully. Please verify your new email and sign in again',
+            autoCloseMs: 5000,
+          });
+
+          this.authService.logout().subscribe({
+            next: () => {
+              this.router.navigate(['/login'])
+            },
+            error: () => {
+              this.router.navigate(['/login'])
+            }
+          });
+
+          return;
+        }
+
+        this.notificationService.show({
+          type: 'success',
+          title: 'Profile Updated',
+          message: 'Your profile was updated succesfully',
+          autoCloseMs: 5000,
+        });
+
+        this.loadProfile();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        const isIncorrectPassword = err?.status === 401;
+
+        this.profilePassword = '';
+        this.profilePasswordConfirm = '';
+
+        if (!isIncorrectPassword) {
+          this.closeProfileConfirmModal();
+        }
+
+        this.notificationService.show({
+          type: 'error',
+          title: 'Operation failed',
+          message: err.error?.message || 'Error updating profile. Please try again',
+          autoCloseMs: 5000,
+        });
+      },
     });
   }
 
@@ -270,56 +414,54 @@ export class MyProfileComponent implements OnInit {
     this.classError = '';
   }
 
+  confirmChangeClass(): void {
+    this.classError = '';
 
-confirmChangeClass(): void {
-  this.classError = '';
+    const code = this.classCodeInput?.trim().toUpperCase();
 
-  const code = this.classCodeInput?.trim().toUpperCase();
+    if (!code) {
+      this.classError = 'Please enter a valid class code.';
+      return;
+    }
 
-  if (!code) {
-    this.classError = 'Please enter a valid class code.';
-    return;
-  }
+    this.classService.validateClassCode(code).subscribe({
+      next: (clazz) => {
 
-  this.classService.validateClassCode(code).subscribe({
-    next: (clazz) => {
+        const currentStudents = clazz.students?.length ?? 0;
 
-      const currentStudents = clazz.students?.length ?? 0;
-
-      if (currentStudents >= clazz.max_capacity) {
-        this.classError = 'This class is already full.';
-        return;
-      }
-
-      if (!this.user?.id) return;
-
-      const updatePayload = {
-        student_class_id: clazz.id
-      };
-
-      this.userService.updateUser(this.user.id, updatePayload).subscribe({
-        next: () => {
-          this.closeChangeClassModal();
-          this.loadProfile();
-        },
-        error: (err) => {
-          console.error(err);
-          this.classError = 'Error updating class. Please try again.';
+        if (currentStudents >= clazz.max_capacity) {
+          this.classError = 'This class is already full.';
+          return;
         }
-      });
-    },
-    error: (err) => {
-  console.error(err);
 
-  if (err.status === 409) {
-    this.classError = 'This class is already full.';
-  } else if (err.status === 404) {
-    this.classError = 'Class code not found.';
-  } else {
-    this.classError = 'Error validating class. Please try again.';
+        if (!this.user?.id) return;
+
+        const updatePayload = {
+          student_class_id: clazz.id
+        };
+
+        this.userService.updateUser(this.user.id, updatePayload).subscribe({
+          next: () => {
+            this.closeChangeClassModal();
+            this.loadProfile();
+          },
+          error: (err) => {
+            console.error(err);
+            this.classError = 'Error updating class. Please try again.';
+          }
+        });
+      },
+      error: (err) => {
+        console.error(err);
+
+        if (err.status === 409) {
+          this.classError = 'This class is already full.';
+        } else if (err.status === 404) {
+          this.classError = 'Class code not found.';
+        } else {
+          this.classError = 'Error validating class. Please try again.';
+        }
+      }
+    });
   }
-}
-  });
-}
-
 }

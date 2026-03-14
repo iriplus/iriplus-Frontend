@@ -113,10 +113,14 @@
                 [(ngModel)]="user.dni"
                 class="app-input app-input--icon-left"
                 placeholder="DNI"
-                [disabled]="true"
+                [disabled]="!isEditing"
               />
             </div>
           </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="app-error">
+          {{ errorMessage }}
         </div>
 
         <div class="profile__actions">
@@ -433,6 +437,91 @@
     <div class="profile-modal__actions">
       <button type="button" class="btn-outline btn-lg" (click)="closeChangeClassModal()">Cancel</button>
       <button type="button" class="btn-primary btn-lg" (click)="confirmChangeClass()">Switch to this class</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirm Profile Update -->
+<div
+  *ngIf="showProfileConfirmModal"
+  class="profile-modal-overlay"
+  (click)="closeProfileConfirmModal()"
+>
+  <div class="profile-modal" (click)="$event.stopPropagation()">
+    <div class="profile-modal__header">
+      <h2 class="profile-modal__title">
+        Confirm Profile Changes
+      </h2>
+
+      <button
+        type="button"
+        class="app-close-btn"
+        (click)="closeProfileConfirmModal()"
+        aria-label="Close"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+             stroke-linejoin="round">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="profile-modal__body">
+      <p class="profile__muted">
+        For security reasons, enter your current password twice before saving your personal information.
+      </p>
+
+      <div class="profile__form">
+        <div class="profile__field">
+          <label class="profile__label" for="profilePassword">Current Password</label>
+          <input
+            id="profilePassword"
+            type="password"
+            class="app-input"
+            [(ngModel)]="profilePassword"
+            [ngModelOptions]="{ standalone: true }"
+            (input)="confirmProfileError = ''"
+            placeholder="Enter your current password"
+          />
+        </div>
+
+        <div class="profile__field">
+          <label class="profile__label" for="profilePasswordConfirm">Confirm Current Password</label>
+          <input
+            id="profilePasswordConfirm"
+            type="password"
+            class="app-input"
+            [(ngModel)]="profilePasswordConfirm"
+            [ngModelOptions]="{ standalone: true }"
+            (input)="confirmProfileError = ''"
+            placeholder="Re-enter your current password"
+          />
+        </div>
+      </div>
+
+      <div *ngIf="confirmProfileError" class="app-error">
+        {{ confirmProfileError }}
+      </div>
+    </div>
+
+    <div class="profile-modal__actions">
+      <button
+        type="button"
+        class="btn-outline btn-lg"
+        (click)="closeProfileConfirmModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn-primary btn-lg"
+        (click)="confirmProfileUpdate()"
+      >
+        Confirm Changes
+      </button>
     </div>
   </div>
 </div>
