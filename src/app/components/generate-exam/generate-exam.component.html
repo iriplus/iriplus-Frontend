@@ -15,7 +15,7 @@
 
       <h1 class="app-header__title">Generate Exam</h1>
       <p class="app-header__subtitle">
-        Generate an exam draft and preview it before sending it to review.
+        Generate an exam draft and edit it before sending it to review.
       </p>
     </div>
 
@@ -39,7 +39,6 @@
     <!-- ================= FORM ================= -->
     <div class="generate-exam-content" *ngIf="step === 'form'">
       <form [formGroup]="form" class="generate-exam-form">
-
         <section class="generate-exam-panel">
           <div class="generate-exam-panel__header">
             <h3>General setup</h3>
@@ -71,7 +70,7 @@
                 class="app-input generate-exam-textarea"
                 rows="8"
                 formControlName="context"
-                placeholder="The text which the exam is going to be based on. E.g. a reading passage, a math problem, a scientific scenario..."
+                placeholder="The text which the exam is going to be based on. E.g. a reading passage, a scientific scenario or a vocabulary-rich topic."
                 [ngClass]="{ 'app-input--error': form.get('context')?.touched && form.get('context')?.invalid }"
               ></textarea>
 
@@ -106,7 +105,6 @@
             Select at least one exercise type.
           </span>
         </section>
-
       </form>
     </div>
 
@@ -125,138 +123,291 @@
         </div>
 
         <div class="loading-inline">
-          <span>Working on your preview...</span>
+          <span>Working on your draft...</span>
         </div>
       </div>
     </div>
 
-    <!-- ================= PREVIEW ================= -->
+    <!-- ================= EDITABLE PREVIEW ================= -->
     <ng-container *ngIf="generatedExam as exam">
-      <div *ngIf="step === 'preview'" class="generate-exam-content generate-exam-content--preview">
+      <div *ngIf="step === 'preview'" class="generate-exam-workspace">
+        <div class="generate-exam__topbar">
+          <button
+            class="generate-exam-btn-danger"
+            type="button"
+            (click)="openDeleteDraftConfirm()"
+            [disabled]="saving || refining"
+          >
+            Delete draft
+          </button>
 
-        <div class="app-actions-bar generate-exam-preview__toolbar">
-          <div class="generate-exam-preview__left">
-            <h2>Preview</h2>
-
-            <div class="generate-exam-preview__meta">
-              <span class="meta-label">Status</span>
-              <span class="status-pill">{{ exam.status }}</span>
-            </div>
-          </div>
-
-          <div class="generate-exam-preview__actions">
-            <button type="button" class="btn-outline btn-rounded" (click)="toggleAnswers()">
-              Toggle Answers
-            </button>
-
-            <button type="button" class="btn-outline btn-rounded" (click)="changeSomething()">
-              Change Something
-            </button>
-
-            <button type="button" class="generate-exam-btn-danger" (click)="discard()">
-              Discard
-            </button>
-
-            <button type="button" class="btn-primary btn-rounded" (click)="sendToReview()">
-              Send to Review
-            </button>
+          <div class="generate-exam__topbar-right">
+            <span class="generate-exam__mode-pill">Editable draft</span>
+            <span class="generate-exam__status">
+              <span class="generate-exam__status-dot"></span>
+              {{ previewStatusLabel }}
+            </span>
           </div>
         </div>
 
-        <div class="generate-exam-preview__list">
-          <article class="generate-exam-exercise" *ngFor="let ex of exam.exercises; let exIndex = index">
+        <header class="app-header app-header--left generate-exam-workspace__header">
+          <p class="generate-exam__eyebrow">Teacher draft workspace</p>
+          <h1 class="app-header__title">Generated Exam #{{ exam.id }}</h1>
+          <p class="app-header__subtitle">
+            Edit the generated content directly before sending it to review.
+          </p>
+        </header>
 
-            <div class="generate-exam-exercise__header">
-              <div>
-                <span class="generate-exam-exercise__index">Exercise {{ exIndex + 1 }}</span>
-                <h3>{{ ex.exercise_type }}</h3>
+        <section class="generate-exam__meta-grid">
+          <div class="generate-exam__meta-card">
+            <span class="generate-exam__meta-label">Class</span>
+            <span class="generate-exam__meta-value">{{ exam.class_description }}</span>
+          </div>
+
+          <div class="generate-exam__meta-card">
+            <span class="generate-exam__meta-label">Teacher</span>
+            <span class="generate-exam__meta-value">{{ teacherDisplayName }}</span>
+          </div>
+
+          <div class="generate-exam__meta-card">
+            <span class="generate-exam__meta-label">Coordinator</span>
+            <span class="generate-exam__meta-value">{{ coordinatorDisplayName }}</span>
+          </div>
+
+          <div class="generate-exam__meta-card">
+            <span class="generate-exam__meta-label">Created on</span>
+            <span class="generate-exam__meta-value">{{ createdAtLabel }}</span>
+          </div>
+        </section>
+
+        <section class="generate-exam__layout">
+          <div class="generate-exam__main">
+            <div class="generate-exam__panel generate-exam__panel--context">
+              <div class="generate-exam__panel-header">
+                <div>
+                  <h2 class="generate-exam__panel-title">Context</h2>
+                  <p class="generate-exam__panel-subtitle">
+                    Base text used to build the exercises.
+                  </p>
+                </div>
               </div>
+
+              <div
+                class="generate-exam__editable generate-exam__editable--context"
+                [attr.contenteditable]="saving || refining ? 'false' : 'true'"
+                spellcheck="true"
+                role="textbox"
+                aria-multiline="true"
+                [textContent]="exam.context"
+                (blur)="onContextChange($event)"
+              ></div>
             </div>
 
-            <div class="generate-exam-exercise__body">
-              <p class="instructions">
-                <strong>Instructions:</strong> {{ ex.instructions }}
-              </p>
+            <div class="generate-exam__panel">
+              <div class="generate-exam__panel-header">
+                <div>
+                  <h2 class="generate-exam__panel-title">Exam Content</h2>
+                  <p class="generate-exam__panel-subtitle">
+                    Click on any question or answer to edit it directly.
+                  </p>
+                </div>
 
-              <div class="exercise-item" *ngFor="let item of ex.items; let i = index">
-                <p>
-                  <strong>{{ i + 1 }}.</strong> {{ item.question }}
+                <div class="generate-exam__panel-pills">
+                  <span class="generate-exam__pill">{{ exam.exercises.length }} exercise types</span>
+                  <span class="generate-exam__pill">{{ totalItems }} total items</span>
+                </div>
+              </div>
+
+              <div
+                *ngFor="let exercise of exam.exercises; let i = index"
+                class="generate-exam__section"
+              >
+                <div class="generate-exam__section-bar">
+                  <div class="generate-exam__section-index">{{ i + 1 }}</div>
+
+                  <div class="generate-exam__section-heading">
+                    <h3>{{ exercise.exercise_type }}</h3>
+                  </div>
+                </div>
+
+                <p class="generate-exam__section-instructions">
+                  {{ exercise.instructions }}
                 </p>
-              </div>
 
-              <div class="answers" *ngIf="showAnswers">
-                <h4>Answer Key</h4>
-                <ol>
-                  <li *ngFor="let item of ex.items">
-                    {{ item.answer }}
-                  </li>
-                </ol>
+                <div class="generate-exam__questions">
+                  <article
+                    *ngFor="let item of exercise.items; let j = index"
+                    class="generate-exam__question"
+                  >
+                    <div class="generate-exam__question-index">{{ j + 1 }}</div>
+
+                    <div class="generate-exam__question-body">
+                      <label class="generate-exam__field-label">Question</label>
+                      <div
+                        class="generate-exam__editable"
+                        [attr.contenteditable]="saving || refining ? 'false' : 'true'"
+                        spellcheck="true"
+                        role="textbox"
+                        aria-multiline="true"
+                        [textContent]="item.question"
+                        (blur)="onQuestionChange(i, j, $event)"
+                      ></div>
+
+                      <div class="generate-exam__question-options" *ngIf="item.options?.length">
+                        <label class="generate-exam__field-label generate-exam__field-label--options">
+                          Options
+                        </label>
+
+                        <ul class="generate-exam__options-list">
+                          <li *ngFor="let option of item.options">
+                            {{ option }}
+                          </li>
+                        </ul>
+                      </div>
+
+                      <label class="generate-exam__field-label generate-exam__field-label--answer">
+                        Correct answer
+                      </label>
+                      <div
+                        class="generate-exam__editable generate-exam__editable--answer"
+                        [attr.contenteditable]="saving || refining ? 'false' : 'true'"
+                        spellcheck="true"
+                        role="textbox"
+                        aria-multiline="true"
+                        [textContent]="item.answer"
+                        (blur)="onAnswerChange(i, j, $event)"
+                      ></div>
+                    </div>
+                  </article>
+                </div>
               </div>
             </div>
-          </article>
-        </div>
+          </div>
 
+          <aside class="generate-exam__sidebar">
+            <div class="generate-exam__side-card generate-exam__side-card--info">
+              <div class="generate-exam__side-header">
+                <h3>Draft workflow</h3>
+              </div>
+
+              <p class="generate-exam__helper-text">
+                Manual edits stay local until you save. AI changes reload the draft from the server and replace any unsaved manual edits.
+              </p>
+            </div>
+
+            <div class="generate-exam__side-card">
+              <div class="generate-exam__side-header">
+                <h3>Actions</h3>
+              </div>
+
+              <div class="generate-exam__actions">
+                <button
+                  class="btn-outline btn-rounded"
+                  type="button"
+                  (click)="openDiscardManualEditsConfirm()"
+                  [disabled]="saving || refining"
+                >
+                  Discard manual edits
+                </button>
+
+                <button
+                  class="btn-outline btn-rounded"
+                  type="button"
+                  (click)="openAiRequest()"
+                  [disabled]="saving || refining"
+                >
+                  Revise with AI
+                </button>
+
+                <button
+                  class="btn-primary btn-rounded btn-with-spinner"
+                  type="button"
+                  (click)="saveAndSendToReview()"
+                  [disabled]="saving || refining"
+                  [class.btn-loading]="saving"
+                >
+                  <span *ngIf="saving" class="app-spinner"></span>
+                  <span>{{ saving ? 'Sending...' : 'Save and send to review' }}</span>
+                </button>
+              </div>
+
+              <div *ngIf="showAiRequest" class="generate-exam__ai-box">
+                <label for="aiChangeRequest" class="generate-exam__ai-label">
+                  AI change request
+                </label>
+
+                <p class="generate-exam__ai-hint">
+                  Ask the AI for your desired changes. This will reload the draft from the server and replace any unsaved manual edits.
+                </p>
+
+                <textarea
+                  id="aiChangeRequest"
+                  class="app-input generate-exam__ai-textarea"
+                  rows="7"
+                  [formControl]="changeRequest"
+                  placeholder="Ask the AI for your desired changes ..."
+                  [ngClass]="{ 'app-input--error': changeRequest.touched && changeRequest.invalid }"
+                ></textarea>
+
+                <span class="field-error" *ngIf="changeRequest.touched && changeRequest.invalid">
+                  Please describe the requested changes.
+                </span>
+
+                <div class="generate-exam__ai-actions">
+                  <button
+                    class="btn-outline btn-rounded"
+                    type="button"
+                    (click)="cancelAiRequest()"
+                    [disabled]="refining"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    class="btn-primary btn-rounded btn-with-spinner"
+                    type="button"
+                    (click)="requestAiChanges()"
+                    [disabled]="saving || refining"
+                    [class.btn-loading]="refining"
+                  >
+                    <span *ngIf="refining" class="app-spinner"></span>
+                    <span>{{ refining ? 'Requesting changes...' : 'Request Changes' }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
       </div>
     </ng-container>
 
-    <!-- ================= ITERATION ================= -->
-    <div class="generate-exam-content" *ngIf="step === 'edit'">
-      <section class="generate-exam-panel generate-exam-panel--narrow">
-        <div class="generate-exam-panel__header">
-          <h3>Request changes</h3>
-          <p>Describe what should be adjusted and regenerate the exam draft.</p>
-        </div>
-
-        <div class="form-group">
-          <label for="changeRequest">Change request</label>
-          <textarea
-            id="changeRequest"
-            class="app-input generate-exam-textarea generate-exam-textarea--edit"
-            rows="7"
-            [formControl]="changeRequest"
-            placeholder="E.g. make it harder, change topic, focus on vocabulary, reduce options..."
-            [ngClass]="{ 'app-input--error': changeRequest.touched && changeRequest.invalid }"
-          ></textarea>
-
-          <span class="field-error" *ngIf="changeRequest.touched && changeRequest.invalid">
-            Please describe the requested changes.
-          </span>
-        </div>
-
-        <div class="generate-exam-edit__actions">
-          <button
-            type="button"
-            class="btn-primary btn-rounded btn-with-spinner"
-            (click)="applyChanges()"
-            [disabled]="changeRequest.invalid"
-          >
-            Regenerate
-          </button>
-
-          <button type="button" class="btn-outline btn-rounded" (click)="step = 'preview'">
-            Back
-          </button>
-        </div>
-      </section>
-    </div>
-
-    <!-- Stats -->
-    <div class="app-stats-bar generate-exam-stats" *ngIf="generatedExam as exam">
+    <div class="app-stats-bar generate-exam-stats" *ngIf="generatedExam && step === 'preview'">
       <div class="app-stat">
         <span class="app-stat__label">Exercises</span>
-        <span class="app-stat__value">{{ exam.exercises.length || 0 }}</span>
+        <span class="app-stat__value">{{ generatedExam.exercises.length || 0 }}</span>
       </div>
 
       <div class="app-stat">
         <span class="app-stat__label">Exam ID</span>
-        <span class="app-stat__value">{{ exam.id }}</span>
+        <span class="app-stat__value">{{ generatedExam.id }}</span>
       </div>
 
       <div class="app-stat">
         <span class="app-stat__label">Status</span>
-        <span class="app-stat__value">{{ exam.status }}</span>
+        <span class="app-stat__value">{{ previewStatusLabel }}</span>
       </div>
     </div>
 
   </section>
 </div>
+<app-confirm-dialog
+  [open]="confirmDialog.open"
+  [title]="confirmDialog.title"
+  [message]="confirmDialog.message"
+  [confirmText]="confirmDialog.confirmText"
+  [cancelText]="confirmDialog.cancelText"
+  [variant]="confirmDialog.variant"
+  (confirmed)="onConfirmDialogConfirmed()"
+  (cancelled)="onConfirmDialogCancelled()"
+></app-confirm-dialog>
+

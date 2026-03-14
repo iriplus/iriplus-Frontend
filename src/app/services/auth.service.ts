@@ -110,8 +110,7 @@ export class AuthService {
         this.setAuthState(user);
         return user;
       }),
-      catchError((err) => {
-        console.log('Error fetching /me:', err);
+      catchError(() => {
         this.clearAuthState();
         return of(null);
       }),
