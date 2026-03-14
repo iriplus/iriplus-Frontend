@@ -7,7 +7,7 @@ import { UserService } from '../../services/user.service';
 import { error } from 'console';
 import { ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
-import { RecaptchaModule, RecaptchaComponent } from 'ng-recaptcha';
+import { RecaptchaModule, RecaptchaComponent } from 'ng-recaptcha-2';
 import { environment } from '../../../environments/environment';
 
 

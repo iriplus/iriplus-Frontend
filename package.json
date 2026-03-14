@@ -41,7 +41,7 @@
     "bootstrap-icons": "^1.13.1",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
-    "ng-recaptcha": "^13.2.1",
+    "ng-recaptcha-2": "16.0.1",
     "path": "^0.12.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

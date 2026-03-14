@@ -9,7 +9,7 @@ import { Class } from '../../interfaces/class.interface';
 import { User, UserType } from '../../interfaces/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
-import { RecaptchaModule, RecaptchaComponent } from 'ng-recaptcha';
+import { RecaptchaModule, RecaptchaComponent } from 'ng-recaptcha-2';
 
 @Component({
   selector: 'app-register',

@@ -6,7 +6,7 @@ import { finalize, switchMap } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { Login } from "../../interfaces/login.interface";
 import { environment } from "../../../environments/environment";
-import { RecaptchaModule, RecaptchaComponent } from "ng-recaptcha";
+import { RecaptchaModule, RecaptchaComponent } from "ng-recaptcha-2";
 
 @Component({
   selector: "app-login",
