@@ -59,8 +59,8 @@
     (resolved)="resolvedCaptcha($event)">
   </re-captcha>
 
-  <div *ngIf="errorMessage" class="app-error">
-    {{ errorMessage }}
+  <div *ngIf="captchaError" class="app-error">
+    {{ captchaError }}
   </div>
 
   <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" [disabled]="isLoading || !isFormValid" (click)="login()">

@@ -2,6 +2,17 @@
 import { CommonModule } from '@angular/common';
 
 export type ConfirmVariant = 'default' | 'danger';
+export type ConfirmAction = 'delete-draft' | 'discard-manual-edits' | null;
+
+export interface ConfirmDialogState{
+  open: boolean;
+  action: ConfirmAction;
+  title: string;
+  message: string;
+  confirmText: string;
+  cancelText: string;
+  variant: ConfirmVariant
+}
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -10,6 +21,7 @@ export type ConfirmVariant = 'default' | 'danger';
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.css'],
 })
+
 export class ConfirmDialogComponent {
   @Input() open = false;
   @Input() title = 'Are you sure?';

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClassService } from '../../services/class.service';
+import { NotificationService } from '../../services/notification.service';
 import { Class } from '../../interfaces/class.interface';
 import { ClassFormComponent } from '../class-form/class-form.component';
 import { AuthService } from '../../services/auth.service';
@@ -31,7 +32,8 @@ export class ClassesComponent implements OnInit {
 
   constructor(
     private classService: ClassService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) {}
 
   get isCoordinator(): boolean {
@@ -140,11 +142,21 @@ export class ClassesComponent implements OnInit {
 
     this.classService.deleteClass(id).subscribe({
       next: () => {
-        this.classes = this.classes.filter(c => c.id !== id);
-        this.filterClasses();
+        this.loadClasses();
+        this.notificationService.show({
+          type: 'success',
+          title: 'Class deleted',
+          message: 'Class deleted succesfully',
+          autoCloseMs: 3500,
+        })
       },
-      error: () => {
-        this.errorMessage = 'The class could not be removed';
+      error: (err) => {
+        this.notificationService.show({
+          type: 'error',
+          title: 'Could not delete class',
+          message: this.getDeleteErrorMessage(err),
+          autoCloseMs: 5000
+        })
       }
     });
   }
@@ -194,5 +206,27 @@ export class ClassesComponent implements OnInit {
   clearSearch(): void {
     this.searchText = '';
     this.filteredClasses = this.classes;
+  }
+
+  private getDeleteErrorMessage(err: any): string {
+    switch (err?.status) {
+      case 404:
+        return err?.error?.message ?? 'Class not found.';
+
+      case 409:
+        return err?.error?.message ?? 'This class cannot be deleted because it has active students.';
+
+      case 400:
+        return err?.error?.message ?? 'Invalid request.';
+
+      case 403:
+        return err?.error?.message ?? 'You do not have permission to delete this class.';
+
+      case 500:
+        return err?.error?.message ?? 'A server error occurred while deleting the class.';
+
+      default:
+        return err?.error?.message ?? 'The class could not be removed.';
+    }
   }
 }

@@ -29,6 +29,7 @@ export class LoginComponent {
   errorMessage = "";
   emailError = "";
   passwordError = "";
+  captchaError = "";
 
   @ViewChild(RecaptchaComponent)
   captcha?: RecaptchaComponent;
@@ -68,6 +69,7 @@ export class LoginComponent {
     this.errorMessage = "";
     this.emailError = "";
     this.passwordError = "";
+    this.captchaError = "";
 
     if (!this.email.includes('@')) {
         this.emailError = "*Please enter a valid email address.";
@@ -86,7 +88,7 @@ export class LoginComponent {
     }
 
     if (!this.captchaToken) {
-      this.errorMessage = "Please complete the captcha.";
+      this.captchaError = "Please complete the captcha.";
       return;
     }
 

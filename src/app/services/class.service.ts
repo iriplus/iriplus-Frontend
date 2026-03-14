@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { Class } from '../interfaces/class.interface';
 
 @Injectable({
@@ -50,7 +50,7 @@ export class ClassService {
       catchError(err => throwError(() => err))
     );
   }
-
+ 
   updateClass(classId: number, Class: Partial<Class>): Observable<Class> {
     return this.http.put<Class>(`${this.CLASS_URL}/${classId}`, Class, {withCredentials: true}).pipe(
       catchError(err => throwError(() => err))
