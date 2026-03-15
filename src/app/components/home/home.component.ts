@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule } from "@angular/router";
-import { CommonModule, NgIf } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { CoordinatorAnalyticsStats } from '../../interfaces/analytics.interface';
+import { NotificationService } from '../../services/notification.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import { UserType } from '../../interfaces/user.interface';
 
 type LeaderboardScope = 'COURSE' | 'GLOBAL';
@@ -65,15 +69,9 @@ interface TeacherCourseDashboard {
   pendingReviewExams: TeacherPendingExam[];
 }
 
-interface CoordinatorStats {
-  newEnrolledStudentsLastWeek: number;
-  totalEnrolledStudents: number;
-  averageCourseOccupancy: number;
-}
-
 @Component({
   selector: 'app-home',
-  imports: [RouterModule, CommonModule, NgIf],
+  imports: [RouterModule, CommonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -81,31 +79,176 @@ interface CoordinatorStats {
 
 export class HomeComponent implements OnInit {
   errorMessage = '';
-  userType: UserType = UserType.STUDENT;
+  userType: UserType | null = null;
 
-  constructor (
+  isLoadingUser = false;
+  isLoadingDashboard = false;
+
+  coordinatorStats: CoordinatorAnalyticsStats | null = null;
+
+  constructor(
     private readonly authService: AuthService,
+    private readonly analyticsService: AnalyticsService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   ngOnInit(): void {
-    this.loadCurrentUser();
+    this.loadHome();
   }
 
-  loadCurrentUser(): void {
+  /**
+   * Loads the current user first and, only for Coordinators,
+   * requests the real analytics payload from the backend.
+   *
+   * Teacher and Student dashboards remain on mock data for now.
+   */
+  loadHome(): void {
+    this.errorMessage = '';
+    this.userType = null;
+    this.coordinatorStats = null;
+    this.isLoadingUser = true;
+    this.isLoadingDashboard = false;
+
+    this.notificationService.clear();
+
     this.authService.loadMe().subscribe({
       next: (user) => {
         if (!user) {
-          this.errorMessage = 'Unable to load current user.';
+          this.handleBlockingError('Unable to load your profile.');
           return;
         }
 
-        this.userType = user.type
+        this.userType = user.type;
+
+        if (this.isCoordinator) {
+          this.loadCoordinatorAnalytics();
+          return;
+        }
+
+        this.isLoadingUser = false;
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error('Error loading current user:', err);
-        this.errorMessage = 'Error loading current user.';
-      }
+        this.handleBlockingError(
+          this.getApiErrorMessage(err, 'Unable to load your profile.')
+        );
+      },
     });
+  }
+
+  /**
+   * Loads the Coordinator-specific Home analytics.
+   */
+  private loadCoordinatorAnalytics(): void {
+    this.isLoadingDashboard = true;
+
+    this.analyticsService
+      .getHomeAnalytics()
+      .pipe(
+        finalize(() => {
+          this.isLoadingUser = false;
+          this.isLoadingDashboard = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          const coordinator = response.dashboard?.coordinator;
+
+          if (!coordinator) {
+            this.handleCoordinatorError(
+              'Coordinator dashboard data is incomplete.'
+            );
+            return;
+          }
+
+          this.coordinatorStats = coordinator;
+        },
+        error: (err: unknown) => {
+          console.error('Error loading coordinator dashboard:', err);
+          this.handleCoordinatorError(
+            this.getApiErrorMessage(
+              err,
+              'Unable to load the coordinator dashboard.'
+            )
+          );
+        },
+      });
+  }
+
+  /**
+   * Handles a blocking Home load error.
+   * This is used when the user profile itself cannot be loaded.
+   */
+  private handleBlockingError(message: string): void {
+    this.errorMessage = message;
+    this.userType = null;
+    this.isLoadingUser = false;
+    this.isLoadingDashboard = false;
+
+    this.notificationService.show({
+      type: 'error',
+      title: 'Home unavailable',
+      message,
+      autoCloseMs: 6000,
+    });
+  }
+
+  /**
+   * Handles a Coordinator analytics failure while preserving the known role.
+   */
+  private handleCoordinatorError(message: string): void {
+    this.errorMessage = message;
+    this.coordinatorStats = null;
+
+    this.notificationService.show({
+      type: 'error',
+      title: 'Coordinator dashboard unavailable',
+      message,
+      autoCloseMs: 6000,
+    });
+  }
+
+  /**
+   * Extracts a friendly backend message from common API error shapes.
+   */
+  private getApiErrorMessage(error: unknown, fallback: string): string {
+    const apiError = error as {
+      error?: {
+        message?: string;
+        msg?: string;
+      };
+    };
+
+    return apiError?.error?.message || apiError?.error?.msg || fallback;
+  }
+
+  get isPageLoading(): boolean {
+    return this.isLoadingUser || this.isLoadingDashboard;
+  }
+
+  get showBlockingErrorState(): boolean {
+    return !this.isPageLoading && !this.userType && !!this.errorMessage;
+  }
+
+  get showCoordinatorErrorState(): boolean {
+    return (
+      this.isCoordinator &&
+      !this.isPageLoading &&
+      !!this.errorMessage &&
+      !this.coordinatorStats
+    );
+  }
+
+  get homeSubtitle(): string {
+    if (this.isCoordinator) {
+      return 'Coordinator overview with real platform analytics.';
+    }
+
+    if (this.isTeacher || this.isStudent) {
+      return 'Role-based dashboard overview.';
+    }
+
+    return 'Loading your dashboard...';
   }
 
   get isStudent(): boolean {
@@ -669,11 +812,4 @@ export class HomeComponent implements OnInit {
       };
     });
   }
-
-  coordinatorStats: CoordinatorStats = {
-    newEnrolledStudentsLastWeek: 18,
-    totalEnrolledStudents: 246,
-    averageCourseOccupancy: 81
-  };
-
 }
