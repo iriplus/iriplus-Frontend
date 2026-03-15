@@ -1,41 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { finalize } from 'rxjs';
 import { TuitionService } from '../../services/tuition.service';
 import { NotificationService } from '../../services/notification.service';
+import { AnalyticsService } from '../../services/analytics.service';
+import {
+  TuitionDashboard,
+  TuitionStudent,
+} from '../../interfaces/analytics.interface';
 
-export interface MockTuitionStudent {
-  name: string;
-  dni: string;
-  status: 'up_to_date' | 'delinquent' | 'other';
-  lastPaidMonth: string;
+interface StatusDistributionItem {
+  label: string;
+  percent: number;
+  color: string;
 }
-
-const MOCK_DELINQUENT_LIST: { name: string; dni: string; monthsOverdue: number }[] = [
-  { name: 'Ana García', dni: '30123456', monthsOverdue: 4 },
-  { name: 'Carlos López', dni: '31234567', monthsOverdue: 5 },
-  { name: 'María Fernández', dni: '32345678', monthsOverdue: 3 },
-  { name: 'Juan Pérez', dni: '33456789', monthsOverdue: 6 },
-  { name: 'Laura Martínez', dni: '34567890', monthsOverdue: 4 },
-];
-
-const MOCK_STATUS_DISTRIBUTION = [
-  { label: 'Up to date', percent: 70, color: 'var(--color-slate)' },
-  { label: 'Delinquent', percent: 20, color: 'var(--color-danger)' },
-  { label: 'Other', percent: 10, color: 'var(--color-olive)' },
-];
-
-const MOCK_TUITION_TABLE: MockTuitionStudent[] = [
-  { name: 'Ana García', dni: '30123456', status: 'delinquent', lastPaidMonth: '2024-10' },
-  { name: 'Carlos López', dni: '31234567', status: 'delinquent', lastPaidMonth: '2024-09' },
-  { name: 'María Fernández', dni: '32345678', status: 'delinquent', lastPaidMonth: '2024-11' },
-  { name: 'Laura Martínez', dni: '34567890', status: 'up_to_date', lastPaidMonth: '2025-03' },
-  { name: 'Pedro Sánchez', dni: '35678901', status: 'up_to_date', lastPaidMonth: '2025-03' },
-  { name: 'Sofía Ruiz', dni: '36789012', status: 'other', lastPaidMonth: '2025-01' },
-  { name: 'Diego Torres', dni: '37890123', status: 'up_to_date', lastPaidMonth: '2025-02' },
-  { name: 'Valentina Morales', dni: '38901234', status: 'delinquent', lastPaidMonth: '2024-08' },
-];
 
 @Component({
   selector: 'app-tuitions',
@@ -44,23 +24,76 @@ const MOCK_TUITION_TABLE: MockTuitionStudent[] = [
   templateUrl: './tuitions.component.html',
   styleUrls: ['./tuitions.component.css'],
 })
-export class TuitionsComponent {
+export class TuitionsComponent implements OnInit {
   showUploadModal = false;
   selectedFile: File | null = null;
   isUploading = false;
   fileInputId = 'tuition-file-input';
 
   searchTerm = '';
+  statusFilter: 'ALL' | 'upToDate' | 'delinquent' | 'noData' = 'ALL';
 
-  mockDelinquentList = MOCK_DELINQUENT_LIST;
-  mockStatusDistribution = MOCK_STATUS_DISTRIBUTION;
-  mockTableData = [...MOCK_TUITION_TABLE];
-  filteredTableData: MockTuitionStudent[] = [...MOCK_TUITION_TABLE];
+  readonly statusFilterOptions: { value: 'ALL' | 'upToDate' | 'delinquent' | 'noData'; label: string }[] = [
+    { value: 'ALL', label: 'All statuses' },
+    { value: 'upToDate', label: 'Up to date' },
+    { value: 'delinquent', label: 'Delinquent' },
+    { value: 'noData', label: 'No data' },
+  ];
+
+  tuitionData: TuitionDashboard | null = null;
+  analyticsError: string | null = null;
+  isLoadingAnalytics = false;
 
   constructor(
     private tuitionService: TuitionService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private analyticsService: AnalyticsService
   ) {}
+
+  ngOnInit(): void {
+    this.loadTuitionAnalytics();
+  }
+
+  loadTuitionAnalytics(): void {
+    this.isLoadingAnalytics = true;
+    this.analyticsError = null;
+
+    this.analyticsService
+      .getTuitionAnalytics()
+      .pipe(
+        finalize(() => {
+          this.isLoadingAnalytics = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          const tuition = response.dashboard?.tuition;
+          if (!tuition) {
+            this.analyticsError = 'Tuition dashboard data is incomplete.';
+            this.notificationService.show({
+              type: 'error',
+              title: 'Tuition analytics unavailable',
+              message: this.analyticsError,
+              autoCloseMs: 6000,
+            });
+            return;
+          }
+          this.tuitionData = tuition;
+          this.analyticsError = null;
+        },
+        error: (err: HttpErrorResponse) => {
+          const msg = this.toAnalyticsErrorMessage(err);
+          this.analyticsError = msg;
+          this.tuitionData = null;
+          this.notificationService.show({
+            type: 'error',
+            title: 'Tuition analytics unavailable',
+            message: msg,
+            autoCloseMs: 6000,
+          });
+        },
+      });
+  }
 
   openUploadModal(): void {
     this.showUploadModal = true;
@@ -105,6 +138,7 @@ export class TuitionsComponent {
         this.showUploadModal = false;
         this.selectedFile = null;
         this.isUploading = false;
+        this.loadTuitionAnalytics();
       },
       error: (err: HttpErrorResponse) => {
         this.isUploading = false;
@@ -138,32 +172,71 @@ export class TuitionsComponent {
     return 'An unexpected error occurred. Please try again.';
   }
 
-  filterTable(): void {
-    const term = this.searchTerm.toLowerCase().trim();
-    if (!term) {
-      this.filteredTableData = [...this.mockTableData];
-      return;
+  private toAnalyticsErrorMessage(err: HttpErrorResponse): string {
+    const body = err.error;
+    const apiMessage = body?.message ?? body?.msg;
+    if (apiMessage) return String(apiMessage);
+    if (err.status === 403)
+      return "You don't have permission to view tuition analytics.";
+    if (err.status === 404)
+      return 'Tuition analytics could not be found.';
+    return 'An unexpected error occurred while loading tuition analytics.';
+  }
+
+  get delinquentList(): TuitionDashboard['studentsWithThreeOrMoreMonthsOverdue'] {
+    return this.tuitionData?.studentsWithThreeOrMoreMonthsOverdue ?? [];
+  }
+
+  get statusDistribution(): StatusDistributionItem[] {
+    const p = this.tuitionData?.summary?.percentages;
+    if (!p) return [];
+    return [
+      { label: 'Up to date', percent: p.upToDate, color: 'var(--color-slate)' },
+      { label: 'Delinquent', percent: p.delinquent, color: 'var(--color-danger)' },
+      { label: 'No data', percent: p.noData, color: 'var(--color-olive)' },
+    ];
+  }
+
+  get filteredTableData(): TuitionStudent[] {
+    let students = this.tuitionData?.students ?? [];
+    if (this.statusFilter !== 'ALL') {
+      students = students.filter((s) => {
+        const status = (s.status ?? '').toLowerCase().replace(/_/g, '');
+        if (this.statusFilter === 'upToDate') return status === 'uptodate';
+        if (this.statusFilter === 'delinquent') return status === 'delinquent';
+        if (this.statusFilter === 'noData') return status === 'nodata';
+        return true;
+      });
     }
-    this.filteredTableData = this.mockTableData.filter(
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) return students;
+    return students.filter(
       (s) =>
-        s.name.toLowerCase().includes(term) ||
+        s.fullName.toLowerCase().includes(term) ||
+        (s.name + ' ' + s.surname).toLowerCase().includes(term) ||
         s.dni.includes(term) ||
         s.lastPaidMonth.toLowerCase().includes(term) ||
-        s.status.toLowerCase().includes(term.replace(/\s/g, '_'))
+        s.status.toLowerCase().includes(term.replace(/\s/g, ''))
     );
+  }
+
+  filterTable(): void {
+    // Filtering is done via getter filteredTableData; this method is kept for (input) binding.
   }
 
   clearSearch(): void {
     this.searchTerm = '';
-    this.filteredTableData = [...this.mockTableData];
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
+      case 'upToDate':
       case 'up_to_date':
         return 'Up to date';
       case 'delinquent':
         return 'Delinquent';
+      case 'noData':
+        return 'No data';
       default:
         return 'Other';
     }
@@ -171,10 +244,12 @@ export class TuitionsComponent {
 
   getStatusClass(status: string): string {
     switch (status) {
+      case 'upToDate':
       case 'up_to_date':
         return 'tuitions__badge--ok';
       case 'delinquent':
         return 'tuitions__badge--danger';
+      case 'noData':
       default:
         return 'tuitions__badge--other';
     }
