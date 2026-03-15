@@ -47,274 +47,297 @@
 
       <!-- STUDENT DASHBOARD -->
       <section class="home-section" *ngIf="isStudent">
+        <div class="home-state home-state--error" *ngIf="showStudentErrorState">
+          <h2 class="home-state__title">We could not load the student dashboard</h2>
+          <p class="home-state__text">
+            {{ errorMessage }}
+          </p>
 
-        <!-- Course summary strip -->
-        <article class="student-course-strip">
-          <div class="student-course-strip__main">
-            <span class="student-course-strip__eyebrow">Current course</span>
-            <h2 class="student-course-strip__title">{{ studentCourse.name }}</h2>
-            <p class="student-course-strip__description">
-              {{ studentCourse.description }}
-            </p>
+          <div class="home-state__actions">
+            <button
+              type="button"
+              class="btn-primary btn-rounded"
+              (click)="loadHome()"
+            >
+              Try again
+            </button>
           </div>
-
-          <div class="student-course-strip__meta">
-            <div class="student-course-meta">
-              <span class="student-course-meta__label">Teachers</span>
-              <span class="student-course-meta__value">
-                {{ studentCourse.teachers.join(' · ') }}
-              </span>
-            </div>
-
-            <div class="student-course-meta">
-              <span class="student-course-meta__label">Students enrolled</span>
-              <span class="student-course-meta__value">
-                {{ studentCourse.studentsEnrolled }}
-              </span>
-            </div>
-
-            <div class="student-course-meta">
-              <span class="student-course-meta__label">English level</span>
-              <span class="student-course-meta__value">
-                {{ studentCourse.englishLevel }}
-              </span>
-            </div>
-          </div>
-        </article>
-
-        <!-- Top row -->
-        <div class="home-grid home-grid--student-top">
-
-          <!-- Leaderboard -->
-          <article class="home-panel student-panel">
-            <div class="home-panel__header home-panel__header--start">
-              <div>
-                <h3>Level & XP leaderboard</h3>
-                <p class="home-panel__subtitle">
-                  Ranking by level first, then by total experience.
-                </p>
-              </div>
-
-              <div class="home-segmented">
-                <button
-                  type="button"
-                  class="home-segmented__btn"
-                  [class.home-segmented__btn--active]="leaderboardScope === 'COURSE'"
-                  (click)="setLeaderboardScope('COURSE')"
-                >
-                  My course
-                </button>
-
-                <button
-                  type="button"
-                  class="home-segmented__btn"
-                  [class.home-segmented__btn--active]="leaderboardScope === 'GLOBAL'"
-                  (click)="setLeaderboardScope('GLOBAL')"
-                >
-                  All students
-                </button>
-              </div>
-            </div>
-
-            <ol class="rank-list">
-              <li
-                class="rank-item"
-                *ngFor="let student of visibleLeaderboard; let i = index"
-                [class.rank-item--current]="student.isCurrentUser"
-              >
-                <span class="rank-pos">#{{ i + 1 }}</span>
-
-                <span class="rank-avatar">
-                  {{ student.name.charAt(0) }}
-                </span>
-
-                <div class="rank-content">
-                  <span class="rank-name">
-                    {{ student.name }}
-                    <span class="rank-you" *ngIf="student.isCurrentUser">You</span>
-                  </span>
-                  <span class="rank-level">Level {{ student.level }}</span>
-                </div>
-
-                <span class="rank-points">{{ student.xp | number }} XP</span>
-              </li>
-            </ol>
-          </article>
-
-          <!-- Weekly XP chart -->
-          <article class="home-panel student-panel">
-            <div class="home-panel__header home-panel__header--start">
-              <div>
-                <h3>Weekly XP gain</h3>
-                <p class="home-panel__subtitle">
-                  Experience earned during the last 7 days.
-                </p>
-              </div>
-
-              <div class="student-chart-stats">
-                <div class="student-chart-stat">
-                  <span class="student-chart-stat__label">Total</span>
-                  <span class="student-chart-stat__value">{{ weeklyXpTotal }} XP</span>
-                </div>
-                <div class="student-chart-stat">
-                  <span class="student-chart-stat__label">Best day</span>
-                  <span class="student-chart-stat__value">{{ bestXpDay.label }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="student-chart">
-              <svg
-                class="student-chart__svg"
-                viewBox="0 0 360 220"
-                preserveAspectRatio="none"
-                aria-label="Weekly XP line chart"
-              >
-                <line
-                  *ngFor="let y of chartGridLines"
-                  x1="36"
-                  [attr.y1]="y"
-                  x2="340"
-                  [attr.y2]="y"
-                  class="student-chart__grid"
-                ></line>
-
-                <polyline
-                  [attr.points]="chartPoints"
-                  class="student-chart__line"
-                ></polyline>
-
-                <ng-container *ngFor="let point of chartDots">
-                  <circle
-                    [attr.cx]="point.x"
-                    [attr.cy]="point.y"
-                    r="4.5"
-                    class="student-chart__dot"
-                  ></circle>
-
-                  <text
-                    [attr.x]="point.x"
-                    y="208"
-                    text-anchor="middle"
-                    class="student-chart__label"
-                  >
-                    {{ point.label }}
-                  </text>
-                </ng-container>
-              </svg>
-            </div>
-          </article>
         </div>
 
-        <!-- Level progress -->
-        <article class="home-panel student-panel student-progress-panel">
-          <div class="home-panel__header home-panel__header--start">
-            <div>
-              <h3>Current level progress</h3>
-              <p class="home-panel__subtitle">
-                Track your current experience and how much is left to reach the next level.
-              </p>
-            </div>
-          </div>
-
-          <div class="student-progress-summary">
-            <div class="student-progress-kpi">
-              <span class="student-progress-kpi__label">Current level</span>
-              <span class="student-progress-kpi__value">Level {{ studentProgress.currentLevel }}</span>
-            </div>
-
-            <div class="student-progress-kpi">
-              <span class="student-progress-kpi__label">Current XP</span>
-              <span class="student-progress-kpi__value">{{ studentProgress.currentXp | number }} XP</span>
-            </div>
-
-            <div class="student-progress-kpi">
-              <span class="student-progress-kpi__label">XP to next level</span>
-              <span class="student-progress-kpi__value">{{ xpToNextLevel | number }} XP</span>
-            </div>
-          </div>
-
-          <div class="progress-block student-progress-block">
-            <div class="progress-row">
-              <span class="progress-label">
-                Level {{ studentProgress.currentLevel }}
-              </span>
-              <span class="progress-value">
-                {{ studentProgress.currentXp | number }} / {{ studentProgress.nextLevelXp | number }} XP
-              </span>
-            </div>
-
-            <div class="progress-bar student-progress-bar">
-              <div
-                class="progress-bar__fill student-progress-bar__fill"
-                [style.width.%]="levelProgressPercent"
-              ></div>
-            </div>
-
-            <p class="student-progress-hint">
-              You need <strong>{{ xpToNextLevel | number }} XP</strong> to reach
-              <strong>Level {{ studentProgress.currentLevel + 1 }}</strong>.
-            </p>
-          </div>
-        </article>
-
-        <!-- Pending feedbacks -->
-        <article class="home-panel student-panel home-panel--table">
-          <div class="home-panel__header home-panel__header--start">
-            <div>
-              <h3>Last Exams</h3>
-              <p class="home-panel__subtitle">
-                Last exams you completed but have not reviewed yet.
+        <ng-container *ngIf="!showStudentErrorState && studentDashboard">
+          <!-- Course summary strip -->
+          <article class="student-course-strip">
+            <div class="student-course-strip__main">
+              <span class="student-course-strip__eyebrow">Current course</span>
+              <h2 class="student-course-strip__title">{{ studentCourse.name }}</h2>
+              <p class="student-course-strip__description">
+                {{ studentCourse.description }}
               </p>
             </div>
 
-            <span class="home-chip">
-              {{ pendingFeedbacks.length }} pending
-            </span>
-          </div>
+            <div class="student-course-strip__meta">
+              <div class="student-course-meta">
+                <span class="student-course-meta__label">Teachers</span>
+                <span class="student-course-meta__value">
+                  {{ studentCourse.teachers.join(' · ') }}
+                </span>
+              </div>
 
-          <div class="app-table-container">
-            <table class="app-table app-table--wide">
-              <thead>
-                <tr>
-                  <th>Completion date</th>
-                  <th>Context</th>
-                  <th>Grade</th>
-                  <th>XP awarded</th>
-                  <th>View Exam</th>
-                </tr>
-              </thead>
+              <div class="student-course-meta">
+                <span class="student-course-meta__label">Students enrolled</span>
+                <span class="student-course-meta__value">
+                  {{ studentCourse.studentsEnrolled }}
+                </span>
+              </div>
 
-              <tbody>
-                <tr *ngFor="let exam of pendingFeedbacks">
-                  <td>{{ exam.completedAt }}</td>
+              <div class="student-course-meta">
+                <span class="student-course-meta__label">English level</span>
+                <span class="student-course-meta__value">
+                  {{ studentCourse.englishLevel }}
+                </span>
+              </div>
+            </div>
+          </article>
 
-                  <td>
-                    <div class="feedback-context">
-                      {{ getContextPreview(exam.context) }}
-                    </div>
-                  </td>
+          <!-- Top row -->
+          <div class="home-grid home-grid--student-top">
+            <!-- Leaderboard -->
+            <article class="home-panel student-panel">
+              <div class="home-panel__header home-panel__header--start">
+                <div>
+                  <h3>Level & XP leaderboard</h3>
+                  <p class="home-panel__subtitle">
+                    Ranking by level first, then by total experience.
+                  </p>
+                </div>
 
-                  <td>
-                    <span class="grade-pill">{{ exam.grade }}</span>
-                  </td>
+                <div class="home-segmented">
+                  <button
+                    type="button"
+                    class="home-segmented__btn"
+                    [class.home-segmented__btn--active]="leaderboardScope === 'COURSE'"
+                    (click)="setLeaderboardScope('COURSE')"
+                  >
+                    My course
+                  </button>
 
-                  <td>{{ exam.xpAwarded }} XP</td>
+                  <button
+                    type="button"
+                    class="home-segmented__btn"
+                    [class.home-segmented__btn--active]="leaderboardScope === 'GLOBAL'"
+                    (click)="setLeaderboardScope('GLOBAL')"
+                  >
+                    All students
+                  </button>
+                </div>
+              </div>
 
-                  <td>
-                    <button
-                      type="button"
-                      class="btn-outline home__small-cta"
-                      (click)="viewExam(exam.id)"
+              <ol class="rank-list">
+                <li
+                  class="rank-item"
+                  *ngFor="let student of visibleLeaderboard"
+                  [class.rank-item--current]="student.isCurrentUser"
+                >
+                  <span class="rank-pos">#{{ student.rank }}</span>
+
+                  <span class="rank-avatar">
+                    {{ student.name.charAt(0) }}
+                  </span>
+
+                  <div class="rank-content">
+                    <span class="rank-name">
+                      {{ student.name }}
+                      <span class="rank-you" *ngIf="student.isCurrentUser">You</span>
+                    </span>
+                    <span class="rank-level">Level {{ student.level }}</span>
+                  </div>
+
+                  <span class="rank-points">{{ student.xp | number }} XP</span>
+                </li>
+              </ol>
+            </article>
+
+            <!-- Weekly XP chart -->
+            <article class="home-panel student-panel">
+              <div class="home-panel__header home-panel__header--start">
+                <div>
+                  <h3>Weekly XP gain</h3>
+                  <p class="home-panel__subtitle">
+                    Experience earned during the last 7 days.
+                  </p>
+                </div>
+
+                <div class="student-chart-stats">
+                  <div class="student-chart-stat">
+                    <span class="student-chart-stat__label">Total</span>
+                    <span class="student-chart-stat__value">{{ weeklyXpTotal }} XP</span>
+                  </div>
+                  <div class="student-chart-stat">
+                    <span class="student-chart-stat__label">Best day</span>
+                    <span class="student-chart-stat__value">{{ bestXpDay.label }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="student-chart">
+                <svg
+                  class="student-chart__svg"
+                  viewBox="0 0 360 220"
+                  preserveAspectRatio="none"
+                  aria-label="Weekly XP line chart"
+                >
+                  <line
+                    *ngFor="let y of chartGridLines"
+                    x1="36"
+                    [attr.y1]="y"
+                    x2="340"
+                    [attr.y2]="y"
+                    class="student-chart__grid"
+                  ></line>
+
+                  <polyline
+                    [attr.points]="chartPoints"
+                    class="student-chart__line"
+                  ></polyline>
+
+                  <ng-container *ngFor="let point of chartDots">
+                    <circle
+                      [attr.cx]="point.x"
+                      [attr.cy]="point.y"
+                      r="4.5"
+                      class="student-chart__dot"
+                    ></circle>
+
+                    <text
+                      [attr.x]="point.x"
+                      y="208"
+                      text-anchor="middle"
+                      class="student-chart__label"
                     >
-                      View Exam
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                      {{ point.label }}
+                    </text>
+                  </ng-container>
+                </svg>
+              </div>
+            </article>
           </div>
-        </article>
+
+          <!-- Level progress -->
+          <article class="home-panel student-panel student-progress-panel">
+            <div class="home-panel__header home-panel__header--start">
+              <div>
+                <h3>Current level progress</h3>
+                <p class="home-panel__subtitle">
+                  Track your current experience and how much is left to reach the next level.
+                </p>
+              </div>
+            </div>
+
+            <div class="student-progress-summary">
+              <div class="student-progress-kpi">
+                <span class="student-progress-kpi__label">Current level</span>
+                <span class="student-progress-kpi__value">Level {{ studentProgress.currentLevel }}</span>
+              </div>
+
+              <div class="student-progress-kpi">
+                <span class="student-progress-kpi__label">Current XP</span>
+                <span class="student-progress-kpi__value">{{ studentProgress.currentXp | number }} XP</span>
+              </div>
+
+              <div class="student-progress-kpi">
+                <span class="student-progress-kpi__label">XP to next level</span>
+                <span class="student-progress-kpi__value">{{ xpToNextLevel | number }} XP</span>
+              </div>
+            </div>
+
+            <div class="progress-block student-progress-block">
+              <div class="progress-row">
+                <span class="progress-label">
+                  Level {{ studentProgress.currentLevel }}
+                </span>
+                <span class="progress-value">
+                  {{ studentProgress.currentXp | number }} / {{ studentProgress.nextLevelXp | number }} XP
+                </span>
+              </div>
+
+              <div class="progress-bar student-progress-bar">
+                <div
+                  class="progress-bar__fill student-progress-bar__fill"
+                  [style.width.%]="levelProgressPercent"
+                ></div>
+              </div>
+
+              <p class="student-progress-hint">
+                You need <strong>{{ xpToNextLevel | number }} XP</strong> to reach
+                <strong>Level {{ studentProgress.currentLevel + 1 }}</strong>.
+              </p>
+            </div>
+          </article>
+
+          <!-- Last exams -->
+          <article class="home-panel student-panel home-panel--table">
+            <div class="home-panel__header home-panel__header--start">
+              <div>
+                <h3>Last Exams</h3>
+                <p class="home-panel__subtitle">
+                  Most recent corrected exams available in your history.
+                </p>
+              </div>
+
+              <span class="home-chip">
+                {{ lastExams.length }} exams
+              </span>
+            </div>
+
+            <div class="app-table-container">
+              <table class="app-table app-table--wide">
+                <thead>
+                  <tr>
+                    <th>Completion date</th>
+                    <th>Context</th>
+                    <th>Grade</th>
+                    <th>XP awarded</th>
+                    <th>View Exam</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngIf="lastExams.length === 0">
+                    <td colspan="5" class="home-empty-row">
+                      No corrected exams are available yet.
+                    </td>
+                  </tr>
+
+                  <tr *ngFor="let exam of lastExams">
+                    <td>{{ exam.completedAt }}</td>
+
+                    <td>
+                      <div class="feedback-context">
+                        {{ getContextPreview(exam.context) }}
+                      </div>
+                    </td>
+
+                    <td>
+                      <span class="grade-pill">{{ exam.grade }}</span>
+                    </td>
+
+                    <td>{{ exam.xpAwarded }} XP</td>
+
+                    <td>
+                      <button
+                        type="button"
+                        class="btn-outline home__small-cta"
+                        (click)="viewExam(exam.id)"
+                      >
+                        View Exam
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </ng-container>
       </section>
 
       <!-- TEACHER DASHBOARD -->

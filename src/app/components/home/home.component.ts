@@ -1,48 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { CoordinatorAnalyticsStats } from '../../interfaces/analytics.interface';
+import { CoordinatorAnalyticsStats, HomeAnalyticsResponse, LeaderboardStudent, StudentCourseSummary, StudentDashboard, StudentLastExam, StudentProgress, WeeklyXpPoint } from '../../interfaces/analytics.interface';
 import { NotificationService } from '../../services/notification.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { UserType } from '../../interfaces/user.interface';
 
 type LeaderboardScope = 'COURSE' | 'GLOBAL';
-
-interface StudentCourseSummary {
-  name: string;
-  description: string;
-  teachers: string[];
-  studentsEnrolled: number;
-  englishLevel: string;
-}
-
-interface LeaderboardStudent {
-  name: string;
-  level: number;
-  xp: number;
-  isCurrentUser?: boolean;
-}
-
-interface WeeklyXpPoint {
-  label: string;
-  value: number;
-}
-
-interface StudentProgress {
-  currentLevel: number;
-  currentXp: number;
-  nextLevelXp: number;
-}
-
-interface PendingFeedbackExam {
-  id: number;
-  completedAt: string;
-  context: string;
-  grade: string;
-  xpAwarded: number;
-}
 
 interface TeacherStudentWeeklyXp {
   name: string;
@@ -56,6 +22,12 @@ interface TeacherPendingExam {
   className: string;
 }
 
+interface TeacherLeaderboardStudent {
+  name: string;
+  level: number;
+  xp: number;
+}
+
 interface TeacherCourseDashboard {
   id: number;
   name: string;
@@ -63,7 +35,7 @@ interface TeacherCourseDashboard {
   teachers: string[];
   studentsEnrolled: number;
   englishLevel: string;
-  leaderboard: LeaderboardStudent[];
+  leaderboard: TeacherLeaderboardStudent[];
   weeklyXpByStudent: TeacherStudentWeeklyXp[];
   pendingCorrectionExams: TeacherPendingExam[];
   pendingReviewExams: TeacherPendingExam[];
@@ -84,27 +56,49 @@ export class HomeComponent implements OnInit {
   isLoadingUser = false;
   isLoadingDashboard = false;
 
+  studentDashboard: StudentDashboard | null = null;
   coordinatorStats: CoordinatorAnalyticsStats | null = null;
+
+  private readonly emptyStudentCourse: StudentCourseSummary = {
+    name: 'No active course assigned',
+    description:
+      'You are not assigned to an active course yet. Please contact the institute staff if this looks incorrect.',
+    teachers: ['Not assigned yet'],
+    studentsEnrolled: 0,
+    englishLevel: 'Not assigned',
+  };
+
+  private readonly emptyStudentProgress: StudentProgress = {
+    currentLevel: 1,
+    currentXp: 0,
+    nextLevelXp: 0,
+  };
+
+  private readonly emptyWeeklyXp: WeeklyXpPoint[] = [
+    { label: 'Mon', value: 0 },
+    { label: 'Tue', value: 0 },
+    { label: 'Wed', value: 0 },
+    { label: 'Thu', value: 0 },
+    { label: 'Fri', value: 0 },
+    { label: 'Sat', value: 0 },
+    { label: 'Sun', value: 0 },
+  ];
 
   constructor(
     private readonly authService: AuthService,
     private readonly analyticsService: AnalyticsService,
     private readonly notificationService: NotificationService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit(): void {
     this.loadHome();
   }
 
-  /**
-   * Loads the current user first and, only for Coordinators,
-   * requests the real analytics payload from the backend.
-   *
-   * Teacher and Student dashboards remain on mock data for now.
-   */
   loadHome(): void {
     this.errorMessage = '';
     this.userType = null;
+    this.studentDashboard = null;
     this.coordinatorStats = null;
     this.isLoadingUser = true;
     this.isLoadingDashboard = false;
@@ -120,8 +114,8 @@ export class HomeComponent implements OnInit {
 
         this.userType = user.type;
 
-        if (this.isCoordinator) {
-          this.loadCoordinatorAnalytics();
+        if (this.isCoordinator || this.isStudent) {
+          this.loadHomeAnalytics();
           return;
         }
 
@@ -136,10 +130,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  /**
-   * Loads the Coordinator-specific Home analytics.
-   */
-  private loadCoordinatorAnalytics(): void {
+  private loadHomeAnalytics(): void {
     this.isLoadingDashboard = true;
 
     this.analyticsService
@@ -151,37 +142,64 @@ export class HomeComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (response) => {
-          const coordinator = response.dashboard?.coordinator;
+        next: (response: HomeAnalyticsResponse) => {
+          this.errorMessage = '';
 
-          if (!coordinator) {
-            this.handleCoordinatorError(
-              'Coordinator dashboard data is incomplete.'
-            );
+          if (this.isCoordinator) {
+            const coordinator = response.dashboard?.coordinator;
+
+            if (!coordinator) {
+              this.handleCoordinatorError(
+                'Coordinator dashboard data is incomplete.'
+              );
+              return;
+            }
+            
+            this.coordinatorStats = coordinator;
             return;
           }
 
-          this.coordinatorStats = coordinator;
+          if (this.isStudent) {
+            const student = response.dashboard?.student;
+
+            if (!student) {
+              this.handleStudentError(
+                'Student dashboard data is incomplete.'
+              );
+              return;
+            }
+
+            this.studentDashboard = student;
+          }
         },
         error: (err: unknown) => {
-          console.error('Error loading coordinator dashboard:', err);
-          this.handleCoordinatorError(
-            this.getApiErrorMessage(
-              err,
-              'Unable to load the coordinator dashboard.'
-            )
+          console.error('Error loading Home Analytics:', err);
+
+          const message = this.getApiErrorMessage(
+            err,
+            'Unable to load the Home Dashboard.'
           );
+
+          if (this.isCoordinator) {
+            this.handleCoordinatorError(message);
+            return;
+          }
+
+          if (this.isStudent) {
+            this.handleStudentError(message);
+            return;
+          }
+
+          this.handleBlockingError(message);
         },
       });
   }
 
-  /**
-   * Handles a blocking Home load error.
-   * This is used when the user profile itself cannot be loaded.
-   */
   private handleBlockingError(message: string): void {
     this.errorMessage = message;
     this.userType = null;
+    this.studentDashboard = null;
+    this.coordinatorStats = null;
     this.isLoadingUser = false;
     this.isLoadingDashboard = false;
 
@@ -193,9 +211,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  /**
-   * Handles a Coordinator analytics failure while preserving the known role.
-   */
   private handleCoordinatorError(message: string): void {
     this.errorMessage = message;
     this.coordinatorStats = null;
@@ -208,9 +223,18 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  /**
-   * Extracts a friendly backend message from common API error shapes.
-   */
+  private handleStudentError(message: string): void {
+    this.errorMessage = message;
+    this.studentDashboard = null;
+
+    this.notificationService.show({
+      type: 'error',
+      title: 'Student dashboard unavailable',
+      message,
+      autoCloseMs: 6000,
+    });
+  }
+
   private getApiErrorMessage(error: unknown, fallback: string): string {
     const apiError = error as {
       error?: {
@@ -230,21 +254,24 @@ export class HomeComponent implements OnInit {
     return !this.isPageLoading && !this.userType && !!this.errorMessage;
   }
 
+  get showStudentErrorState(): boolean {
+    return this.isStudent && !this.isPageLoading && !!this.errorMessage && !this.studentDashboard;
+  }
+
   get showCoordinatorErrorState(): boolean {
-    return (
-      this.isCoordinator &&
-      !this.isPageLoading &&
-      !!this.errorMessage &&
-      !this.coordinatorStats
-    );
+    return this.isCoordinator && !this.isPageLoading && !!this.errorMessage && !this.coordinatorStats;
   }
 
   get homeSubtitle(): string {
+    if (this.isStudent) {
+      return 'Student overview with real platform analytics.'
+    }
+    
     if (this.isCoordinator) {
       return 'Coordinator overview with real platform analytics.';
     }
 
-    if (this.isTeacher || this.isStudent) {
+    if (this.isTeacher) {
       return 'Role-based dashboard overview.';
     }
 
@@ -263,77 +290,29 @@ export class HomeComponent implements OnInit {
     return this.userType === UserType.COORDINATOR;
   }
 
-  leaderboardScope: LeaderboardScope = 'COURSE';
+  get studentCourse(): StudentCourseSummary {
+    return this.studentDashboard?.courseSummary ?? this.emptyStudentCourse;
+  }
 
-  studentCourse: StudentCourseSummary = {
-    name: '4th Year A - Morning Group',
-    description:
-      'Intermediate English course focused on reading comprehension, writing practice, grammar reinforcement, and exam preparation.',
-    teachers: ['Emma Wilson', 'Daniel Carter'],
-    studentsEnrolled: 28,
-    englishLevel: 'B1'
-  };
+  get courseLeaderboard(): LeaderboardStudent[] {
+    return this.studentDashboard?.leaderboards.course ?? [];
+  }
 
-  courseLeaderboard: LeaderboardStudent[] = [
-    { name: 'Olivia Martin', level: 11, xp: 4820 },
-    { name: 'Lucas Bennett', level: 10, xp: 4510 },
-    { name: 'You', level: 10, xp: 4290, isCurrentUser: true },
-    { name: 'Sophia Turner', level: 9, xp: 4015 },
-    { name: 'Noah Hughes', level: 9, xp: 3870 },
-    { name: 'Mia Foster', level: 8, xp: 3520 }
-  ];
+  get globalLeaderboard(): LeaderboardStudent[] {
+    return this.studentDashboard?.leaderboards.global ?? [];
+  }
 
-  globalLeaderboard: LeaderboardStudent[] = [
-    { name: 'Charlotte Evans', level: 15, xp: 7900 },
-    { name: 'Liam Parker', level: 14, xp: 7510 },
-    { name: 'Emily Brooks', level: 14, xp: 7320 },
-    { name: 'James Collins', level: 13, xp: 7055 },
-    { name: 'Ava Stewart', level: 12, xp: 6810 },
-    { name: 'You', level: 10, xp: 4290, isCurrentUser: true }
-  ];
+  get weeklyXp(): WeeklyXpPoint[] {
+    return this.studentDashboard?.weeklyXp ?? this.emptyWeeklyXp;
+  }
 
-  weeklyXp: WeeklyXpPoint[] = [
-    { label: 'Mon', value: 80 },
-    { label: 'Tue', value: 120 },
-    { label: 'Wed', value: 95 },
-    { label: 'Thu', value: 150 },
-    { label: 'Fri', value: 110 },
-    { label: 'Sat', value: 175 },
-    { label: 'Sun', value: 140 }
-  ];
+  get studentProgress(): StudentProgress {
+    return this.studentDashboard?.progress ?? this.emptyStudentProgress;
+  }
 
-  studentProgress: StudentProgress = {
-    currentLevel: 10,
-    currentXp: 4290,
-    nextLevelXp: 5000
-  };
-
-  pendingFeedbacks: PendingFeedbackExam[] = [
-    {
-      id: 101,
-      completedAt: '2026-02-25',
-      context:
-        'A school is planning a cultural exchange trip to another country and students must analyze costs, accommodation options, and communication challenges before making a final decision.',
-      grade: '8.5 / 10',
-      xpAwarded: 180
-    },
-    {
-      id: 102,
-      completedAt: '2026-02-26',
-      context:
-        'An article discusses how technology affects study habits, concentration, and collaboration among teenagers in modern classrooms.',
-      grade: '9 / 10',
-      xpAwarded: 220
-    },
-    {
-      id: 103,
-      completedAt: '2026-02-28',
-      context:
-        'A city council is evaluating whether public parks should include more sports areas or more quiet reading spaces, based on residents’ opinions and usage patterns.',
-      grade: '7.5 / 10',
-      xpAwarded: 160
-    }
-  ];
+  get lastExams(): StudentLastExam[] {
+    return this.studentDashboard?.lastExams ?? [];
+  }
 
   private readonly chartWidth = 360;
   private readonly chartHeight = 220;
@@ -342,12 +321,10 @@ export class HomeComponent implements OnInit {
   private readonly chartTop = 18;
   private readonly chartBottom = 34;
 
-  goTo(route: string): void {
-    console.log('Navigate to:', route);
-  }
+  leaderboardScope: LeaderboardScope = 'COURSE';
 
   viewExam(examId: number): void {
-    console.log('View exam:', examId);
+    this.router.navigate([`/view-exam/${examId}`]);
   }
 
   setLeaderboardScope(scope: LeaderboardScope): void {
@@ -361,10 +338,17 @@ export class HomeComponent implements OnInit {
   }
 
   get xpToNextLevel(): number {
-    return Math.max(this.studentProgress.nextLevelXp - this.studentProgress.currentXp, 0);
+    return Math.max(
+      this.studentProgress.nextLevelXp - this.studentProgress.currentXp,
+      0
+    );
   }
 
   get levelProgressPercent(): number {
+    if (this.studentProgress.nextLevelXp <= 0) {
+      return 0;
+    }
+
     return Math.min(
       (this.studentProgress.currentXp / this.studentProgress.nextLevelXp) * 100,
       100
@@ -376,6 +360,10 @@ export class HomeComponent implements OnInit {
   }
 
   get bestXpDay(): WeeklyXpPoint {
+    if (this.weeklyXp.length === 0) {
+      return { label: '-', value: 0 };
+    }
+
     return this.weeklyXp.reduce((best, current) =>
       current.value > best.value ? current : best
     );

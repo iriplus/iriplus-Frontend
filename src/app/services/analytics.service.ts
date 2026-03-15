@@ -12,10 +12,6 @@ import {
   providedIn: 'root',
 })
 export class AnalyticsService {
-  /**
-   * Home analytics endpoint.
-   * The backend decides which role-specific block can be safely returned.
-   */
   private readonly HOME_URL = `${environment.backendUrl}/home`;
 
   private readonly TUITION_ANALYTICS_URL = `${environment.backendUrl}/tuitions/analytics`;

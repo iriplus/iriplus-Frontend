@@ -839,3 +839,8 @@
     font-size: 20px;
   }
 }
+
+.home-empty-row {
+  text-align: center;
+  color: var(--color-text-muted);
+}
