@@ -51,6 +51,8 @@
 
 .teacher-form__submit {
   width: 100%;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
   border-radius: var(--radius-lg, 14px);
 }
