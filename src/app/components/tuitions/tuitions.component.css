@@ -66,6 +66,13 @@
   color: var(--color-danger);
 }
 
+.tuitions__empty-msg {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin: 0;
+  padding: 12px 0;
+}
+
 .tuitions__chart {
   display: flex;
   height: 32px;
@@ -114,6 +121,33 @@
 
 .tuitions__table-actions {
   margin-bottom: 12px;
+}
+
+/* Status filter (same pattern as exams screen) */
+.tuitions__filter {
+  position: relative;
+  min-width: 180px;
+  flex: 0 0 auto;
+}
+
+.tuitions__filter-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.tuitions__filter-control {
+  background: var(--color-surface-soft);
+}
+
+.tuitions__filter-control:focus {
+  background: var(--color-surface);
 }
 
 .tuitions__badge {

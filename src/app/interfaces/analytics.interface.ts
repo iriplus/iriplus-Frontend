@@ -94,3 +94,55 @@ export interface HomeAnalyticsResponse {
     teacher?: TeacherDashboard;
   };
 }
+<<<<<<< HEAD
+=======
+
+export interface TuitionStudentOverdue {
+  id: number;
+  fullName: string;
+  dni: string;
+  monthsOverdue: number;
+}
+
+export type TuitionStudentStatus = 'upToDate' | 'delinquent' | 'noData';
+
+export interface TuitionStudent {
+  id: number;
+  name: string;
+  surname: string;
+  fullName: string;
+  dni: string;
+  status: TuitionStudentStatus;
+  monthsOverdue: number;
+  lastPaidMonth: string;
+  lastPaymentDate: string;
+}
+
+export interface TuitionSummary {
+  totalStudents: number;
+  counts: {
+    upToDate: number;
+    delinquent: number;
+    noData: number;
+  };
+  percentages: {
+    upToDate: number;
+    delinquent: number;
+    noData: number;
+  };
+}
+
+export interface TuitionDashboard {
+  generatedAt: string;
+  summary: TuitionSummary;
+  studentsWithThreeOrMoreMonthsOverdue: TuitionStudentOverdue[];
+  students: TuitionStudent[];
+}
+
+export interface TuitionAnalyticsResponse {
+  role: string;
+  dashboard: {
+    tuition?: TuitionDashboard;
+  };
+}
+>>>>>>> ec719990c90eda98c060ddfb6de424c368e224be
