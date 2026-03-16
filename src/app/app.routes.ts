@@ -22,6 +22,7 @@ import { ExamResolveComponent } from './components/exam-resolve/exam-resolve.com
 import { ViewExamComponent } from './components/view-exam/view-exam.component';
 import { StudentsComponent } from './components/students/students.component';
 import { TuitionsComponent } from './components/tuitions/tuitions.component';
+import { WritingReviewComponent } from './components/writing-review/writing-review.component';
 
 export const routes: Routes = [
   {
@@ -86,6 +87,12 @@ export const routes: Routes = [
       {
         path: 'exam-resolve/:id',
         component: ExamResolveComponent,
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserType.STUDENT] }
+      },
+      {
+        path: 'writing-review',
+        component: WritingReviewComponent,
         canActivate: [roleGuard],
         data: { allowedRoles: [UserType.STUDENT] }
       },

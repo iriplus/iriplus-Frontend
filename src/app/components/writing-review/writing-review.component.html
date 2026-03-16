@@ -1,0 +1,264 @@
+<div class="app-page app-page--gradient writing-page">
+  <div class="app-card app-card--xl app-card--elevated writing-card">
+    <header class="app-header app-header--left writing-header">
+      <div class="writing-header__top">
+        <button
+          type="button"
+          class="btn-outline btn-rounded writing-header__back"
+          (click)="onBackToHome()"
+        >
+          ← Back to Home
+        </button>
+      </div>
+
+      <div class="writing-header__content">
+        <div>
+          <p class="writing-header__eyebrow">Student writing workspace</p>
+          <h1 class="app-header__title">Writing practice</h1>
+          <p class="app-header__subtitle">
+            Paste the exercise prompt and your writing to get instant AI
+            feedback. This feedback is not stored in the system.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="writing-state writing-state--error" *ngIf="errorMessage">
+      <p class="writing-state__text">
+        {{ errorMessage }}
+      </p>
+    </div>
+
+    <section class="writing-layout">
+      <div class="writing-main">
+        <section class="writing-form">
+          <h2 class="writing-form__title">Submit your writing</h2>
+          <p class="writing-form__description">
+            Provide the original exercise prompt and your full written response.
+            The AI will analyze both and return personalized feedback.
+          </p>
+
+          <div class="writing-form__field">
+            <label class="writing-form__label" for="exercisePrompt">
+              Exercise prompt
+            </label>
+            <textarea
+              id="exercisePrompt"
+              class="app-input writing-form__textarea"
+              rows="4"
+              [(ngModel)]="exercisePrompt"
+              [disabled]="isSubmitting"
+              placeholder="E.g. Write an email to a friend telling them about your last holiday."
+            ></textarea>
+          </div>
+
+          <div class="writing-form__field">
+            <label class="writing-form__label" for="studentSubmission">
+              Your writing
+            </label>
+            <textarea
+              id="studentSubmission"
+              class="app-input writing-form__textarea writing-form__textarea--large"
+              rows="10"
+              [(ngModel)]="studentSubmission"
+              [disabled]="isSubmitting"
+              placeholder="Write your full answer here..."
+            ></textarea>
+          </div>
+
+          <div class="writing-form__hint">
+            This writing is analyzed in-memory only. It is not saved to your
+            exam history.
+          </div>
+
+          <div class="writing-form__actions">
+            <button
+              type="button"
+              class="btn-outline btn-rounded"
+              (click)="onBackToHome()"
+              [disabled]="isSubmitting"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              class="btn-primary btn-rounded btn-lg writing-form__submit"
+              (click)="onSubmit()"
+              [disabled]="isSubmitting || !!feedback"
+            >
+              <span class="writing-form__submit-spinner" *ngIf="isSubmitting">
+                <span class="app-spinner"></span>
+              </span>
+              <span class="writing-form__submit-text">
+                {{ isSubmitting ? 'Generating feedback...' : 'Get feedback' }}
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <section
+          class="writing-submission"
+          *ngIf="hasSubmitted && (exercisePrompt || studentSubmission)"
+        >
+          <header class="writing-submission__header">
+            <h2>Your submission</h2>
+          </header>
+
+          <div class="writing-submission__content">
+            <article class="writing-submission__block">
+              <h3 class="writing-submission__title">Exercise prompt</h3>
+              <p class="writing-submission__text">
+                {{ exercisePrompt }}
+              </p>
+            </article>
+
+            <article class="writing-submission__block">
+              <h3 class="writing-submission__title">Your writing</h3>
+              <p class="writing-submission__text writing-submission__text--mono">
+                {{ studentSubmission }}
+              </p>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="writing-sidebar" *ngIf="feedback">
+        <div class="writing-sidebar__top">
+          <div class="writing-sidebar__titles">
+            <h2>Feedback</h2>
+            <p class="writing-sidebar__subtitle">
+              Detailed analysis of your writing based on the prompt you
+              provided.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="btn-outline btn-rounded writing-sidebar__print-btn"
+            (click)="onPrint()"
+          >
+            Print feedback
+          </button>
+        </div>
+
+        <div class="writing-feedback">
+          <section class="writing-feedback__block">
+            <h3 class="writing-feedback__title">Overall assessment</h3>
+            <p class="writing-feedback__text">
+              {{ feedback.overall_assessment }}
+            </p>
+          </section>
+
+          <section class="writing-feedback__block">
+            <h3 class="writing-feedback__title">Corrected version</h3>
+            <pre class="writing-feedback__corrected">
+{{ feedback.corrected_version }}</pre
+            >
+          </section>
+
+          <section
+            class="writing-feedback__block"
+            *ngIf="feedback.feedback?.task_achievement?.length"
+          >
+            <h3 class="writing-feedback__title">Task achievement</h3>
+            <ul class="writing-feedback__list">
+              <li *ngFor="let item of feedback.feedback?.task_achievement">
+                {{ item }}
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="writing-feedback__block"
+            *ngIf="feedback.feedback?.grammar?.length"
+          >
+            <h3 class="writing-feedback__title">Grammar</h3>
+            <ul class="writing-feedback__list">
+              <li *ngFor="let item of feedback.feedback?.grammar">
+                {{ item }}
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="writing-feedback__block"
+            *ngIf="feedback.feedback?.vocabulary?.length"
+          >
+            <h3 class="writing-feedback__title">Vocabulary</h3>
+            <ul class="writing-feedback__list">
+              <li *ngFor="let item of feedback.feedback?.vocabulary">
+                {{ item }}
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="writing-feedback__block"
+            *ngIf="feedback.feedback?.organization?.length"
+          >
+            <h3 class="writing-feedback__title">Organization</h3>
+            <ul class="writing-feedback__list">
+              <li *ngFor="let item of feedback.feedback?.organization">
+                {{ item }}
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="writing-feedback__block"
+            *ngIf="feedback.line_corrections?.length"
+          >
+            <h3 class="writing-feedback__title">Line-by-line corrections</h3>
+
+            <div class="writing-corrections">
+              <article
+                class="writing-corrections__row"
+                *ngFor="let line of feedback.line_corrections"
+              >
+                <div class="writing-corrections__col">
+                  <h4>Original</h4>
+                  <p class="writing-corrections__text">
+                    {{ line.original }}
+                  </p>
+                </div>
+                <div class="writing-corrections__col">
+                  <h4>Corrected</h4>
+                  <p class="writing-corrections__text writing-corrections__text--corrected">
+                    {{ line.corrected }}
+                  </p>
+                </div>
+                <div class="writing-corrections__col">
+                  <h4>Explanation</h4>
+                  <p class="writing-corrections__text">
+                    {{ line.explanation }}
+                  </p>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="writing-feedback__block" *ngIf="feedback.tips?.length">
+            <h3 class="writing-feedback__title">Tips</h3>
+            <ul class="writing-feedback__list">
+              <li *ngFor="let tip of feedback.tips">
+                {{ tip }}
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="writing-feedback__block writing-feedback__block--level"
+            *ngIf="feedback.estimated_level_fit"
+          >
+            <h3 class="writing-feedback__title">Estimated level fit</h3>
+            <p class="writing-feedback__level-pill">
+              {{ feedback.estimated_level_fit }}
+            </p>
+          </section>
+        </div>
+      </aside>
+    </section>
+  </div>
+</div>
+
