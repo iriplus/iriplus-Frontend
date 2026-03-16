@@ -47,6 +47,10 @@ export class HeaderComponent {
     return this.authService.getUserType() === UserType.TEACHER;
   }
 
+  get isStudent(): boolean {
+    return this.authService.getUserType() === UserType.STUDENT;
+  }
+
   get isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
   }
