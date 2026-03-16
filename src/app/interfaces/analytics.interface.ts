@@ -94,8 +94,6 @@ export interface HomeAnalyticsResponse {
     teacher?: TeacherDashboard;
   };
 }
-<<<<<<< HEAD
-=======
 
 export interface TuitionStudentOverdue {
   id: number;
@@ -145,4 +143,3 @@ export interface TuitionAnalyticsResponse {
     tuition?: TuitionDashboard;
   };
 }
->>>>>>> ec719990c90eda98c060ddfb6de424c368e224be

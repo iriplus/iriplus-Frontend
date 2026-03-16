@@ -195,7 +195,7 @@
             </div>
             <div class="progress-xp-info">
               <span class="xp-current">{{ accumulatedXp || 0 }} XP</span>
-              <span class="xp-needed" *ngIf="nextLevel">{{ nextLevel.min_xp }} XP para {{ nextLevel.description }}</span>
+              <span class="xp-needed" *ngIf="nextLevel">{{ nextLevel.min_xp }} XP for {{ nextLevel.description }}</span>
               <span class="xp-needed" *ngIf="!nextLevel">Maximum level reached</span>
             </div>
           </div>
@@ -228,7 +228,7 @@
               </div>
               <div class="stat-content">
                 <span class="stat-value">{{ currentLevelIndex + 1 }}</span>
-                <span class="stat-label"> de {{ totalLevels }} levels</span>
+                <span class="stat-label"> of {{ totalLevels }} levels</span>
               </div>
             </div>
           </div>
