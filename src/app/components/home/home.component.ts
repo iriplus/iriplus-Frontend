@@ -3,43 +3,14 @@ import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { CoordinatorAnalyticsStats, HomeAnalyticsResponse, LeaderboardStudent, StudentCourseSummary, StudentDashboard, StudentLastExam, StudentProgress, WeeklyXpPoint } from '../../interfaces/analytics.interface';
+import { CoordinatorAnalyticsStats, HomeAnalyticsResponse, LeaderboardStudent, StudentCourseSummary, StudentDashboard, StudentLastExam, StudentProgress, WeeklyXpPoint, TeacherDashboard, TeacherCourseDashboard, TeacherPendingExam } from '../../interfaces/analytics.interface';
 import { NotificationService } from '../../services/notification.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { UserType } from '../../interfaces/user.interface';
+import { ExamService } from '../../services/exam.service';
+import { Status } from '../../interfaces/exam.interface';
 
 type LeaderboardScope = 'COURSE' | 'GLOBAL';
-
-interface TeacherStudentWeeklyXp {
-  name: string;
-  values: WeeklyXpPoint[];
-}
-
-interface TeacherPendingExam {
-  id: number;
-  generationDate: string;
-  context: string;
-  className: string;
-}
-
-interface TeacherLeaderboardStudent {
-  name: string;
-  level: number;
-  xp: number;
-}
-
-interface TeacherCourseDashboard {
-  id: number;
-  name: string;
-  description: string;
-  teachers: string[];
-  studentsEnrolled: number;
-  englishLevel: string;
-  leaderboard: TeacherLeaderboardStudent[];
-  weeklyXpByStudent: TeacherStudentWeeklyXp[];
-  pendingCorrectionExams: TeacherPendingExam[];
-  pendingReviewExams: TeacherPendingExam[];
-}
 
 @Component({
   selector: 'app-home',
@@ -58,6 +29,7 @@ export class HomeComponent implements OnInit {
 
   studentDashboard: StudentDashboard | null = null;
   coordinatorStats: CoordinatorAnalyticsStats | null = null;
+  teacherDashboard: TeacherDashboard | null = null;
 
   private readonly emptyStudentCourse: StudentCourseSummary = {
     name: 'No active course assigned',
@@ -66,6 +38,20 @@ export class HomeComponent implements OnInit {
     teachers: ['Not assigned yet'],
     studentsEnrolled: 0,
     englishLevel: 'Not assigned',
+  };
+
+  private readonly emptyTeacherCourse: TeacherCourseDashboard = {
+    id: 0,
+    name: 'No active courses assigned',
+    description:
+      'You are not assigned to any active course yet.',
+    teachers: [],
+    studentsEnrolled: 0,
+    englishLevel: 'Not assigned',
+    leaderboard: [],
+    weeklyXpByStudent: [],
+    pendingCorrectionExams: [],
+    pendingReviewExams: [],
   };
 
   private readonly emptyStudentProgress: StudentProgress = {
@@ -88,6 +74,7 @@ export class HomeComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly analyticsService: AnalyticsService,
     private readonly notificationService: NotificationService,
+    private readonly examService: ExamService,
     private readonly router: Router,
   ) {}
 
@@ -100,6 +87,10 @@ export class HomeComponent implements OnInit {
     this.userType = null;
     this.studentDashboard = null;
     this.coordinatorStats = null;
+    this.teacherDashboard = null;
+    this.selectedTeacherCourseId = null;
+    this.selectedTeacherChartStudents = [];
+    this.teacherStudentMenuOpen = false;
     this.isLoadingUser = true;
     this.isLoadingDashboard = false;
 
@@ -114,7 +105,7 @@ export class HomeComponent implements OnInit {
 
         this.userType = user.type;
 
-        if (this.isCoordinator || this.isStudent) {
+        if (this.isCoordinator || this.isStudent || this.isTeacher) {
           this.loadHomeAnalytics();
           return;
         }
@@ -170,6 +161,25 @@ export class HomeComponent implements OnInit {
             }
 
             this.studentDashboard = student;
+            return;
+          }
+          if (this.isTeacher) {
+            const teacher = response.dashboard?.teacher;
+
+            if (!teacher) {
+              this.handleTeacherError('Teacher dashboard data is incomplete.');
+            return;
+          }
+          this.teacherDashboard = teacher;
+          this.teacherStudentMenuOpen = false;
+
+          const firstCourse = teacher.courses[0];
+          this.selectedTeacherCourseId = firstCourse?.id ?? null;
+          this.selectedTeacherChartStudents =
+            firstCourse?.weeklyXpByStudent
+              .slice(0, 3)
+              .map(series => series.name) ?? [];
+          return;
           }
         },
         error: (err: unknown) => {
@@ -190,6 +200,11 @@ export class HomeComponent implements OnInit {
             return;
           }
 
+          if (this.isTeacher) {
+            this.handleTeacherError(message);
+            return;
+          }
+
           this.handleBlockingError(message);
         },
       });
@@ -200,6 +215,10 @@ export class HomeComponent implements OnInit {
     this.userType = null;
     this.studentDashboard = null;
     this.coordinatorStats = null;
+    this.teacherDashboard = null;
+    this.selectedTeacherCourseId = null;
+    this.selectedTeacherChartStudents = [];
+    this.teacherStudentMenuOpen = false;
     this.isLoadingUser = false;
     this.isLoadingDashboard = false;
 
@@ -235,6 +254,18 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  private handleTeacherError(message: string): void {
+    this.errorMessage = message;
+    this.teacherDashboard = null;
+
+    this.notificationService.show({
+      type: 'error',
+      title: 'Teacher dashboard unavailable',
+      message,
+      autoCloseMs: 6000,
+    });
+  }
+
   private getApiErrorMessage(error: unknown, fallback: string): string {
     const apiError = error as {
       error?: {
@@ -262,6 +293,18 @@ export class HomeComponent implements OnInit {
     return this.isCoordinator && !this.isPageLoading && !!this.errorMessage && !this.coordinatorStats;
   }
 
+  get showTeacherErrorState(): boolean {
+  return this.isTeacher && !this.isPageLoading && !!this.errorMessage && !this.teacherDashboard;
+}
+
+  get teacherCourses(): TeacherCourseDashboard[] {
+    return this.teacherDashboard?.courses ?? [];  
+  }
+
+  get hasTeacherCourses(): boolean {
+    return this.teacherCourses.length > 0;
+  }
+
   get homeSubtitle(): string {
     if (this.isStudent) {
       return 'Student overview with real platform analytics.'
@@ -272,7 +315,7 @@ export class HomeComponent implements OnInit {
     }
 
     if (this.isTeacher) {
-      return 'Role-based dashboard overview.';
+      return 'Teacher overview with real platform analytics.';
     }
 
     return 'Loading your dashboard...';
@@ -409,14 +452,9 @@ export class HomeComponent implements OnInit {
     return `${context.slice(0, maxLength).trim()}...`;
   }
 
-  selectedTeacherCourseId = 1;
-  teacherStudentMenuOpen = false;
-
-  selectedTeacherChartStudents: string[] = [
-    'Olivia Martin',
-    'Lucas Bennett',
-    'Sophia Turner'
-  ];
+selectedTeacherCourseId: number | null = null;
+teacherStudentMenuOpen = false;
+selectedTeacherChartStudents: string[] = [];
 
   readonly teacherSeriesPalette: string[] = [
     '#27532f',
@@ -426,283 +464,21 @@ export class HomeComponent implements OnInit {
     '#f0ac91'
   ];
 
-  teacherCourses: TeacherCourseDashboard[] = [
-    {
-      id: 1,
-      name: '4th Year A - Morning Group',
-      description:
-        'Intermediate course focused on reading comprehension, structured writing, oral production, and Cambridge-style practice tasks.',
-      teachers: ['Emma Wilson', 'Daniel Carter'],
-      studentsEnrolled: 28,
-      englishLevel: 'B1',
-      leaderboard: [
-        { name: 'Olivia Martin', level: 11, xp: 4820 },
-        { name: 'Lucas Bennett', level: 10, xp: 4510 },
-        { name: 'Sophia Turner', level: 10, xp: 4295 },
-        { name: 'Noah Hughes', level: 9, xp: 3960 },
-        { name: 'Mia Foster', level: 8, xp: 3625 }
-      ],
-      weeklyXpByStudent: [
-        {
-          name: 'Olivia Martin',
-          values: [
-            { label: 'Mon', value: 80 },
-            { label: 'Tue', value: 110 },
-            { label: 'Wed', value: 95 },
-            { label: 'Thu', value: 140 },
-            { label: 'Fri', value: 120 },
-            { label: 'Sat', value: 165 },
-            { label: 'Sun', value: 130 }
-          ]
-        },
-        {
-          name: 'Lucas Bennett',
-          values: [
-            { label: 'Mon', value: 60 },
-            { label: 'Tue', value: 90 },
-            { label: 'Wed', value: 125 },
-            { label: 'Thu', value: 100 },
-            { label: 'Fri', value: 135 },
-            { label: 'Sat', value: 150 },
-            { label: 'Sun', value: 115 }
-          ]
-        },
-        {
-          name: 'Sophia Turner',
-          values: [
-            { label: 'Mon', value: 70 },
-            { label: 'Tue', value: 85 },
-            { label: 'Wed', value: 78 },
-            { label: 'Thu', value: 132 },
-            { label: 'Fri', value: 98 },
-            { label: 'Sat', value: 142 },
-            { label: 'Sun', value: 120 }
-          ]
-        },
-        {
-          name: 'Noah Hughes',
-          values: [
-            { label: 'Mon', value: 40 },
-            { label: 'Tue', value: 72 },
-            { label: 'Wed', value: 68 },
-            { label: 'Thu', value: 88 },
-            { label: 'Fri', value: 94 },
-            { label: 'Sat', value: 112 },
-            { label: 'Sun', value: 90 }
-          ]
-        },
-        {
-          name: 'Mia Foster',
-          values: [
-            { label: 'Mon', value: 52 },
-            { label: 'Tue', value: 64 },
-            { label: 'Wed', value: 58 },
-            { label: 'Thu', value: 95 },
-            { label: 'Fri', value: 82 },
-            { label: 'Sat', value: 120 },
-            { label: 'Sun', value: 100 }
-          ]
-        }
-      ],
-      pendingCorrectionExams: [
-        {
-          id: 201,
-          generationDate: '2026-02-23',
-          context:
-            'Students analyze how social media influences communication habits, attention span, and the way teenagers build personal relationships.',
-          className: '4th Year A'
-        },
-        {
-          id: 202,
-          generationDate: '2026-02-25',
-          context:
-            'A town is debating whether to invest more in public transport or road expansion, and students must evaluate environmental and economic arguments.',
-          className: '4th Year A'
-        }
-      ],
-      pendingReviewExams: [
-        {
-          id: 203,
-          generationDate: '2026-02-20',
-          context:
-            'An article explores the benefits and limitations of remote learning for high school students in urban and rural contexts.',
-          className: '4th Year A'
-        },
-        {
-          id: 204,
-          generationDate: '2026-02-22',
-          context:
-            'A city museum wants to attract younger visitors and is considering interactive exhibitions, digital campaigns, and student partnerships.',
-          className: '4th Year A'
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: '5th Year B - Afternoon Group',
-      description:
-        'Upper-intermediate course with emphasis on argumentative writing, listening comprehension, and exam-oriented vocabulary expansion.',
-      teachers: ['Emma Wilson'],
-      studentsEnrolled: 24,
-      englishLevel: 'B2',
-      leaderboard: [
-        { name: 'Ethan Reed', level: 13, xp: 6550 },
-        { name: 'Grace Hall', level: 12, xp: 6225 },
-        { name: 'Aiden Brooks', level: 11, xp: 5980 },
-        { name: 'Lily Cooper', level: 11, xp: 5760 },
-        { name: 'Mason Gray', level: 10, xp: 5410 }
-      ],
-      weeklyXpByStudent: [
-        {
-          name: 'Ethan Reed',
-          values: [
-            { label: 'Mon', value: 110 },
-            { label: 'Tue', value: 135 },
-            { label: 'Wed', value: 150 },
-            { label: 'Thu', value: 142 },
-            { label: 'Fri', value: 160 },
-            { label: 'Sat', value: 175 },
-            { label: 'Sun', value: 148 }
-          ]
-        },
-        {
-          name: 'Grace Hall',
-          values: [
-            { label: 'Mon', value: 95 },
-            { label: 'Tue', value: 124 },
-            { label: 'Wed', value: 118 },
-            { label: 'Thu', value: 137 },
-            { label: 'Fri', value: 132 },
-            { label: 'Sat', value: 158 },
-            { label: 'Sun', value: 146 }
-          ]
-        },
-        {
-          name: 'Aiden Brooks',
-          values: [
-            { label: 'Mon', value: 82 },
-            { label: 'Tue', value: 100 },
-            { label: 'Wed', value: 108 },
-            { label: 'Thu', value: 125 },
-            { label: 'Fri', value: 140 },
-            { label: 'Sat', value: 150 },
-            { label: 'Sun', value: 134 }
-          ]
-        },
-        {
-          name: 'Lily Cooper',
-          values: [
-            { label: 'Mon', value: 88 },
-            { label: 'Tue', value: 92 },
-            { label: 'Wed', value: 110 },
-            { label: 'Thu', value: 118 },
-            { label: 'Fri', value: 126 },
-            { label: 'Sat', value: 144 },
-            { label: 'Sun', value: 130 }
-          ]
-        }
-      ],
-      pendingCorrectionExams: [
-        {
-          id: 205,
-          generationDate: '2026-02-24',
-          context:
-            'Students discuss whether international volunteer programs genuinely benefit local communities or mainly serve the participants.',
-          className: '5th Year B'
-        }
-      ],
-      pendingReviewExams: [
-        {
-          id: 206,
-          generationDate: '2026-02-21',
-          context:
-            'A report compares traditional libraries and digital reading platforms, focusing on accessibility, habits, and long-term engagement.',
-          className: '5th Year B'
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: '3rd Year C - Evening Group',
-      description:
-        'Foundational course designed to strengthen grammar accuracy, basic writing, and reading confidence through guided practice.',
-      teachers: ['Daniel Carter', 'Sophie Allen'],
-      studentsEnrolled: 19,
-      englishLevel: 'A2',
-      leaderboard: [
-        { name: 'Chloe Perry', level: 7, xp: 2480 },
-        { name: 'Leo Price', level: 7, xp: 2310 },
-        { name: 'Ruby Ross', level: 6, xp: 2195 },
-        { name: 'Jack Bailey', level: 6, xp: 2070 },
-        { name: 'Ella Ward', level: 5, xp: 1890 }
-      ],
-      weeklyXpByStudent: [
-        {
-          name: 'Chloe Perry',
-          values: [
-            { label: 'Mon', value: 42 },
-            { label: 'Tue', value: 58 },
-            { label: 'Wed', value: 60 },
-            { label: 'Thu', value: 70 },
-            { label: 'Fri', value: 75 },
-            { label: 'Sat', value: 82 },
-            { label: 'Sun', value: 78 }
-          ]
-        },
-        {
-          name: 'Leo Price',
-          values: [
-            { label: 'Mon', value: 38 },
-            { label: 'Tue', value: 46 },
-            { label: 'Wed', value: 52 },
-            { label: 'Thu', value: 64 },
-            { label: 'Fri', value: 68 },
-            { label: 'Sat', value: 73 },
-            { label: 'Sun', value: 70 }
-          ]
-        },
-        {
-          name: 'Ruby Ross',
-          values: [
-            { label: 'Mon', value: 34 },
-            { label: 'Tue', value: 40 },
-            { label: 'Wed', value: 48 },
-            { label: 'Thu', value: 55 },
-            { label: 'Fri', value: 60 },
-            { label: 'Sat', value: 66 },
-            { label: 'Sun', value: 62 }
-          ]
-        }
-      ],
-      pendingCorrectionExams: [
-        {
-          id: 207,
-          generationDate: '2026-02-26',
-          context:
-            'Students read a short text about healthy routines and answer grammar and comprehension questions linked to daily habits.',
-          className: '3rd Year C'
-        }
-      ],
-      pendingReviewExams: [
-        {
-          id: 208,
-          generationDate: '2026-02-19',
-          context:
-            'A simple classroom article presents a school recycling campaign and asks students to identify key actions and recommendations.',
-          className: '3rd Year C'
-        }
-      ]
-    }
-  ];
 
   get selectedTeacherCourse(): TeacherCourseDashboard {
     return (
       this.teacherCourses.find(course => course.id === this.selectedTeacherCourseId) ??
-      this.teacherCourses[0]
+      this.teacherCourses[0] ??
+      this.emptyTeacherCourse
     );
   }
 
   setSelectedTeacherCourse(courseId: number): void {
+    const course = this.teacherCourses.find(item => item.id === courseId);
+
+    if (!course) {
+      return;
+    }
     this.selectedTeacherCourseId = courseId;
     this.teacherStudentMenuOpen = false;
 
@@ -741,7 +517,49 @@ export class HomeComponent implements OnInit {
   }
 
   openTeacherExam(examId: number, mode: 'correction' | 'review'): void {
-    console.log('Teacher action:', mode, 'Exam ID:', examId);
+    if (mode === 'correction') {
+      this.examService.setOnCorrection(examId).subscribe({
+        next: () => {
+          this.router.navigate([`/exam-revise/${examId}`]);
+        },
+        error: (err: unknown) => {
+          console.error('Error setting exam on correction:', err);
+          this.notificationService.show({
+            type: 'error',
+            title: 'Unable to open exam',
+            message: this.getApiErrorMessage(
+              err,
+              'Unable to open the exam for correction.'
+            ),
+            autoCloseMs: 6000,
+          });
+        },
+      });
+      return;
+    }
+
+    this.router.navigate([`/view-exam/${examId}`]);
+  }
+
+  get pendingCorrectionExams(): TeacherPendingExam[] {
+    return this.filterTeacherPendingExams(
+      this.selectedTeacherCourse.pendingCorrectionExams,
+      Status.PENDING_CORRECTION
+    );
+  }
+
+  get pendingReviewExams(): TeacherPendingExam[] {
+    return this.filterTeacherPendingExams(
+      this.selectedTeacherCourse.pendingReviewExams,
+      Status.PENDING_REVIEW
+    );
+  }
+
+  private filterTeacherPendingExams(
+    exams: TeacherPendingExam[],
+    status: Status
+  ): TeacherPendingExam[] {
+    return exams.filter(exam => !exam.status || exam.status === status);
   }
 
   get teacherSelectedWeeklySeries(): Array<{

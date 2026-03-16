@@ -347,6 +347,29 @@
           <p>Course performance and exam workflow overview for the selected class.</p>
         </div>
 
+         <div class="home-state home-state--error" *ngIf="showTeacherErrorState">
+          <h3 class="home-state__title">We could not load the teacher dashboard</h3>
+          <p class="home-state__text">
+            {{ errorMessage }}
+          </p>
+
+          <div class="home-state__actions">
+            <button
+              type="button"
+              class="btn-primary btn-rounded"
+              (click)="loadHome()">
+              Try again
+            </button>
+          </div>
+        </div>
+
+        <div class="home-state" *ngIf="!showTeacherErrorState && !hasTeacherCourses">
+          <h3 class="home-state__title">No active courses assigned</h3>
+          <p class="home-state__text">
+            There are no active courses assigned to your profile yet.
+          </p>
+        </div>
+
         <!-- Course selector -->
         <div class="teacher-course-switcher">
           <div class="home-segmented">
@@ -545,14 +568,14 @@
         <article class="home-panel student-panel home-panel--table teacher-table-panel">
           <div class="home-panel__header home-panel__header--start">
             <div>
-              <h3>Exams Pending Revision</h3>
+              <h3>Exams Pending Correction</h3>
               <p class="home-panel__subtitle">
-                Generated exams that still require teacher correction.
+                Exams with status "Pending Correction" that require teacher correction.
               </p>
             </div>
 
             <span class="home-chip">
-              {{ selectedTeacherCourse.pendingCorrectionExams.length }} pending
+              {{ pendingCorrectionExams.length }} pending
             </span>
           </div>
 
@@ -568,7 +591,7 @@
               </thead>
 
               <tbody>
-                <tr *ngFor="let exam of selectedTeacherCourse.pendingCorrectionExams">
+                <tr *ngFor="let exam of pendingCorrectionExams">
                   <td>{{ exam.generationDate }}</td>
 
                   <td>
@@ -605,7 +628,7 @@
             </div>
 
             <span class="home-chip">
-              {{ selectedTeacherCourse.pendingReviewExams.length }} pending
+              {{ pendingReviewExams.length }} pending
             </span>
           </div>
 
@@ -621,7 +644,7 @@
               </thead>
 
               <tbody>
-                <tr *ngFor="let exam of selectedTeacherCourse.pendingReviewExams">
+                <tr *ngFor="let exam of pendingReviewExams">
                   <td>{{ exam.generationDate }}</td>
 
                   <td>

@@ -50,10 +50,47 @@ export interface StudentDashboard {
   lastExams: StudentLastExam[];
 }
 
+export interface TeacherStudentWeeklyXp {
+  name: string;
+  values: WeeklyXpPoint[];
+}
+
+export interface TeacherPendingExam {
+  id: number;
+  generationDate: string;
+  context: string;
+  className: string;
+  status?: string;
+}
+
+export interface TeacherLeaderboardStudent {
+  name: string;
+  level: number;
+  xp: number;
+}
+
+export interface TeacherCourseDashboard {
+  id: number;
+  name: string;
+  description: string;
+  teachers: string[];
+  studentsEnrolled: number;
+  englishLevel: string;
+  leaderboard: TeacherLeaderboardStudent[];
+  weeklyXpByStudent: TeacherStudentWeeklyXp[];
+  pendingCorrectionExams: TeacherPendingExam[];
+  pendingReviewExams: TeacherPendingExam[];
+}
+
+export interface TeacherDashboard {
+  courses: TeacherCourseDashboard[];
+}
+
 export interface HomeAnalyticsResponse {
   role: string;
   dashboard: {
     coordinator?: CoordinatorAnalyticsStats;
     student?: StudentDashboard;
+    teacher?: TeacherDashboard;
   };
 }
