@@ -30,38 +30,49 @@
       </button>
     </div>
 
-    <!-- Mock: Delinquent list (students with more than 3 months overdue) -->
-    <section class="tuitions__section">
-      <h2 class="tuitions__section-title">Students with more than 3 months overdue (mock)</h2>
+    <!-- Loading state -->
+    <section class="tuitions__section" *ngIf="isLoadingAnalytics">
+      <p class="tuitions__section-title">Loading analytics...</p>
+    </section>
+
+    <!-- Error state -->
+    <section class="tuitions__section" *ngIf="!isLoadingAnalytics && analyticsError">
+      <p class="tuitions__section-title">{{ analyticsError }}</p>
+    </section>
+
+    <!-- Delinquent list (students with more than 3 months overdue) -->
+    <section class="tuitions__section" *ngIf="!isLoadingAnalytics && tuitionData">
+      <h2 class="tuitions__section-title">Students with more than 3 months overdue</h2>
       <div class="tuitions__delinquent-list">
-        <div class="tuitions__delinquent-item" *ngFor="let s of mockDelinquentList">
-          <span class="tuitions__delinquent-name">{{ s.name }}</span>
+        <div class="tuitions__delinquent-item" *ngFor="let s of delinquentList">
+          <span class="tuitions__delinquent-name">{{ s.fullName }}</span>
           <span class="tuitions__delinquent-dni">DNI: {{ s.dni }}</span>
           <span class="tuitions__delinquent-badge">{{ s.monthsOverdue }} months overdue</span>
         </div>
+        <p *ngIf="delinquentList.length === 0" class="tuitions__empty-msg">No students with 3+ months overdue</p>
       </div>
     </section>
 
-    <!-- Mock: Status distribution (pie chart placeholder) -->
-    <section class="tuitions__section">
-      <h2 class="tuitions__section-title">Student status distribution (mock)</h2>
+    <!-- Status distribution -->
+    <section class="tuitions__section" *ngIf="!isLoadingAnalytics && tuitionData">
+      <h2 class="tuitions__section-title">Student status distribution</h2>
       <div class="tuitions__chart">
-        <div class="tuitions__chart-bar" *ngFor="let item of mockStatusDistribution"
+        <div class="tuitions__chart-bar" *ngFor="let item of statusDistribution"
              [style.width.%]="item.percent" [style.background]="item.color">
           <span class="tuitions__chart-label">{{ item.label }} ({{ item.percent }}%)</span>
         </div>
       </div>
       <div class="tuitions__chart-legend">
-        <span *ngFor="let item of mockStatusDistribution" class="tuitions__legend-item">
+        <span *ngFor="let item of statusDistribution" class="tuitions__legend-item">
           <span class="tuitions__legend-dot" [style.background]="item.color"></span>
           {{ item.label }}: {{ item.percent }}%
         </span>
       </div>
     </section>
 
-    <!-- Mock: Table with search -->
-    <section class="tuitions__section">
-      <h2 class="tuitions__section-title">Students tuition status (mock)</h2>
+    <!-- Table with search -->
+    <section class="tuitions__section" *ngIf="!isLoadingAnalytics && tuitionData">
+      <h2 class="tuitions__section-title">Students tuition status</h2>
       <div class="app-actions-bar tuitions__table-actions">
         <div class="app-search">
           <svg class="app-search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -91,6 +102,20 @@
             </svg>
           </button>
         </div>
+
+        <div class="tuitions__filter">
+          <svg class="tuitions__filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          <select
+            class="app-input app-input--icon-left tuitions__filter-control"
+            [(ngModel)]="statusFilter"
+            aria-label="Filter by status"
+          >
+            <option *ngFor="let opt of statusFilterOptions" [value]="opt.value">{{ opt.label }}</option>
+          </select>
+        </div>
       </div>
       <div class="app-table-container">
         <table class="app-table">
@@ -104,7 +129,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let row of filteredTableData">
-              <td>{{ row.name }}</td>
+              <td>{{ row.fullName }}</td>
               <td>{{ row.dni }}</td>
               <td>
                 <span class="tuitions__badge" [ngClass]="getStatusClass(row.status)">

@@ -44,9 +44,9 @@ importers:
       fs:
         specifier: ^0.0.1-security
         version: 0.0.1-security
-      ng-recaptcha:
-        specifier: ^13.2.1
-        version: 13.2.1(@angular/core@20.3.17(@angular/compiler@20.3.17)(rxjs@7.8.2)(zone.js@0.15.1))
+      ng-recaptcha-2:
+        specifier: 16.0.1
+        version: 16.0.1(@angular/core@20.3.17(@angular/compiler@20.3.17)(rxjs@7.8.2)(zone.js@0.15.1))
       path:
         specifier: ^0.12.7
         version: 0.12.7
@@ -2187,10 +2187,10 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
-  ng-recaptcha@13.2.1:
-    resolution: {integrity: sha512-aBOoFla9t6AfT9t5paykoXomCDKreBKouB16VUFxSZwn1RCfDsdcaTmSNJKYLFz5j0Cq/V+szY9f3mHLgzRw5Q==}
+  ng-recaptcha-2@16.0.1:
+    resolution: {integrity: sha512-LPjJd7VJ3pNtxD+ttSKlgBpJSFECfHYnQ2y5H6x/BcFWxtt8pPlQ9gcpeJFakYha2+u6vOYzLwEru/IximALzw==}
     peerDependencies:
-      '@angular/core': ^17.0.0
+      '@angular/core': ^20.0.1
 
   node-addon-api@6.1.0:
     resolution: {integrity: sha512-+eawOlIgy680F0kBzPUNFhMZGtJ1YmqM6l4+Crf4IkImjYrO/mqPwRMh352g23uIaQKFItcQ64I7KMaJxHgAVA==}
@@ -4976,7 +4976,7 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  ng-recaptcha@13.2.1(@angular/core@20.3.17(@angular/compiler@20.3.17)(rxjs@7.8.2)(zone.js@0.15.1)):
+  ng-recaptcha-2@16.0.1(@angular/core@20.3.17(@angular/compiler@20.3.17)(rxjs@7.8.2)(zone.js@0.15.1)):
     dependencies:
       '@angular/core': 20.3.17(@angular/compiler@20.3.17)(rxjs@7.8.2)(zone.js@0.15.1)
       '@types/grecaptcha': 3.0.9
