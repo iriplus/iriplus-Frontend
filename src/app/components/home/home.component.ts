@@ -412,12 +412,87 @@ export class HomeComponent implements OnInit {
     );
   }
 
+  get chartMaxValue(): number {
+    return Math.max(...this.weeklyXp.map(point => point.value), 1);
+  }
+
+  get chartYAxisTicks(): Array<{ value: number; y: number }> {
+    const steps = 4;
+    const drawableHeight = this.chartHeight - this.chartTop - this.chartBottom;
+    const rawMax = Math.max(...this.weeklyXp.map(point => point.value), 0);
+
+    if (rawMax === 0) {
+      return Array.from({ length: steps + 1 }, (_, index) => {
+        const ratio = index / steps;
+        const y = this.chartTop + ratio * drawableHeight;
+
+        return { value: 0, y };
+      });
+   }
+
+    return Array.from({ length: steps + 1 }, (_, index) => {
+      const ratio = index / steps;
+      const y = this.chartTop + ratio * drawableHeight;
+      const value = Math.round(this.chartMaxValue * (1 - ratio));
+
+      return { value, y };
+    });
+  }
+
   get chartGridLines(): number[] {
-    return [35, 75, 115, 155];
+    return this.chartYAxisTicks.map(tick => tick.y);
+  }
+
+  get teacherChartMaxValue(): number {
+    const allValues = this.selectedTeacherCourse.weeklyXpByStudent.reduce<number[]>(
+      (acc, series) => {
+        acc.push(...series.values.map(point => point.value));
+        return acc;
+      },
+      []
+    );
+
+    return Math.max(...allValues, 1);
+  }
+
+  get teacherChartYAxisTicks(): Array<{ value: number; y: number }> {
+    const steps = 4;
+    const drawableHeight = this.chartHeight - this.chartTop - this.chartBottom;
+
+    const allValues = this.selectedTeacherCourse.weeklyXpByStudent.reduce<number[]>(
+      (acc, series) => {
+        acc.push(...series.values.map(point => point.value));
+        return acc;
+      },
+      []
+    );
+
+    const rawMax = Math.max(...allValues, 0);
+
+    if (rawMax === 0) {
+      return Array.from({ length: steps + 1 }, (_, index) => {
+        const ratio = index / steps;
+        const y = this.chartTop + ratio * drawableHeight;
+
+        return { value: 0, y };
+      });
+    }
+
+    return Array.from({ length: steps + 1 }, (_, index) => {
+      const ratio = index / steps;
+      const y = this.chartTop + ratio * drawableHeight;
+      const value = Math.round(this.teacherChartMaxValue * (1 - ratio));
+
+      return { value, y };
+    });
+  }
+
+  get teacherChartGridLines(): number[] {
+    return this.teacherChartYAxisTicks.map(tick => tick.y);
   }
 
   get chartDots(): Array<{ x: number; y: number; label: string; value: number }> {
-    const maxValue = Math.max(...this.weeklyXp.map(point => point.value), 1);
+    const maxValue = this.chartMaxValue;
     const drawableWidth = this.chartWidth - this.chartLeft - this.chartRight;
     const drawableHeight = this.chartHeight - this.chartTop - this.chartBottom;
 
@@ -595,7 +670,7 @@ selectedTeacherChartStudents: string[] = [];
       []
     );
 
-    const maxValue = Math.max(...allValues, 1);
+    const maxValue = this.teacherChartMaxValue;
 
     const drawableWidth = this.chartWidth - this.chartLeft - this.chartRight;
     const drawableHeight = this.chartHeight - this.chartTop - this.chartBottom;
