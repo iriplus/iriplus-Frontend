@@ -9,8 +9,10 @@ import {
   ExamDTO,
   ExamExerciseInstanceDTO,
   ExamItemDTO,
-  SubmitStudentExamPayload
+  SubmitStudentExamPayload,
+  SubmitStudentExamResponse
 } from '../../interfaces/exam.interface';
+import { NotificationService } from '../../services/notification.service';
 
 interface ResolveItemView {
   promptBefore: string;
@@ -47,7 +49,8 @@ export class ExamResolveComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private examService: ExamService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -139,32 +142,57 @@ export class ExamResolveComponent implements OnInit {
   cancel(): void {
     this.router.navigate(['/exam']);
   }
+finishExam(): void {
+  if (this.submitting || this.examId == null || !this.exam) return;
 
-  finishExam(): void {
-    if (this.submitting || this.examId == null || !this.exam) return;
-
-    const payload: SubmitStudentExamPayload = {
-      exercises: this.exerciseViews.map((ex) => ({
-        exam_exercise_instance_id: ex.examExerciseInstanceId,
-        items: ex.items.map((item) => ({
-          student_answer: item.studentAnswer?.trim() ?? ''
-        }))
+  const payload: SubmitStudentExamPayload = {
+    exercises: this.exerciseViews.map((ex) => ({
+      exam_exercise_instance_id: ex.examExerciseInstanceId,
+      items: ex.items.map((item) => ({
+        student_answer: item.studentAnswer?.trim() ?? ''
       }))
-    };
+    }))
+  };
 
-    this.errorMessage = '';
-    this.submitting = true;
-    this.examService.submitStudentExam(this.examId, payload).subscribe({
-      next: () => {
-        this.router.navigate(['/exam']);
-      },
-      error: (err) => {
-        this.errorMessage =
-          err?.error?.message ?? 'Error submitting exam. Please try again.';
-        this.submitting = false;
-      }
-    });
-  }
+  this.errorMessage = '';
+  this.submitting = true;
+
+  this.examService.submitStudentExam(this.examId, payload).subscribe({
+    next: (response: SubmitStudentExamResponse) => {
+      const leveledUp =
+        response.leveled_up ??
+        (
+          response.previous_level_id != null &&
+          response.new_level_id != null &&
+          response.previous_level_id !== response.new_level_id
+        );
+
+      this.notificationService.show({
+        type: 'success',
+        title: leveledUp ? 'Level up!' : 'Exam completed',
+        message: leveledUp
+          ? `You gained ${response.xp_gained} XP and advanced to level ${response.new_level_id}.`
+          : `You gained ${response.xp_gained} XP.`,
+        autoCloseMs: 5000
+      });
+
+      this.router.navigate(['/exam']);
+    },
+    error: (err) => {
+      this.errorMessage =
+        err?.error?.message ?? 'Error submitting exam. Please try again.';
+
+      this.notificationService.show({
+        type: 'error',
+        title: 'Exam submission failed',
+        message: this.errorMessage,
+        autoCloseMs: 5000
+      });
+
+      this.submitting = false;
+    }
+  });
+}
 
   private buildResolveItem(item: ExamItemDTO): ResolveItemView {
     const options = this.extractOptions(item.question);

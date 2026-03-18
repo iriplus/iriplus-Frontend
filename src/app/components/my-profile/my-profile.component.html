@@ -526,6 +526,104 @@
   </div>
 </div>
 
+<!-- Modal: Change Password -->
+<div
+  *ngIf="showChangePasswordModal"
+  class="profile-modal-overlay"
+  (click)="closeChangePasswordModal()"
+>
+  <div class="profile-modal" (click)="$event.stopPropagation()">
+    <div class="profile-modal__header">
+      <h2 class="profile-modal__title">
+        Change Password
+      </h2>
+
+      <button
+        type="button"
+        class="app-close-btn"
+        (click)="closeChangePasswordModal()"
+        aria-label="Close"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+             stroke-linejoin="round">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="profile-modal__body">
+      <p class="profile__muted">
+        Enter your current password and choose a new one.
+      </p>
+
+      <div class="profile__form">
+        <div class="profile__field">
+          <label class="profile__label" for="currentPassword">Current Password</label>
+          <input
+            id="currentPassword"
+            type="password"
+            class="app-input"
+            [(ngModel)]="currentPassword"
+            [ngModelOptions]="{ standalone: true }"
+            (input)="changePasswordError = ''"
+            placeholder="Enter your current password"
+          />
+        </div>
+
+        <div class="profile__field">
+          <label class="profile__label" for="newPassword">New Password</label>
+          <input
+            id="newPassword"
+            type="password"
+            class="app-input"
+            [(ngModel)]="newPassword"
+            [ngModelOptions]="{ standalone: true }"
+            (input)="changePasswordError = ''"
+            placeholder="Enter your new password"
+          />
+        </div>
+
+        <div class="profile__field">
+          <label class="profile__label" for="repeatNewPassword">Repeat New Password</label>
+          <input
+            id="repeatNewPassword"
+            type="password"
+            class="app-input"
+            [(ngModel)]="repeatNewPassword"
+            [ngModelOptions]="{ standalone: true }"
+            (input)="changePasswordError = ''"
+            placeholder="Repeat your new password"
+          />
+        </div>
+      </div>
+
+      <div *ngIf="changePasswordError" class="app-error">
+        {{ changePasswordError }}
+      </div>
+    </div>
+
+    <div class="profile-modal__actions">
+      <button
+        type="button"
+        class="btn-outline btn-lg"
+        (click)="closeChangePasswordModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn-primary btn-lg"
+        (click)="confirmChangePassword()"
+      >
+        Update Password
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Delete Account -->
 <div *ngIf="showDeleteModal" class="profile-modal-overlay" (click)="closeDeleteModal()">
   <div class="profile-modal profile-modal--danger" (click)="$event.stopPropagation()">

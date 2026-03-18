@@ -53,6 +53,12 @@ export class MyProfileComponent implements OnInit {
   profilePassword = '';
   profilePasswordConfirm = '';
   confirmProfileError = '';
+  
+  showChangePasswordModal = false;
+  currentPassword = '';
+  newPassword = '';
+  repeatNewPassword = '';
+  changePasswordError = '';
 
   constructor(
     private authService: AuthService,
@@ -346,10 +352,93 @@ export class MyProfileComponent implements OnInit {
   }
 
   changePassword(): void {
-    this.router.navigate(['/forgot-password'], {
-      queryParams: { mode: 'change' }
-    });
+    this.openChangePasswordModal();
   }
+
+  openChangePasswordModal(): void {
+    this.changePasswordError = '';
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.repeatNewPassword = '';
+    this.showChangePasswordModal = true;
+  }
+
+  closeChangePasswordModal(): void {
+    this.showChangePasswordModal = false;
+    this.changePasswordError = '';
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.repeatNewPassword = '';
+  }
+confirmChangePassword(): void {
+  if (!this.user?.id) {
+    return;
+  }
+
+  this.changePasswordError = '';
+
+  const currentPassword = this.currentPassword?.trim() ?? '';
+  const newPassword = this.newPassword?.trim() ?? '';
+  const repeatNewPassword = this.repeatNewPassword?.trim() ?? '';
+
+  if (!currentPassword || !newPassword || !repeatNewPassword) {
+    this.changePasswordError = 'All password fields are required.';
+    return;
+  }
+
+  if (newPassword !== repeatNewPassword) {
+    this.changePasswordError = 'New passwords do not match.';
+    return;
+  }
+
+  if (currentPassword === newPassword) {
+    this.changePasswordError = 'The new password must be different from the current password.';
+    return;
+  }
+
+  this.authService.changePassword({ currentPassword, newPassword }).subscribe({
+    next: () => {
+      this.closeChangePasswordModal();
+
+      this.notificationService.show({
+        type: 'success',
+        title: 'Password Updated',
+        message: 'Your password was updated successfully. Please sign in again.',
+        autoCloseMs: 5000,
+      });
+
+      this.authService.logout().subscribe({
+        next: () => {
+          this.router.navigate(['/login']);
+        },
+        error: () => {
+          this.router.navigate(['/login']);
+        }
+      });
+    },
+    error: (err) => {
+      const isIncorrectPassword = err?.status === 401;
+
+      this.currentPassword = '';
+      this.newPassword = '';
+      this.repeatNewPassword = '';
+
+      if (isIncorrectPassword) {
+        this.changePasswordError = err.error?.msg || 'Current password is incorrect.';
+        return;
+      }
+
+      this.closeChangePasswordModal();
+
+      this.notificationService.show({
+        type: 'error',
+        title: 'Operation failed',
+        message: err.error?.msg || 'Error updating password. Please try again.',
+        autoCloseMs: 5000,
+      });
+    }
+  });
+}
 
   confirmDeleteAccount(): void {
     this.showDeleteModal = true;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ExamDTO, ExamReviewDTO, SubmitStudentExamPayload, SubmitStudentExamResponse } from '../interfaces/exam.interface';
 
@@ -99,10 +99,6 @@ export class ExamService {
   }
 
   submitStudentExam(examId: number, payload: SubmitStudentExamPayload): Observable<SubmitStudentExamResponse> {
-    return this.http.post<SubmitStudentExamResponse>(
-      `${this.EXAM_URL}/${examId}/submit`,
-      payload,
-      { withCredentials: true }
-    );
+    return this.http.post<SubmitStudentExamResponse>(`${this.EXAM_URL}/${examId}/submit`,payload,{ withCredentials: true });
   }
 }

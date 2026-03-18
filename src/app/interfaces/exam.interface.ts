@@ -33,6 +33,10 @@ export interface SubmitStudentExamResponse {
   exam_id: number;
   score: number;
   xp_gained?: number;
+  student_accumulated_xp: number;
+  previous_level_id: number | null;
+  new_level_id: number | null;
+  leveled_up: boolean;
 }
 
 export interface ExamDTO {
