@@ -52,61 +52,62 @@ export class LoginComponent {
   resetCaptcha() {
     this.captcha?.reset();
   }
-ngOnInit(): void {
-  this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
 
-  this.route.queryParamMap.subscribe((params) => {
-    const verifiedFromRoute = params.get('verified');
-    const verifiedFromUrl = new URLSearchParams(window.location.search).get('verified');
-    const verified = verifiedFromRoute || verifiedFromUrl;
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
 
-    console.log('verified route:', verifiedFromRoute);
-    console.log('verified url:', verifiedFromUrl);
+    this.route.queryParamMap.subscribe((params) => {
+      const verifiedFromRoute = params.get('verified');
+      const verifiedFromUrl = new URLSearchParams(window.location.search).get('verified');
+      const verified = verifiedFromRoute || verifiedFromUrl;
 
-    if (!verified || this.handledVerified) {
-      return;
-    }
+      console.log('verified route:', verifiedFromRoute);
+      console.log('verified url:', verifiedFromUrl);
 
-    this.handledVerified = true;
+      if (!verified || this.handledVerified) {
+        return;
+      }
 
-    if (verified === 'success') {
-      this.notificationService.show({
-        type: 'success',
-        title: 'Operation Successful',
-        message: 'Verification successful. You can now log in.',
-        autoCloseMs: 5000,
+      this.handledVerified = true;
+
+      if (verified === 'success') {
+        this.notificationService.show({
+          type: 'success',
+          title: 'Operation Successful',
+          message: 'Verification successful. You can now log in.',
+          autoCloseMs: 5000,
+        });
+      } else if (verified === 'already') {
+        this.notificationService.show({
+          type: 'info',
+          title: 'Already verified',
+          message: 'Your email is already verified. You can log in.',
+          autoCloseMs: 5000,
+        });
+      } else if (verified === 'invalid') {
+        this.notificationService.show({
+          type: 'error',
+          title: 'Verification failed',
+          message: 'Invalid or expired verification link.',
+          autoCloseMs: 5000,
+        });
+      } else if (verified === 'not-found') {
+        this.notificationService.show({
+          type: 'error',
+          title: 'Verification failed',
+          message: 'User not found.',
+          autoCloseMs: 5000,
+        });
+      }
+
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { verified: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
       });
-    } else if (verified === 'already') {
-      this.notificationService.show({
-        type: 'info',
-        title: 'Already verified',
-        message: 'Your email is already verified. You can log in.',
-        autoCloseMs: 5000,
-      });
-    } else if (verified === 'invalid') {
-      this.notificationService.show({
-        type: 'error',
-        title: 'Verification failed',
-        message: 'Invalid or expired verification link.',
-        autoCloseMs: 5000,
-      });
-    } else if (verified === 'not-found') {
-      this.notificationService.show({
-        type: 'error',
-        title: 'Verification failed',
-        message: 'User not found.',
-        autoCloseMs: 5000,
-      });
-    }
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { verified: null },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
     });
-  });
-}
+  }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;

@@ -53,12 +53,6 @@ export interface ExamDTO {
   exp_gained?: number | null;
 }
 
-export interface ExerciseTypeDTO {
-  id: number;
-  name: string;
-  content_description: string;
-}
-
 // Exam Review (correction view for students)
 export interface ExamReviewItemDTO {
   question: string;

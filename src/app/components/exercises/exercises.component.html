@@ -1,0 +1,272 @@
+<div class="app-page app-page--gradient">
+  <div class="app-card app-card--xl exercises">
+
+    <header class="app-header app-header--center">
+      <div class="app-header__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" x2="8" y1="13" y2="13"></line>
+          <line x1="16" x2="8" y1="17" y2="17"></line>
+          <line x1="10" x2="8" y1="9" y2="9"></line>
+        </svg>
+      </div>
+      <h1 class="app-header__title">Exercise Type Management</h1>
+      <p class="app-header__subtitle">Manage reusable exercise types for exam generation</p>
+    </header>
+
+    <div class="app-actions-bar">
+      <div class="app-search">
+        <svg class="app-search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+
+        <input
+          type="text"
+          class="app-input app-input--icon-left app-search__input"
+          placeholder="Search by ID or name"
+          [(ngModel)]="searchTerm"
+          (input)="filterExercises()"
+        />
+
+        <button
+          *ngIf="searchTerm"
+          type="button"
+          class="app-icon-btn app-icon-btn--ghost app-search__clear"
+          (click)="clearSearch()"
+          aria-label="Clear search"
+          title="Clear"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn-primary exercises__add-btn" (click)="openCreateModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="M12 5v14"></path>
+        </svg>
+        <span>New Exercise Type</span>
+      </button>
+    </div>
+
+    <div class="app-stats-bar exercises__stats">
+      <div class="app-stat">
+        <span class="app-stat__label">Total exercise types:</span>
+        <span class="app-stat__value">{{ exercises.length }}</span>
+      </div>
+      <div class="app-stat">
+        <span class="app-stat__label">Results:</span>
+        <span class="app-stat__value">{{ filteredExercises.length }}</span>
+      </div>
+      <div class="app-stat">
+        <span class="app-stat__label">Search active:</span>
+        <span class="app-stat__value">{{ searchTerm ? 'Yes' : 'No' }}</span>
+      </div>
+    </div>
+
+    <div class="app-table-container" *ngIf="filteredExercises.length > 0">
+      <table class="app-table app-table--wide exercises__table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date Created</th>
+            <th>Name</th>
+            <th>Content Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId">
+            <td>
+              <span class="exercises__id-badge">#{{ exercise.id }}</span>
+            </td>
+
+            <td class="exercises__date-cell">
+              {{ exercise.date_created | date: 'dd/MM/yyyy' }}
+            </td>
+
+            <td>
+              <span class="exercises__name" [title]="exercise.name">{{ exercise.name }}</span>
+            </td>
+
+            <td>
+              <p class="exercises__description" [title]="exercise.content_description">
+                {{ exercise.content_description }}
+              </p>
+            </td>
+
+            <td>
+              <div class="app-actions-cell">
+                <button
+                  type="button"
+                  class="app-icon-btn app-icon-btn--edit"
+                  (click)="openEditModal(exercise)"
+                  title="Edit Exercise Type"
+                  aria-label="Edit Exercise Type"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                    <path d="m15 5 4 4"></path>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="app-icon-btn app-icon-btn--danger"
+                  (click)="openDeleteDialog(exercise)"
+                  title="Delete Exercise Type"
+                  aria-label="Delete Exercise Type"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="exercises-empty" *ngIf="filteredExercises.length === 0">
+      <div class="exercises-empty__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" x2="8" y1="13" y2="13"></line>
+          <line x1="16" x2="8" y1="17" y2="17"></line>
+          <line x1="10" x2="8" y1="9" y2="9"></line>
+        </svg>
+      </div>
+
+      <p class="exercises-empty__title">No exercise types were found</p>
+      <p class="exercises-empty__subtitle" *ngIf="searchTerm">
+        There are no results for "{{ searchTerm }}"
+      </p>
+      <p class="exercises-empty__subtitle" *ngIf="!searchTerm">
+        Start by creating your first exercise type
+      </p>
+
+      <button
+        *ngIf="!searchTerm"
+        type="button"
+        class="btn-primary exercises__add-btn"
+        (click)="openCreateModal()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="M12 5v14"></path>
+        </svg>
+        <span>New Exercise Type</span>
+      </button>
+    </div>
+
+    <div class="exercises-modal-overlay" *ngIf="showModal" (click)="closeModal()">
+      <div class="exercises-modal" (click)="$event.stopPropagation()">
+        <div class="exercises-modal__header">
+          <h2 class="exercises-modal__title">
+            {{ isEditing ? 'Edit Exercise Type' : 'New Exercise Type' }}
+          </h2>
+
+          <button type="button" class="app-close-btn" (click)="closeModal()" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <form class="exercises-modal__body" (ngSubmit)="saveExercise()">
+          <div class="exercises-field">
+            <label for="exercise-name" class="exercises-label">Name *</label>
+            <input
+              id="exercise-name"
+              type="text"
+              class="app-input"
+              [(ngModel)]="currentExercise.name"
+              name="name"
+              placeholder="e.g. Open Cloze"
+              maxlength="255"
+            />
+            <span class="field-error" *ngIf="nameError">{{ nameError }}</span>
+          </div>
+
+          <div class="exercises-field">
+            <label for="exercise-content-description" class="exercises-label">Content Description *</label>
+            <textarea
+              id="exercise-content-description"
+              class="app-input exercises__textarea"
+              [(ngModel)]="currentExercise.content_description"
+              name="content_description"
+              placeholder="Describe the purpose, structure, and expected content of this exercise type..."
+              rows="8"
+            ></textarea>
+            <span class="field-error" *ngIf="contentDescriptionError">
+              {{ contentDescriptionError }}
+            </span>
+            <span class="exercises-hint">
+              Explain what this exercise type is and what the generated content should include.
+            </span>
+          </div>
+
+          <div class="exercises-modal__actions">
+            <button
+              type="button"
+              class="btn-outline exercises__btn-cancel"
+              (click)="closeModal()"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="btn-primary exercises__btn-save btn-with-spinner"
+              [class.btn-loading]="saving"
+            >
+              <span class="app-spinner" *ngIf="saving"></span>
+
+              <svg *ngIf="!saving" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+
+              <span>{{ isEditing ? 'Save Changes' : 'Create Exercise Type' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <app-confirm-dialog
+      [open]="showDeleteConfirm"
+      title="Delete Exercise Type"
+      [message]="deleteDialogMessage"
+      confirmText="Delete"
+      cancelText="Cancel"
+      variant="danger"
+      (confirmed)="confirmDelete()"
+      (cancelled)="closeDeleteDialog()"
+    ></app-confirm-dialog>
+
+  </div>
+</div>

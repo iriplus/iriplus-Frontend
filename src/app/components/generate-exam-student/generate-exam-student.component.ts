@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ExamService } from '../../services/exam.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../services/auth.service';
-import { ExerciseTypeDTO } from '../../interfaces/exam.interface';
+import { Exercise } from '../../interfaces/exercise.interface';
 
 type Step = 'form' | 'loading';
 
@@ -19,7 +19,7 @@ type Step = 'form' | 'loading';
 })
 export class GenerateExamStudentComponent implements OnInit {
   step: Step = 'form';
-  exerciseTypes: ExerciseTypeDTO[] = [];
+  exerciseTypes: Exercise[] = [];
   classId: number | null = null;
   errorMessage = '';
 
@@ -55,7 +55,7 @@ export class GenerateExamStudentComponent implements OnInit {
       }
     });
 
-    this.exerciseService.getAllExercises().subscribe({
+    this.exerciseService.getExercises().subscribe({
       next: (res) => this.exerciseTypes = res,
       error: () => {
         this.errorMessage = 'Error loading exercise types.';
@@ -98,8 +98,8 @@ export class GenerateExamStudentComponent implements OnInit {
         const exam_id = res.exam_id;
         this.router.navigate(['/exam-resolve', exam_id]);
       },
-      error: (err) => {
-        this.errorMessage = err?.error?.message || 'Error generating exam. Please try again.';
+      error: () => {
+        this.errorMessage = 'Error generating exam. Please try again.';
         this.step = 'form';
       }
     });

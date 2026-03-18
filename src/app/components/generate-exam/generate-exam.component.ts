@@ -7,7 +7,8 @@ import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { Class } from '../../interfaces/class.interface';
-import { ExamDTO, ExerciseTypeDTO, Status } from '../../interfaces/exam.interface';
+import { ExamDTO, Status } from '../../interfaces/exam.interface';
+import { Exercise } from '../../interfaces/exercise.interface';
 import { UserType } from '../../interfaces/user.interface';
 import { ConfirmDialogComponent, ConfirmVariant, ConfirmDialogState } from '../ui/confirm-dialog/confirm-dialog.component';
 
@@ -25,7 +26,7 @@ export class GenerateExamComponent implements OnInit {
   step: Step = 'form';
 
   classes: Class[] = [];
-  exerciseTypes: ExerciseTypeDTO[] = [];
+  exerciseTypes: Exercise[] = [];
   generatedExam: ExamDTO | null = null;
   private originalExam: ExamDTO | null = null;
 
@@ -130,7 +131,7 @@ export class GenerateExamComponent implements OnInit {
       },
     });
 
-    this.exerciseService.getAllExercises().subscribe({
+    this.exerciseService.getExercises().subscribe({
       next: (res) => {
         this.exerciseTypes = res;
       },

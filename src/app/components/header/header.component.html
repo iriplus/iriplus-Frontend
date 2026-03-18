@@ -52,6 +52,12 @@
               </button>
             </li>
 
+            <li class="nav-item" *ngIf="isCoordinator">
+              <button type="button" class="nav-link nav-link-btn" (click)="goTo('/exercise')">
+                Exercises
+              </button>
+            </li>
+
             <li class="nav-item" *ngIf="isStudent">
               <button type="button" class="nav-link nav-link-btn" (click)="goTo('/writing-review')">
                 Writing

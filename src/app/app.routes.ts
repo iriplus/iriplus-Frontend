@@ -23,6 +23,7 @@ import { ViewExamComponent } from './components/view-exam/view-exam.component';
 import { StudentsComponent } from './components/students/students.component';
 import { TuitionsComponent } from './components/tuitions/tuitions.component';
 import { WritingReviewComponent } from './components/writing-review/writing-review.component';
+import { ExercisesComponent } from './components/exercises/exercises.component';
 
 export const routes: Routes = [
   {
@@ -34,7 +35,12 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent, canActivate: [privateGuard] },
       { path: 'my-profile', component: MyProfileComponent, canActivate: [privateGuard] },
       { path: 'exam', component: ExamsComponent, canActivate: [privateGuard] },
-
+      {
+        path: 'exercise',
+        component: ExercisesComponent,
+        canActivate: [roleGuard],
+        data: {allowedRoles: [UserType.COORDINATOR]}
+      },
       {
         path: 'generate-exam',
         component: GenerateExamComponent,
