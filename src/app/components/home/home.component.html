@@ -195,6 +195,25 @@
                     class="student-chart__grid"
                   ></line>
 
+                  <line
+                    x1="36"
+                    y1="18"
+                    x2="36"
+                    y2="186"
+                    class="student-chart__axis"
+                  ></line>
+
+                  <ng-container *ngFor="let tick of chartYAxisTicks">
+                    <text
+                      x="30"
+                      [attr.y]="tick.y + 4"
+                      text-anchor="end"
+                      class="student-chart__label student-chart__label--y"
+                    >
+                      {{ tick.value }}
+                    </text>
+                  </ng-container>
+
                   <polyline
                     [attr.points]="chartPoints"
                     class="student-chart__line"
@@ -511,13 +530,32 @@
                 aria-label="Weekly XP comparison chart"
               >
                 <line
-                  *ngFor="let y of chartGridLines"
+                  *ngFor="let y of teacherChartGridLines"
                   x1="36"
                   [attr.y1]="y"
                   x2="340"
                   [attr.y2]="y"
                   class="student-chart__grid"
                 ></line>
+
+                <line
+                  x1="36"
+                  y1="18"
+                  x2="36"
+                  y2="186"
+                  class="student-chart__axis"
+                ></line>
+
+                <ng-container *ngFor="let tick of teacherChartYAxisTicks">
+                  <text
+                    x="30"
+                    [attr.y]="tick.y + 4"
+                    text-anchor="end"
+                    class="student-chart__label student-chart__label--y"
+                  >
+                    {{ tick.value }}
+                  </text>
+                </ng-container>
 
                 <ng-container *ngFor="let series of teacherSelectedWeeklySeries">
                   <polyline
