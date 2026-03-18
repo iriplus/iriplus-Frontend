@@ -67,5 +67,4 @@ export class UserService {
       catchError(err => throwError(() => err))
     );
   }
-
 }

@@ -22,6 +22,7 @@ export class AuthService {
   private readonly REGISTER_URL = `${environment.backendUrl}/user/student`;
   private readonly FORGOT_PASSWORD_URL = `${environment.backendUrl}/forgot-password`;
   private readonly RESET_PASSWORD_URL = `${environment.backendUrl}/reset-password`;
+  private readonly CHANGE_PASSWORD_URL = `${environment.backendUrl}/change-password`;
 
   constructor(private http: HttpClient) {}
 
@@ -189,5 +190,9 @@ export class AuthService {
 
   resetPassword(email: string, newPassword: string) {
     return this.http.post(this.RESET_PASSWORD_URL, { email, newPassword });
+  }
+
+  changePassword(payload: { currentPassword: string; newPassword: string }) {
+    return this.http.post(this.CHANGE_PASSWORD_URL, payload, {withCredentials: true});
   }
 }
