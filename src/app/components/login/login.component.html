@@ -4,7 +4,7 @@
   <p class="auth-subtitle">Log in to continue</p>
 </div>
 
-<form class="auth-form">
+<form class="auth-form" (ngSubmit)="login()">
   <div class="form-group">
     <label for="email" class="form-label">Email</label>
     <div class="input-wrapper">
@@ -63,7 +63,11 @@
     {{ captchaError }}
   </div>
 
-  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" [disabled]="isLoading || !isFormValid" (click)="login()">
+  <div *ngIf="errorMessage" class="app-error">
+    {{ errorMessage }}
+  </div>
+
+  <button type="submit" class="submit-button btn-with-spinner" [class.btn-loading]="isLoading" [disabled]="isLoading || !isFormValid">
     <span *ngIf="isLoading" class="app-spinner"></span>
     <span *ngIf="!isLoading">Login</span>
   </button>
