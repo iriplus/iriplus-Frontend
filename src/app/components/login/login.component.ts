@@ -1,6 +1,6 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, Inject, PLATFORM_ID, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { CommonModule } from "@angular/common";
+import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { finalize, switchMap } from "rxjs";
 import { AuthService } from "../../services/auth.service";
@@ -42,7 +42,8 @@ export class LoginComponent {
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   resolvedCaptcha(token: string | null) {
@@ -54,21 +55,22 @@ export class LoginComponent {
   }
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
+  this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/home';
 
-    this.route.queryParamMap.subscribe((params) => {
-      const verifiedFromRoute = params.get('verified');
-      const verifiedFromUrl = new URLSearchParams(window.location.search).get('verified');
-      const verified = verifiedFromRoute || verifiedFromUrl;
+  if (!isPlatformBrowser(this.platformId)) {
+    return;
+  }
 
-      console.log('verified route:', verifiedFromRoute);
-      console.log('verified url:', verifiedFromUrl);
+  this.route.queryParamMap.subscribe((params) => {
+    const verified = params.get('verified');
 
-      if (!verified || this.handledVerified) {
-        return;
-      }
+    console.log('verified:', verified);
 
-      this.handledVerified = true;
+    if (!verified || this.handledVerified) {
+      return;
+    }
+
+    this.handledVerified = true;
 
       if (verified === 'success') {
         this.notificationService.show({
