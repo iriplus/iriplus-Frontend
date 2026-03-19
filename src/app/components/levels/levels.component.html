@@ -76,9 +76,18 @@
     <div class="levels-grid" *ngIf="filteredLevels.length > 0">
       <div class="levels-card" *ngFor="let level of filteredLevels; let i = index">
         <div class="level-badge" [ngClass]="'level-' + (i % 5)">
-          <span class="level-number">{{ i + 1 }}</span>
-        </div>
+          <img
+            *ngIf="getCosmeticImagePath(level)"
+            [src]="getCosmeticImagePath(level)!"
+            [alt]="level.description + ' icon'"
+            class="level-badge__image"
+            (error)="onCosmeticImageError($event)"
+          />
 
+          <span class="level-number" *ngIf="!getCosmeticImagePath(level)">
+            {{ i + 1 }}
+          </span>
+        </div>
         <div class="level-content">
           <h3 class="level-name">{{ level.description }}</h3>
           <p class="level-description">XP minimum required: {{ level.min_xp }} XP</p>

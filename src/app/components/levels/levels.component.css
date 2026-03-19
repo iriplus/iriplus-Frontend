@@ -61,30 +61,19 @@
 .level-badge {
   width: 52px;
   height: 52px;
-  border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-weight: 800;
-  color: #fff;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
 }
 
-.level-badge.level-0 {
-  background: linear-gradient(135deg, var(--color-slate), var(--color-slate-dark));
-}
-.level-badge.level-1 {
-  background: linear-gradient(135deg, var(--color-sage), var(--color-slate));
-}
-.level-badge.level-2 {
-  background: linear-gradient(135deg, var(--color-beige), var(--color-terracotta));
-}
-.level-badge.level-3 {
-  background: linear-gradient(135deg, var(--color-terracotta), var(--color-slate-dark));
-}
-.level-badge.level-4 {
-  background: linear-gradient(135deg, var(--color-olive), var(--color-slate));
+.level-badge__image {
+  max-width: 52px;
+  max-height: 52px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .level-number {

@@ -93,57 +93,57 @@ export class LevelsComponent implements OnInit {
   ========================== */
 
   saveLevel(): void {
-  if (!this.currentLevel.description || this.currentLevel.min_xp === undefined) {
-    return;
-  }
-
-  const description = this.currentLevel.description.trim().toLowerCase();
-  const minXp = this.currentLevel.min_xp;
-
-  const duplicated = this.levels.some(level => {
-    // Excluir el mismo registro cuando se edita
-    if (this.isEditing && level.id === this.currentLevel.id) {
-      return false;
+    if (!this.currentLevel.description || this.currentLevel.min_xp === undefined) {
+      return;
     }
 
-    return (
-      level.description.trim().toLowerCase() === description ||
-      level.min_xp === minXp
-    );
-  });
+    const description = this.currentLevel.description.trim().toLowerCase();
+    const minXp = this.currentLevel.min_xp;
 
-  if (duplicated) {
-    this.notificationService.show({
-      type: 'error',
-      title: 'Operation Failed',
-      message: 'There is already a level with the same name or the same minimum experience.',
-      autoCloseMs: 5000,
+    const duplicated = this.levels.some(level => {
+      // Excluir el mismo registro cuando se edita
+      if (this.isEditing && level.id === this.currentLevel.id) {
+        return false;
+      }
+
+      return (
+        level.description.trim().toLowerCase() === description ||
+        level.min_xp === minXp
+      );
     });
-    return;
-  }
 
-  /* ==== lo que ya tenías ==== */
+    if (duplicated) {
+      this.notificationService.show({
+        type: 'error',
+        title: 'Operation Failed',
+        message: 'There is already a level with the same name or the same minimum experience.',
+        autoCloseMs: 5000,
+      });
+      return;
+    }
 
-  if (this.isEditing) {
-    this.levelService
-      .updateLevel(this.currentLevel.id, this.currentLevel)
-      .subscribe({
+    /* ==== lo que ya tenías ==== */
+
+    if (this.isEditing) {
+      this.levelService
+        .updateLevel(this.currentLevel.id, this.currentLevel)
+        .subscribe({
+          next: () => {
+            this.loadLevels();
+            this.closeModal();
+          },
+          error: err => console.error(err)
+        });
+    } else {
+      this.levelService.createLevel(this.currentLevel).subscribe({
         next: () => {
           this.loadLevels();
           this.closeModal();
         },
         error: err => console.error(err)
       });
-  } else {
-    this.levelService.createLevel(this.currentLevel).subscribe({
-      next: () => {
-        this.loadLevels();
-        this.closeModal();
-      },
-      error: err => console.error(err)
-    });
+    }
   }
-}
 
 
   deleteLevel(levelId: number): void {
@@ -166,42 +166,55 @@ export class LevelsComponent implements OnInit {
     };
   }
 
-  clearSearch(): void {
-  this.searchTerm = '';
-  this.filteredLevels = [...this.levels];
-}
-
-openDeleteModal(level: Level): void {
-  this.levelToDelete = level;
-  this.showDeleteModal = true;
-}
-
-closeDeleteModal(): void {
-  this.showDeleteModal = false;
-  this.levelToDelete = null;
-}
-
-confirmDelete(): void {
-  if (!this.levelToDelete) {
-    return;
+    clearSearch(): void {
+    this.searchTerm = '';
+    this.filteredLevels = [...this.levels];
   }
 
-  this.levelService.deleteLevel(this.levelToDelete.id).subscribe({
-    next: () => {
-      this.loadLevels();
-      this.closeDeleteModal();
-    },
-    error: err => console.error(err)
-  });
-}
-
-getMaxXP(): number {
-  if (this.levels.length === 0) {
-    return 0;
+  openDeleteModal(level: Level): void {
+    this.levelToDelete = level;
+    this.showDeleteModal = true;
   }
 
-  return Math.max(...this.levels.map(level => level.min_xp ?? 0));
-}
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.levelToDelete = null;
+  }
 
+  confirmDelete(): void {
+    if (!this.levelToDelete) {
+      return;
+    }
 
+    this.levelService.deleteLevel(this.levelToDelete.id).subscribe({
+      next: () => {
+        this.loadLevels();
+        this.closeDeleteModal();
+      },
+      error: err => console.error(err)
+    });
+  }
+
+  getMaxXP(): number {
+    if (this.levels.length === 0) {
+      return 0;
+    }
+
+    return Math.max(...this.levels.map(level => level.min_xp ?? 0));
+  }
+
+  getCosmeticImagePath(level: Level): string | null {
+    const cosmetic = level.cosmetic?.trim();
+
+    if (!cosmetic) {
+      return null;
+    }
+
+    return `assets/${cosmetic}.png`;
+  }
+
+  onCosmeticImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+  }
 }
