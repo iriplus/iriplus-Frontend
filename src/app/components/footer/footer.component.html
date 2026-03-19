@@ -7,7 +7,9 @@
       <nav>
         <ul class="footer-list">
           <li><a href="https://drive.google.com/file/d/10BZ9Gs8jt1Ig4TpqqG87BWr7R3P1rPpo/view" target="_blank" rel="noopener noreferrer" class="link-inline">Terms and Conditions</a></li>
-          <li><a href="https://drive.google.com/file/d/1UKtprZaxHKOZNryIpWw6zVT3h-xUtcDG/view" target="_blank" rel="noopener noreferrer" class="link-inline">User Manual</a></li>
+          <li *ngIf="isCoordinator"><a href="https://drive.google.com/file/d/1ATQcqgTu_SGB1GnS_dfLT5WE9_JrsYHb/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="link-inline">User Manual</a></li>
+          <li *ngIf="isStudent"><a href="https://drive.google.com/file/d/1kmsVEY0XsQ7tY2FXH2KQet9rNfOjtk5-/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="link-inline">User Manual</a></li>
+          <li *ngIf="isTeacher"><a href="https://drive.google.com/file/d/1UAsqoIAwFEXLAy90L6rFcNogtQbuf2lZ/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="link-inline">User Manual</a></li>
         </ul>
       </nav>
     </div>
