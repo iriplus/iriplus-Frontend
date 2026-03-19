@@ -16,6 +16,7 @@ export interface LeaderboardStudent {
   rank: number;
   name: string;
   level: number;
+  levelName: string;
   xp: number;
   isCurrentUser?: boolean;
 }
@@ -27,8 +28,10 @@ export interface WeeklyXpPoint {
 
 export interface StudentProgress {
   currentLevel: number;
+  currentLevelName: string;
   currentXp: number;
   nextLevelXp: number;
+  nextLevelName: string | null;
 }
 
 export interface StudentLastExam {
@@ -66,6 +69,7 @@ export interface TeacherPendingExam {
 export interface TeacherLeaderboardStudent {
   name: string;
   level: number;
+  levelName: string;
   xp: number;
 }
 

@@ -55,7 +55,7 @@ constructor(private userService: UserService) {}
   deleteTeacher(id: number): void {
     this.userService.deleteUser(id).subscribe({
       next: () => {
-        this.teachers = this.teachers.filter(t => t.id !== id);
+        this.loadTeachers();
       },
       error: () => {
         this.errorMessage = 'The teacher could not be removed';

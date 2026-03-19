@@ -56,8 +56,10 @@ export class HomeComponent implements OnInit {
 
   private readonly emptyStudentProgress: StudentProgress = {
     currentLevel: 1,
+    currentLevelName: 'Unranked',
     currentXp: 0,
     nextLevelXp: 0,
+    nextLevelName: 'Bronze'
   };
 
   private readonly emptyWeeklyXp: WeeklyXpPoint[] = [

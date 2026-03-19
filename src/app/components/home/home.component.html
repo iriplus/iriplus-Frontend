@@ -149,7 +149,7 @@
                       {{ student.name }}
                       <span class="rank-you" *ngIf="student.isCurrentUser">You</span>
                     </span>
-                    <span class="rank-level">Level {{ student.level }}</span>
+                    <span class="rank-level">{{ student.levelName }}</span>
                   </div>
 
                   <span class="rank-points">{{ student.xp | number }} XP</span>
@@ -255,7 +255,7 @@
             <div class="student-progress-summary">
               <div class="student-progress-kpi">
                 <span class="student-progress-kpi__label">Current level</span>
-                <span class="student-progress-kpi__value">Level {{ studentProgress.currentLevel }}</span>
+                <span class="student-progress-kpi__value">{{ studentProgress.currentLevelName }}</span>
               </div>
 
               <div class="student-progress-kpi">
@@ -272,7 +272,7 @@
             <div class="progress-block student-progress-block">
               <div class="progress-row">
                 <span class="progress-label">
-                  Level {{ studentProgress.currentLevel }}
+                  {{ studentProgress.currentLevelName }}
                 </span>
                 <span class="progress-value">
                   {{ studentProgress.currentXp | number }} / {{ studentProgress.nextLevelXp | number }} XP
@@ -287,8 +287,13 @@
               </div>
 
               <p class="student-progress-hint">
-                You need <strong>{{ xpToNextLevel | number }} XP</strong> to reach
-                <strong>Level {{ studentProgress.currentLevel + 1 }}</strong>.
+                <ng-container *ngIf="studentProgress.nextLevelName; else maxLevelReached">
+                  You need <strong>{{ xpToNextLevel | number }} XP</strong> to reach
+                  <strong>{{ studentProgress.nextLevelName }}</strong>.
+                </ng-container>
+                <ng-template #maxLevelReached>
+                  You are already at the highest available level.
+                </ng-template>
               </p>
             </div>
           </article>
@@ -469,7 +474,7 @@
 
                 <div class="rank-content">
                   <span class="rank-name">{{ student.name }}</span>
-                  <span class="rank-level">Level {{ student.level }}</span>
+                  <span class="rank-level">{{ student.levelName }}</span>
                 </div>
 
                 <span class="rank-points">{{ student.xp | number }} XP</span>
