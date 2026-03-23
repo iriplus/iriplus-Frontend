@@ -301,9 +301,7 @@ export class ExamsComponent implements OnInit {
       const classMatch =
         !this.selectedClass ||
         this.selectedClass === 'ALL' ||
-        (exam.class_description || '')
-          .toLowerCase()
-          .includes(this.selectedClass.toLowerCase());
+        (exam.class_description || '').toLowerCase() === this.selectedClass.toLowerCase();
 
       let searchMatch = true;
 

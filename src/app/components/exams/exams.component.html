@@ -76,19 +76,16 @@
           <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
         </svg>
 
-        <input
-          type="text"
+        <select
           class="app-input app-input--icon-left exams-filter__control"
-          placeholder="All classes"
-          list="coursesList"
           [(ngModel)]="selectedClass"
-          (input)="applyFilters()"
-        />
-
-        <datalist id="coursesList">
+          (change)="applyFilters()"
+        > 
           <option value="ALL">All classes</option>
-          <option *ngFor="let cls of classes" [value]="cls.description"></option>
-        </datalist>
+          <option *ngFor="let cls of classes" [value]="cls.description">
+            {{ cls.description }}
+          </option>
+        </select>
       </div>
 
       <button
