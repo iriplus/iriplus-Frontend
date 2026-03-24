@@ -32,9 +32,9 @@ export class HomeComponent implements OnInit {
   teacherDashboard: TeacherDashboard | null = null;
 
   private readonly emptyStudentCourse: StudentCourseSummary = {
-    name: 'No active course assigned',
+    name: 'No active class assigned',
     description:
-      'You are not assigned to an active course yet. Please contact the institute staff if this looks incorrect.',
+      'You are not assigned to an active class yet. Please contact the institute staff if this looks incorrect.',
     teachers: ['Not assigned yet'],
     studentsEnrolled: 0,
     englishLevel: 'Not assigned',
@@ -42,9 +42,9 @@ export class HomeComponent implements OnInit {
 
   private readonly emptyTeacherCourse: TeacherCourseDashboard = {
     id: 0,
-    name: 'No active courses assigned',
+    name: 'No active classes assigned',
     description:
-      'You are not assigned to any active course yet.',
+      'You are not assigned to any active class yet.',
     teachers: [],
     studentsEnrolled: 0,
     englishLevel: 'Not assigned',

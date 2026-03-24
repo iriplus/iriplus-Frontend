@@ -47,7 +47,7 @@ export class GenerateExamStudentComponent implements OnInit {
         if (res?.student_class_id) {
           this.classId = res.student_class_id;
         } else {
-          this.errorMessage = 'You are not enrolled in a course. Please contact your coordinator.';
+          this.errorMessage = 'You are not enrolled in a class. Please contact your coordinator.';
         }
       },
       error: () => {
@@ -81,7 +81,7 @@ export class GenerateExamStudentComponent implements OnInit {
     }
 
     if (this.classId == null) {
-      this.errorMessage = 'You are not enrolled in a course.';
+      this.errorMessage = 'You are not enrolled in a class.';
       return;
     }
 

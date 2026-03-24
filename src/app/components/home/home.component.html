@@ -118,7 +118,7 @@
                     [class.home-segmented__btn--active]="leaderboardScope === 'COURSE'"
                     (click)="setLeaderboardScope('COURSE')"
                   >
-                    My course
+                    My class
                   </button>
 
                   <button
@@ -368,7 +368,7 @@
       <section class="home-section" *ngIf="isTeacher">
         <div class="home-section__title">
           <h2>Teacher dashboard</h2>
-          <p>Course performance and exam workflow overview for the selected class.</p>
+          <p>Class performance and exam workflow overview for the selected class.</p>
         </div>
 
          <div class="home-state home-state--error" *ngIf="showTeacherErrorState">
@@ -388,9 +388,9 @@
         </div>
 
         <div class="home-state" *ngIf="!showTeacherErrorState && !hasTeacherCourses">
-          <h3 class="home-state__title">No active courses assigned</h3>
+          <h3 class="home-state__title">No active classes assigned</h3>
           <p class="home-state__text">
-            There are no active courses assigned to your profile yet.
+            There are no active classes assigned to your profile yet.
           </p>
         </div>
 
@@ -412,7 +412,7 @@
         <!-- Course summary strip -->
         <article class="student-course-strip teacher-course-strip">
           <div class="student-course-strip__main">
-            <span class="student-course-strip__eyebrow">Selected course</span>
+            <span class="student-course-strip__eyebrow">Selected class</span>
             <h2 class="student-course-strip__title">{{ selectedTeacherCourse.name }}</h2>
             <p class="student-course-strip__description">
               {{ selectedTeacherCourse.description }}
@@ -452,7 +452,7 @@
               <div>
                 <h3>Student leaderboard</h3>
                 <p class="home-panel__subtitle">
-                  Ranking for the selected course by level and total experience.
+                  Ranking for the selected class by level and total experience.
                 </p>
               </div>
 
@@ -718,7 +718,7 @@
       <section class="home-section" *ngIf="isCoordinator">
         <div class="home-section__title">
           <h2>Coordinator dashboard</h2>
-          <p>Enrollment and course occupancy overview for the last week.</p>
+          <p>Enrollment and class occupancy overview for the last week.</p>
         </div>
 
         <div class="home-state home-state--error" *ngIf="showCoordinatorErrorState">
@@ -750,7 +750,7 @@
               {{ coordinatorStats.newEnrolledStudentsLastWeek }}
             </span>
             <p class="coordinator-stat-card__description">
-              Students who joined a course during the last 7 days.
+              Students who joined a class during the last 7 days.
             </p>
           </article>
 
@@ -768,13 +768,13 @@
 
           <article class="coordinator-stat-card">
             <span class="coordinator-stat-card__label">
-              Average course occupancy
+              Average class occupancy
             </span>
             <span class="coordinator-stat-card__value">
               {{ coordinatorStats.averageCourseOccupancy }}%
             </span>
             <p class="coordinator-stat-card__description">
-              Average percentage of occupied seats across all active courses.
+              Average percentage of occupied seats across all active classes.
             </p>
           </article>
         </div>
