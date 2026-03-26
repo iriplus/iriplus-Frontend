@@ -24,6 +24,7 @@ import { StudentsComponent } from './components/students/students.component';
 import { TuitionsComponent } from './components/tuitions/tuitions.component';
 import { WritingReviewComponent } from './components/writing-review/writing-review.component';
 import { ExercisesComponent } from './components/exercises/exercises.component';
+import { PendingChangesGuard } from './guards/can-deactivate.guard';
 
 export const routes: Routes = [
   {
@@ -45,6 +46,7 @@ export const routes: Routes = [
         path: 'generate-exam',
         component: GenerateExamComponent,
         canActivate: [roleGuard],
+        canDeactivate: [PendingChangesGuard],
         data: { allowedRoles: [UserType.TEACHER, UserType.COORDINATOR] }
       },
       {

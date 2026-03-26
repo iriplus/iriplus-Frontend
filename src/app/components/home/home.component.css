@@ -853,3 +853,13 @@
 .student-chart__label--y {
   font-size: 10px;
 }
+
+.rank-list-scroll {
+  width: 100%;
+}
+
+.rank-list-scroll--active {
+  max-height: 410px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}

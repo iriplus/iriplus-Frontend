@@ -132,12 +132,13 @@
                 </div>
               </div>
 
-              <ol class="rank-list">
-                <li
-                  class="rank-item"
-                  *ngFor="let student of visibleLeaderboard"
-                  [class.rank-item--current]="student.isCurrentUser"
-                >
+              <div class="rank-list-scroll" [class.rank-list-scroll--active]="shouldScrollStudentLeaderboard">
+                <ol class="rank-list">
+                  <li
+                    class="rank-item"
+                    *ngFor="let student of visibleLeaderboard"
+                    [class.rank-item--current]="student.isCurrentUser"
+                  >
                   <span class="rank-pos">#{{ student.rank }}</span>
 
                   <span class="rank-avatar">
@@ -151,10 +152,10 @@
                     </span>
                     <span class="rank-level">{{ student.levelName }}</span>
                   </div>
-
                   <span class="rank-points">{{ student.xp | number }} XP</span>
-                </li>
-              </ol>
+              </li>
+            </ol>
+          </div>
             </article>
 
             <!-- Weekly XP chart -->
@@ -461,11 +462,12 @@
               </span>
             </div>
 
-            <ol class="rank-list">
-              <li
-                class="rank-item"
-                *ngFor="let student of selectedTeacherCourse.leaderboard; let i = index"
-              >
+            <div class="rank-list-scroll" [class.rank-list-scroll--active]="shouldScrollTeacherLeaderboard">
+              <ol class="rank-list">
+                <li
+                  class="rank-item"
+                  *ngFor="let student of selectedTeacherCourse.leaderboard; let i = index"
+                >
                 <span class="rank-pos">#{{ i + 1 }}</span>
 
                 <span class="rank-avatar">
@@ -480,6 +482,7 @@
                 <span class="rank-points">{{ student.xp | number }} XP</span>
               </li>
             </ol>
+          </div>
           </article>
 
           <!-- Weekly XP multi-student chart -->

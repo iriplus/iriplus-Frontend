@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,6 +12,7 @@ import { ExamDTO, Status } from '../../interfaces/exam.interface';
 import { Exercise } from '../../interfaces/exercise.interface';
 import { UserType } from '../../interfaces/user.interface';
 import { ConfirmDialogComponent, ConfirmVariant, ConfirmDialogState } from '../ui/confirm-dialog/confirm-dialog.component';
+import { PendingChangesComponent } from '../../guards/can-deactivate.guard';
 
 type Step = 'form' | 'loading' | 'preview';
 
@@ -22,7 +24,7 @@ type Step = 'form' | 'loading' | 'preview';
   styleUrl: './generate-exam.component.css'
 })
 
-export class GenerateExamComponent implements OnInit {
+export class GenerateExamComponent implements OnInit, PendingChangesComponent {
   step: Step = 'form';
 
   classes: Class[] = [];
@@ -37,6 +39,9 @@ export class GenerateExamComponent implements OnInit {
   readonly Status = Status;
 
   form: FormGroup;
+
+  private leaveConfirmation$?: Subject<boolean>;
+  private allowImmediateNavigation = false;
 
   changeRequest = new FormControl('', {
     nonNullable: true,
@@ -256,11 +261,26 @@ export class GenerateExamComponent implements OnInit {
 
     if (action === 'delete-draft') {
       this.deleteDraft();
+      return;
+    }
+
+    if (action === 'leave-generate-exam') {
+      this.allowImmediateNavigation = true;
+      this.leaveConfirmation$?.next(true);
+      this.leaveConfirmation$?.complete();
+      this.leaveConfirmation$ = undefined;
     }
   }
 
   onConfirmDialogCancelled(): void {
+    const action = this.confirmDialog.action;
     this.closeConfirmDialog();
+
+    if (action === 'leave-generate-exam') {
+      this.leaveConfirmation$?.next(false);
+      this.leaveConfirmation$?.complete();
+      this.leaveConfirmation$ = undefined;
+    }
   }
 
   private discardManualEdits(): void {
@@ -294,7 +314,9 @@ export class GenerateExamComponent implements OnInit {
           autoCloseMs: 3500,
         });
 
-        this.resetFlow();
+        this.allowImmediateNavigation = true;
+        this.clearLocalState();
+        this.router.navigate(['/exam']);
       },
       error: (error) => {
         this.notifyApiError(error, 'The draft could not be deleted.');
@@ -433,6 +455,7 @@ export class GenerateExamComponent implements OnInit {
           autoCloseMs: 3500,
         });
 
+        this.allowImmediateNavigation = true;
         this.router.navigate(['/exam']);
       },
       error: (error) => {
@@ -443,10 +466,29 @@ export class GenerateExamComponent implements OnInit {
   }
 
   cancel(): void {
-    this.resetFlow();
+    this.router.navigate(['/exam']);
   }
 
-  resetFlow(): void {
+  canDeactivate(): boolean | Observable<boolean> {
+    if (!this.shouldWarnBeforeLeaving()) {
+      return true;
+    }
+
+    this.leaveConfirmation$ = new Subject<boolean>();
+
+    this.openConfirmDialog({
+      action: 'leave-generate-exam',
+      title: 'Leave generated exam?',
+      message:'If you leave the page now, you may not be able to retrieve the generated exam. Are you sure you want to leave?',
+      confirmText: 'Leave page',
+      cancelText: 'Stay here',
+      variant: 'danger',
+    });
+
+    return this.leaveConfirmation$.asObservable();
+  }
+
+  private clearLocalState(): void {
     this.step = 'form';
     this.generatedExam = null;
     this.originalExam = null;
@@ -462,7 +504,10 @@ export class GenerateExamComponent implements OnInit {
 
     this.resetChangeRequest();
     this.closeConfirmDialog();
-    this.router.navigate(['/exam']);
+  }
+
+  resetFlow(): void {
+    this.clearLocalState();
   }
 
   private getEditableContentValidationError(): string | null {
@@ -571,5 +616,33 @@ export class GenerateExamComponent implements OnInit {
     }
 
     return fallback;
+  }
+
+   private shouldWarnBeforeLeaving(): boolean {
+    if (this.allowImmediateNavigation) {
+      return false;
+    }
+
+    if (this.saving || this.refining) {
+      return true;
+    }
+
+    if (this.step === 'loading') {
+      return true;
+    }
+
+    if (this.step === 'preview' && !!this.generatedExam) {
+      return this.generatedExam.status === 'Generating';
+    }
+
+    return false;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+    handleBeforeUnload(event: BeforeUnloadEvent): void {
+      if (this.shouldWarnBeforeLeaving()) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
   }
 }

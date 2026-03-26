@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { delay } from 'rxjs/operators';
 import { ExamDTO, ExamReviewDTO, SubmitStudentExamPayload, SubmitStudentExamResponse } from '../interfaces/exam.interface';
 
 @Injectable({
@@ -33,9 +34,14 @@ export class ExamService {
     return this.http.get(`${this.EXAM_URL}/exercise`);
   }
 
-  generateExam(exam_data: any): Observable<any> {
+  /*generateExam(exam_data: any): Observable<any> {
     return this.http.post(`${this.EXAM_URL}/generate`, exam_data, {withCredentials: true});
-  }
+  }*/
+ generateExam(exam_data: any): Observable<any> {
+  console.log('MOCK generateExam', exam_data);
+
+  return of({ exam_id: 999 }).pipe(delay(5000));
+}
 
   generateStudentExam(exam_data: { class_id: number; exercise_type_ids: number[] }): Observable<{ exam_id: number }> {
     return this.http.post<{ exam_id: number }>(
@@ -45,9 +51,35 @@ export class ExamService {
     );
   }
 
-  getFullExam(id: number): Observable<ExamDTO> {
+  /*getFullExam(id: number): Observable<ExamDTO> {
     return this.http.get<ExamDTO>(`${this.EXAM_URL}/${id}/full`, {withCredentials: true});
-  }
+  }*/
+ getFullExam(id: number): Observable<ExamDTO> {
+  console.log('MOCK getFullExam', id);
+
+  return of({
+    id,
+    status: 'Generating',
+    context: 'Read the text and answer the questions.',
+    notes: null,
+    date_created: new Date().toISOString(),
+    class_id: 1,
+    exercises: [
+      {
+        exam_exercise_instance_id: 101,
+        exercise_type: 'Multiple Choice',
+        instructions: 'Choose the correct option.',
+        items: [
+          {
+            question: 'I ___ to school every day.',
+            answer: 'go',
+            student_answer: ''
+          }
+        ]
+      }
+    ]
+  } as ExamDTO);
+}
 
   getExamReview(id: number): Observable<ExamReviewDTO> {
     return this.http.get<ExamReviewDTO>(`${this.EXAM_URL}/${id}/review`, { withCredentials: true });

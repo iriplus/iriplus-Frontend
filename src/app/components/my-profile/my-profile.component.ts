@@ -86,26 +86,28 @@ export class MyProfileComponent implements OnInit {
       }
     });
   }
+  
+loadStudentAcademicData(): void {
+  this.loadLevelsAndCalculateProgress();
 
-  loadStudentAcademicData(): void {
-    this.loadLevelsAndCalculateProgress();
-
-    if (!this.user.student_class_id) {
-      this.currentClass = null;
-      return;
-    }
-
-    this.classService.getClassById(this.user.student_class_id).subscribe({
-      next: (cls) => {
-        this.currentClass = cls;
-        this.calculateClassCapacity();
-      },
-      error: (err) => {
-        console.error('Error loading class', err);
-        this.currentClass = null;
-      }
-    });
+  if (!this.user.student_class_id) {
+    this.currentClass = null;
+    this.classCapacityPercentage = 0;
+    return;
   }
+
+  this.classService.getClassById(this.user.student_class_id).subscribe({
+    next: (cls) => {
+      this.currentClass = cls;
+      this.calculateClassCapacity();
+    },
+    error: (err) => {
+      console.error('Error loading class', err);
+      this.currentClass = null;
+      this.classCapacityPercentage = 0;
+    }
+  });
+}
 
   calculateClassCapacity(): void {
     if (!this.currentClass) {
@@ -531,8 +533,13 @@ confirmChangePassword(): void {
 
         this.userService.updateUser(this.user.id, updatePayload).subscribe({
           next: () => {
-            this.closeChangeClassModal();
-            this.loadProfile();
+                this.user = {
+                ...this.user,
+                student_class_id: clazz.id
+                };
+
+              this.refreshClassInfo(clazz.id);
+              this.closeChangeClassModal();
           },
           error: (err) => {
             console.error(err);
@@ -553,4 +560,16 @@ confirmChangePassword(): void {
       }
     });
   }
+
+  refreshClassInfo(classId: number): void {
+  this.classService.getClassById(classId).subscribe({
+    next: (cls) => {
+      this.currentClass = cls;
+      this.calculateClassCapacity();
+    },
+    error: () => {
+      this.currentClass = null;
+    }
+  });
+}
 }

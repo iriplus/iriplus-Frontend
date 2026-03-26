@@ -359,6 +359,14 @@ export class HomeComponent implements OnInit {
     return this.studentDashboard?.lastExams ?? [];
   }
 
+  get shouldScrollStudentLeaderboard(): boolean {
+    return this.visibleLeaderboard.length > 5;
+  }
+
+  get shouldScrollTeacherLeaderboard(): boolean {
+    return this.selectedTeacherCourse.leaderboard.length > 5;
+  }
+
   private readonly chartWidth = 360;
   private readonly chartHeight = 220;
   private readonly chartLeft = 36;
