@@ -4,7 +4,8 @@ export enum Status {
   ACCEPTED = 'Accepted',
   PENDING_CORRECTION = 'Pending Correction',
   ON_CORRECTION = 'On Correction',
-  STUDENT_EXAM = 'Student Exam'
+  STUDENT_EXAM = 'Student Exam',
+  GENERATING = 'Generating'
 }
 
 export interface ExamItemDTO {

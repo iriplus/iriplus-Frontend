@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
 
 import { ExamService } from '../../services/exam.service';
 import { AuthService } from '../../services/auth.service';
@@ -13,6 +14,11 @@ import {
   SubmitStudentExamResponse
 } from '../../interfaces/exam.interface';
 import { NotificationService } from '../../services/notification.service';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogState
+} from '../ui/confirm-dialog/confirm-dialog.component';
+import { PendingChangesComponent } from '../../guards/can-deactivate.guard';
 
 interface ResolveItemView {
   promptBefore: string;
@@ -32,11 +38,11 @@ interface ResolveExerciseView {
 @Component({
   selector: 'app-exam-resolve',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent],
   templateUrl: './exam-resolve.component.html',
   styleUrl: './exam-resolve.component.css'
 })
-export class ExamResolveComponent implements OnInit {
+export class ExamResolveComponent implements OnInit, PendingChangesComponent {
   studentName = '';
   exam: ExamDTO | null = null;
   examId: number | null = null;
@@ -44,6 +50,19 @@ export class ExamResolveComponent implements OnInit {
   loading = true;
   submitting = false;
   errorMessage = '';
+
+  private allowImmediateNavigation = false;
+  private leaveConfirmation$?: Subject<boolean>;
+
+  confirmDialog: ConfirmDialogState = {
+    open: false,
+    action: null,
+    title: 'Are you sure?',
+    message: 'This action cannot be undone.',
+    confirmText: 'Confirm',
+    cancelText: 'Cancel',
+    variant: 'default',
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -75,17 +94,20 @@ export class ExamResolveComponent implements OnInit {
     }
 
     this.examId = examId;
+
     this.examService.getFullExam(examId).subscribe({
       next: (exam) => {
         this.exam = exam;
         const exercises = exam.exercises?.length
           ? exam.exercises
           : (exam as { generated_exercises?: ExamExerciseInstanceDTO[] }).generated_exercises ?? [];
+
         this.exerciseViews = exercises.map((exercise) => {
           const instanceId =
             exercise.exam_exercise_instance_id ??
             (exercise as { id?: number }).id ??
             0;
+
           return {
             examExerciseInstanceId: instanceId,
             exercise_type: exercise.exercise_type,
@@ -93,6 +115,7 @@ export class ExamResolveComponent implements OnInit {
             items: exercise.items.map((item) => this.buildResolveItem(item))
           };
         });
+
         this.loading = false;
       },
       error: () => {
@@ -142,57 +165,175 @@ export class ExamResolveComponent implements OnInit {
   cancel(): void {
     this.router.navigate(['/exam']);
   }
-finishExam(): void {
-  if (this.submitting || this.examId == null || !this.exam) return;
 
-  const payload: SubmitStudentExamPayload = {
-    exercises: this.exerciseViews.map((ex) => ({
-      exam_exercise_instance_id: ex.examExerciseInstanceId,
-      items: ex.items.map((item) => ({
-        student_answer: item.studentAnswer?.trim() ?? ''
+  finishExam(): void {
+    if (this.submitting || this.examId == null || !this.exam) return;
+
+    const payload: SubmitStudentExamPayload = {
+      exercises: this.exerciseViews.map((ex) => ({
+        exam_exercise_instance_id: ex.examExerciseInstanceId,
+        items: ex.items.map((item) => ({
+          student_answer: item.studentAnswer?.trim() ?? ''
+        }))
       }))
-    }))
-  };
+    };
 
-  this.errorMessage = '';
-  this.submitting = true;
+    this.errorMessage = '';
+    this.submitting = true;
 
-  this.examService.submitStudentExam(this.examId, payload).subscribe({
-    next: (response: SubmitStudentExamResponse) => {
-      const leveledUp =
-        response.leveled_up ??
-        (
-          response.previous_level_id != null &&
-          response.new_level_id != null &&
-          response.previous_level_id !== response.new_level_id
-        );
+    this.examService.submitStudentExam(this.examId, payload).subscribe({
+      next: (response: SubmitStudentExamResponse) => {
+        const leveledUp =
+          response.leveled_up ??
+          (
+            response.previous_level_id != null &&
+            response.new_level_id != null &&
+            response.previous_level_id !== response.new_level_id
+          );
 
-      this.notificationService.show({
-        type: 'success',
-        title: leveledUp ? 'Level up!' : 'Exam completed',
-        message: leveledUp
-          ? `You gained ${response.xp_gained} XP and advanced to level ${response.new_level_id}.`
-          : `You gained ${response.xp_gained} XP.`,
-        autoCloseMs: 5000
-      });
+        this.notificationService.show({
+          type: 'success',
+          title: leveledUp ? 'Level up!' : 'Exam completed',
+          message: leveledUp
+            ? `You gained ${response.xp_gained} XP and advanced to level ${response.new_level_id}.`
+            : `You gained ${response.xp_gained} XP.`,
+          autoCloseMs: 5000
+        });
 
-      this.router.navigate(['/exam']);
-    },
-    error: (err) => {
-      this.errorMessage =
-        err?.error?.message ?? 'Error submitting exam. Please try again.';
+        this.allowImmediateNavigation = true;
+        this.router.navigate(['/exam']);
+      },
+      error: (err) => {
+        this.errorMessage =
+          err?.error?.message ?? 'Error submitting exam. Please try again.';
 
-      this.notificationService.show({
-        type: 'error',
-        title: 'Exam submission failed',
-        message: this.errorMessage,
-        autoCloseMs: 5000
-      });
+        this.notificationService.show({
+          type: 'error',
+          title: 'Exam submission failed',
+          message: this.errorMessage,
+          autoCloseMs: 5000
+        });
 
-      this.submitting = false;
+        this.submitting = false;
+      }
+    });
+  }
+
+  canDeactivate(): boolean | Observable<boolean> {
+    if (!this.shouldWarnBeforeLeaving()) {
+      return true;
     }
-  });
-}
+
+    this.leaveConfirmation$ = new Subject<boolean>();
+
+    this.openConfirmDialog({
+      action: 'leave-generate-exam',
+      title: 'Leave exam?',
+      message: 'If you leave now, this generated exam will be deleted. Are you sure you want to leave?',
+      confirmText: 'Leave page',
+      cancelText: 'Stay here',
+      variant: 'danger',
+    });
+
+    return this.leaveConfirmation$.asObservable();
+  }
+
+  onConfirmDialogConfirmed(): void {
+    const action = this.confirmDialog.action;
+    this.closeConfirmDialog();
+
+    if (action === 'leave-generate-exam') {
+      this.confirmLeaveAndCleanup();
+    }
+  }
+
+  onConfirmDialogCancelled(): void {
+    const action = this.confirmDialog.action;
+    this.closeConfirmDialog();
+
+    if (action === 'leave-generate-exam') {
+      this.leaveConfirmation$?.next(false);
+      this.leaveConfirmation$?.complete();
+      this.leaveConfirmation$ = undefined;
+    }
+  }
+
+  private confirmLeaveAndCleanup(): void {
+    if (!this.leaveConfirmation$) {
+      return;
+    }
+
+    const examId = this.examId;
+
+    const finishNavigation = (): void => {
+      this.allowImmediateNavigation = true;
+      this.leaveConfirmation$?.next(true);
+      this.leaveConfirmation$?.complete();
+      this.leaveConfirmation$ = undefined;
+    };
+
+    const cancelNavigation = (): void => {
+      this.leaveConfirmation$?.next(false);
+      this.leaveConfirmation$?.complete();
+      this.leaveConfirmation$ = undefined;
+    };
+
+    if (examId == null) {
+      finishNavigation();
+      return;
+    }
+
+    this.examService.deleteExam(examId).subscribe({
+      next: () => {
+        this.exam = null;
+        this.exerciseViews = [];
+        finishNavigation();
+      },
+      error: () => {
+        this.errorMessage = 'The exam could not be deleted.';
+        cancelNavigation();
+      }
+    });
+  }
+
+  private shouldWarnBeforeLeaving(): boolean {
+    if (this.allowImmediateNavigation) {
+      return false;
+    }
+
+    if (this.submitting) {
+      return true;
+    }
+
+    return this.examId !== null;
+  }
+
+  private openConfirmDialog(config: Omit<ConfirmDialogState, 'open'>): void {
+    this.confirmDialog = {
+      open: true,
+      ...config,
+    };
+  }
+
+  private closeConfirmDialog(): void {
+    this.confirmDialog = {
+      open: false,
+      action: null,
+      title: 'Are you sure?',
+      message: 'This action cannot be undone.',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
+      variant: 'default',
+    };
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBrowserUnload(event: BeforeUnloadEvent): void {
+    if (this.shouldWarnBeforeLeaving()) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  }
 
   private buildResolveItem(item: ExamItemDTO): ResolveItemView {
     const options = this.extractOptions(item.question);
@@ -215,38 +356,33 @@ finishExam(): void {
     };
   }
 
-  private splitAroundAnswer(question: string, answer: string): { before: string; after: string } {
-    if (answer == null || typeof answer !== 'string') {
-      return { before: question, after: '' };
-    }
-    const escapedAnswer = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(escapedAnswer, 'i');
-    const match = question.match(regex);
-
-    if (!match || match.index === undefined) {
-      return {
-        before: question,
-        after: ''
-      };
-    }
-
-    return {
-      before: question.slice(0, match.index).trim(),
-      after: question.slice(match.index + match[0].length).trim()
-    };
-  }
-
-  private extractKeyword(question: string): string | null {
-    const match = question.match(/\b([A-Z][A-Z-]*)\b\s*$/);
-    return match ? match[1] : null;
+  private extractOptions(question: string): string[] {
+    const match = question.match(/\(([^)]+)\)\s*$/);
+    if (!match) return [];
+    return match[1].split('/').map((option) => option.trim()).filter(Boolean);
   }
 
   private removeOptions(question: string): string {
-    return question.replace(/\([A-Z]\)\s*[^()]+(?=(\s*\([A-Z]\))|$)/g, '').trim();
+    return question.replace(/\(([^)]+)\)\s*$/, '').trim();
   }
 
-  private extractOptions(question: string): string[] {
-    const matches = [...question.matchAll(/\([A-Z]\)\s*([^()]+?)(?=\s*\([A-Z]\)|$)/g)];
-    return matches.map((match) => match[1].trim());
+  private extractKeyword(question: string): string | null {
+    const match = question.match(/\b[A-Z][A-Z\s]+\b$/);
+    return match ? match[0].trim() : null;
+  }
+
+  private splitAroundAnswer(question: string, answer: string): { before: string; after: string } {
+    const normalizedQuestion = question ?? '';
+    const normalizedAnswer = answer ?? '';
+    const index = normalizedQuestion.indexOf(normalizedAnswer);
+
+    if (index === -1) {
+      return { before: normalizedQuestion, after: '' };
+    }
+
+    return {
+      before: normalizedQuestion.slice(0, index).trim(),
+      after: normalizedQuestion.slice(index + normalizedAnswer.length).trim()
+    };
   }
 }

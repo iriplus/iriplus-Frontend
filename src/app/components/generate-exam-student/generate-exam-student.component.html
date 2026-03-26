@@ -99,3 +99,14 @@
 
   </section>
 </div>
+
+<app-confirm-dialog
+  [open]="confirmDialog.open"
+  [title]="confirmDialog.title"
+  [message]="confirmDialog.message"
+  [confirmText]="confirmDialog.confirmText"
+  [cancelText]="confirmDialog.cancelText"
+  [variant]="confirmDialog.variant"
+  (confirmed)="onConfirmDialogConfirmed()"
+  (cancelled)="onConfirmDialogCancelled()">
+</app-confirm-dialog>

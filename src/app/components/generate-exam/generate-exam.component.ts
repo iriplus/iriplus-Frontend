@@ -58,6 +58,9 @@ export class GenerateExamComponent implements OnInit, PendingChangesComponent {
     variant: 'default',
   };
 
+  private generationCancelled = false;
+  private generationInProgress = false;
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly examService: ExamService,
@@ -162,61 +165,82 @@ export class GenerateExamComponent implements OnInit, PendingChangesComponent {
     control?.markAsTouched();
     control?.updateValueAndValidity();
   }
-
-  generateExam(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.step = 'loading';
-
-    const examData = {
-      class_id: this.form.value.classId,
-      context: this.form.value.context,
-      exercise_type_ids: this.form.value.exerciseTypeIds,
-    };
-
-    this.examService.generateExam(examData).subscribe({
-      next: (response) => {
-        const examId = this.resolveExamIdFromResponse(response, 0);
-
-        if (!examId) {
-          this.step = 'form';
-          this.notificationService.show({
-            type: 'error',
-            title: 'Generation Error',
-            message: 'The generated exam id could not be resolved.',
-            autoCloseMs: 5000,
-          });
-          return;
-        }
-
-        this.examService.getFullExam(examId).subscribe({
-          next: (exam) => {
-            this.generatedExam = this.cloneExam(exam);
-            this.originalExam = this.cloneExam(exam);
-            this.step = 'preview';
-
-            this.notificationService.show({
-              type: 'success',
-              title: 'Draft Generated',
-              message: 'The exam draft was generated successfully.',
-              autoCloseMs: 3500,
-            });
-          },
-          error: (error) => {
-            this.step = 'form';
-            this.notifyApiError(error, 'The generated exam could not be loaded.');
-          },
-        });
-      },
-      error: (error) => {
-        this.step = 'form';
-        this.notifyApiError(error, 'The exam could not be generated.');
-      },
-    });
+generateExam(): void {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  this.generationCancelled = false;
+  this.generationInProgress = true;
+  this.step = 'loading';
+
+  const examData = {
+    class_id: this.form.value.classId,
+    context: this.form.value.context,
+    exercise_type_ids: this.form.value.exerciseTypeIds,
+  };
+
+  this.examService.generateExam(examData).subscribe({
+    next: (response) => {
+      this.generationInProgress = false;
+
+      if (this.generationCancelled) {
+        return;
+      }
+
+      const examId = this.resolveExamIdFromResponse(response, 0);
+
+      if (!examId) {
+        this.step = 'form';
+        this.notificationService.show({
+          type: 'error',
+          title: 'Generation Error',
+          message: 'The generated exam id could not be resolved.',
+          autoCloseMs: 5000,
+        });
+        return;
+      }
+
+      this.examService.getFullExam(examId).subscribe({
+        next: (exam) => {
+          if (this.generationCancelled) {
+            return;
+          }
+
+          this.generatedExam = this.cloneExam(exam);
+          this.originalExam = this.cloneExam(exam);
+          this.step = 'preview';
+
+          this.notificationService.show({
+            type: 'success',
+            title: 'Draft Generated',
+            message: 'The exam draft was generated successfully.',
+            autoCloseMs: 3500,
+          });
+        },
+        error: (error) => {
+          if (this.generationCancelled) {
+            return;
+          }
+
+          this.generationInProgress = false;
+          this.step = 'form';
+          this.notifyApiError(error, 'The generated exam could not be loaded.');
+        },
+      });
+    },
+    error: (error) => {
+      if (this.generationCancelled) {
+        return;
+      }
+
+      this.generationInProgress = false;
+      this.step = 'form';
+      this.notifyApiError(error, 'The exam could not be generated.');
+    },
+  });
+}
 
   openDiscardManualEditsConfirm(): void {
     if (!this.originalExam || this.saving || this.refining) {
@@ -265,12 +289,58 @@ export class GenerateExamComponent implements OnInit, PendingChangesComponent {
     }
 
     if (action === 'leave-generate-exam') {
-      this.allowImmediateNavigation = true;
-      this.leaveConfirmation$?.next(true);
-      this.leaveConfirmation$?.complete();
-      this.leaveConfirmation$ = undefined;
+      this.confirmLeaveAndCleanup();
     }
   }
+
+  private confirmLeaveAndCleanup(): void {
+  if (!this.leaveConfirmation$) {
+    return;
+  }
+  
+  this.generationCancelled = true;
+  this.generationInProgress = false;
+
+  const finishNavigation = (): void => {
+    this.allowImmediateNavigation = true;
+    this.leaveConfirmation$?.next(true);
+    this.leaveConfirmation$?.complete();
+    this.leaveConfirmation$ = undefined;
+  };
+
+  const cancelNavigation = (): void => {
+    this.leaveConfirmation$?.next(false);
+    this.leaveConfirmation$?.complete();
+    this.leaveConfirmation$ = undefined;
+  };
+
+  const shouldDeleteDraft =
+    !!this.generatedExam &&
+    this.generatedExam.status === Status.GENERATING;
+
+  if (!shouldDeleteDraft) {
+    finishNavigation();
+    return;
+  }
+
+  this.examService.deleteExam(this.generatedExam!.id).subscribe({
+    next: () => {
+      this.notificationService.show({
+        type: 'success',
+        title: 'Draft Deleted',
+        message: 'The generated exam was deleted successfully.',
+        autoCloseMs: 3500,
+      });
+
+      this.clearLocalState();
+      finishNavigation();
+    },
+    error: (error) => {
+      this.notifyApiError(error, 'The generated exam could not be deleted.');
+      cancelNavigation();
+    },
+  });
+}
 
   onConfirmDialogCancelled(): void {
     const action = this.confirmDialog.action;

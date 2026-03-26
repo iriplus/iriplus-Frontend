@@ -53,6 +53,7 @@ export const routes: Routes = [
         path: 'generate-exam-student',
         component: GenerateExamStudentComponent,
         canActivate: [roleGuard],
+        canDeactivate: [PendingChangesGuard],
         data: { allowedRoles: [UserType.STUDENT] }
       },
 
@@ -96,6 +97,7 @@ export const routes: Routes = [
         path: 'exam-resolve/:id',
         component: ExamResolveComponent,
         canActivate: [roleGuard],
+        canDeactivate: [PendingChangesGuard],
         data: { allowedRoles: [UserType.STUDENT] }
       },
       {
