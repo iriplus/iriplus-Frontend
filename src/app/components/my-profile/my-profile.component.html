@@ -166,15 +166,24 @@
       <div class="profile__cards-grid">
         <div class="level-card">
           <div class="level-header">
-            <div class="level-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
+            <div class="level-icon" [class.level-icon--badge]="getLevelBadgePath(currentLevel)">
+              <img
+                *ngIf="getLevelBadgePath(currentLevel) as badgePath; else defaultLevelIcon"
+                [src]="badgePath"
+                alt=""
+                class="level-icon__badge"
+                (error)="onLevelBadgeError($event)"
+              />
+              <ng-template #defaultLevelIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              </ng-template>
             </div>
             <div class="level-info">
               <span class="level-label">My Level</span>
-              <span class="level-name">{{ currentLevel?.description || 'No nivel' }}</span>
+              <span class="level-name">{{ currentLevel?.description || 'No level' }}</span>
             </div>
             <div class="xp-badge">
               <span class="xp-value">{{ accumulatedXp || 0 }}</span>
@@ -184,8 +193,35 @@
 
           <div class="progress-section">
             <div class="progress-labels">
-              <span class="progress-current">{{ currentLevel?.description || 'Start' }}</span>
-              <span class="progress-next">{{ nextLevel?.description || 'Maximum' }}</span>
+              <span class="progress-current">
+                <span class="profile-level-inline">
+                  <img
+                    *ngIf="getLevelBadgePath(currentLevel) as badgePath"
+                    [src]="badgePath"
+                    alt=""
+                    class="profile-level-inline__badge"
+                    (error)="onLevelBadgeError($event)"
+                  />
+                  <span>{{ currentLevel?.description || 'Start' }}</span>
+                </span>
+              </span>
+              <span class="progress-next">
+                <ng-container *ngIf="nextLevel; else maximumLevelLabel">
+                  <span class="profile-level-inline profile-level-inline--right">
+                    <img
+                      *ngIf="getLevelBadgePath(nextLevel) as badgePath"
+                      [src]="badgePath"
+                      alt=""
+                      class="profile-level-inline__badge"
+                      (error)="onLevelBadgeError($event)"
+                    />
+                    <span>{{ nextLevel.description }}</span>
+                  </span>
+                </ng-container>
+                <ng-template #maximumLevelLabel>
+                  Maximum
+                </ng-template>
+              </span>
             </div>
             <div class="progress-bar-container">
               <div class="progress-bar" [style.width.%]="progressPercentage"></div>
@@ -195,7 +231,19 @@
             </div>
             <div class="progress-xp-info">
               <span class="xp-current">{{ accumulatedXp || 0 }} XP</span>
-              <span class="xp-needed" *ngIf="nextLevel">{{ nextLevel.min_xp }} XP for {{ nextLevel.description }}</span>
+                <span class="xp-needed" *ngIf="nextLevel">
+                  {{ nextLevel.min_xp }} XP for
+                  <span class="profile-level-inline profile-level-inline--compact">
+                    <img
+                      *ngIf="getLevelBadgePath(nextLevel) as badgePath"
+                      [src]="badgePath"
+                      alt=""
+                      class="profile-level-inline__badge"
+                      (error)="onLevelBadgeError($event)"
+                    />
+                    <span>{{ nextLevel.description }}</span>
+                  </span>
+                </span>
               <span class="xp-needed" *ngIf="!nextLevel">Maximum level reached</span>
             </div>
           </div>
