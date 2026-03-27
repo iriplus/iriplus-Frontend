@@ -199,25 +199,49 @@ export class TuitionsComponent implements OnInit {
 
   get filteredTableData(): TuitionStudent[] {
     let students = this.tuitionData?.students ?? [];
+
     if (this.statusFilter !== 'ALL') {
       students = students.filter((s) => {
-        const status = (s.status ?? '').toLowerCase().replace(/_/g, '');
+        const status = this.normalizeStatus(s.status);
+
         if (this.statusFilter === 'upToDate') return status === 'uptodate';
         if (this.statusFilter === 'delinquent') return status === 'delinquent';
         if (this.statusFilter === 'noData') return status === 'nodata';
+
         return true;
       });
     }
-    const term = this.searchTerm.toLowerCase().trim();
-    if (!term) return students;
-    return students.filter(
-      (s) =>
-        s.fullName.toLowerCase().includes(term) ||
-        (s.name + ' ' + s.surname).toLowerCase().includes(term) ||
-        s.dni.includes(term) ||
-        s.lastPaidMonth.toLowerCase().includes(term) ||
-        s.status.toLowerCase().includes(term.replace(/\s/g, ''))
-    );
+
+    const rawTerm = this.normalizeText(this.searchTerm).trim();
+    const normalizedTerm = this.normalizeStatus(this.searchTerm);
+
+    if (!rawTerm) return students;
+
+    return students.filter((s) => {
+      const fullName = this.normalizeText(s.fullName);
+      const composedName = this.normalizeText(`${s.name ?? ''} ${s.surname ?? ''}`);
+      const dni = this.normalizeText(s.dni);
+      const lastPaidMonth = this.normalizeText(s.lastPaidMonth);
+      const statusLabel = this.normalizeText(this.getStatusLabel(s.status));
+      const normalizedStatus = this.normalizeStatus(s.status);
+
+      return (
+        fullName.includes(rawTerm) ||
+        composedName.includes(rawTerm) ||
+        dni.includes(rawTerm) ||
+        lastPaidMonth.includes(rawTerm) ||
+        statusLabel.includes(rawTerm) ||
+        normalizedStatus.includes(normalizedTerm)
+      );
+    });
+  }
+
+  private normalizeText(value: unknown): string {
+    return String(value ?? '').toLowerCase();
+  }
+
+  private normalizeStatus(value: unknown): string {
+    return this.normalizeText(value).replace(/[\s_]/g, '');
   }
 
   filterTable(): void {
@@ -229,13 +253,12 @@ export class TuitionsComponent implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'upToDate':
-      case 'up_to_date':
+    switch (this.normalizeStatus(status)) {
+      case 'uptodate':
         return 'Up to date';
       case 'delinquent':
         return 'Delinquent';
-      case 'noData':
+      case 'nodata':
         return 'No data';
       default:
         return 'Other';
@@ -243,13 +266,12 @@ export class TuitionsComponent implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'upToDate':
-      case 'up_to_date':
+    switch (this.normalizeStatus(status)) {
+      case 'uptodate':
         return 'tuitions__badge--ok';
       case 'delinquent':
         return 'tuitions__badge--danger';
-      case 'noData':
+      case 'nodata':
       default:
         return 'tuitions__badge--other';
     }
