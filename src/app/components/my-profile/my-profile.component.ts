@@ -87,27 +87,27 @@ export class MyProfileComponent implements OnInit {
     });
   }
   
-loadStudentAcademicData(): void {
-  this.loadLevelsAndCalculateProgress();
+  loadStudentAcademicData(): void {
+    this.loadLevelsAndCalculateProgress();
 
-  if (!this.user.student_class_id) {
-    this.currentClass = null;
-    this.classCapacityPercentage = 0;
-    return;
-  }
-
-  this.classService.getClassById(this.user.student_class_id).subscribe({
-    next: (cls) => {
-      this.currentClass = cls;
-      this.calculateClassCapacity();
-    },
-    error: (err) => {
-      console.error('Error loading class', err);
+    if (!this.user.student_class_id) {
       this.currentClass = null;
       this.classCapacityPercentage = 0;
+      return;
     }
-  });
-}
+
+    this.classService.getClassById(this.user.student_class_id).subscribe({
+      next: (cls) => {
+        this.currentClass = cls;
+        this.calculateClassCapacity();
+      },
+      error: (err) => {
+        console.error('Error loading class', err);
+        this.currentClass = null;
+        this.classCapacityPercentage = 0;
+      }
+    });
+  }
 
   calculateClassCapacity(): void {
     if (!this.currentClass) {
@@ -372,75 +372,76 @@ loadStudentAcademicData(): void {
     this.newPassword = '';
     this.repeatNewPassword = '';
   }
-confirmChangePassword(): void {
-  if (!this.user?.id) {
-    return;
-  }
-
-  this.changePasswordError = '';
-
-  const currentPassword = this.currentPassword?.trim() ?? '';
-  const newPassword = this.newPassword?.trim() ?? '';
-  const repeatNewPassword = this.repeatNewPassword?.trim() ?? '';
-
-  if (!currentPassword || !newPassword || !repeatNewPassword) {
-    this.changePasswordError = 'All password fields are required.';
-    return;
-  }
-
-  if (newPassword !== repeatNewPassword) {
-    this.changePasswordError = 'New passwords do not match.';
-    return;
-  }
-
-  if (currentPassword === newPassword) {
-    this.changePasswordError = 'The new password must be different from the current password.';
-    return;
-  }
-
-  this.authService.changePassword({ currentPassword, newPassword }).subscribe({
-    next: () => {
-      this.closeChangePasswordModal();
-
-      this.notificationService.show({
-        type: 'success',
-        title: 'Password Updated',
-        message: 'Your password was updated successfully. Please sign in again.',
-        autoCloseMs: 5000,
-      });
-
-      this.authService.logout().subscribe({
-        next: () => {
-          this.router.navigate(['/login']);
-        },
-        error: () => {
-          this.router.navigate(['/login']);
-        }
-      });
-    },
-    error: (err) => {
-      const isIncorrectPassword = err?.status === 401;
-
-      this.currentPassword = '';
-      this.newPassword = '';
-      this.repeatNewPassword = '';
-
-      if (isIncorrectPassword) {
-        this.changePasswordError = err.error?.msg || 'Current password is incorrect.';
-        return;
-      }
-
-      this.closeChangePasswordModal();
-
-      this.notificationService.show({
-        type: 'error',
-        title: 'Operation failed',
-        message: err.error?.msg || 'Error updating password. Please try again.',
-        autoCloseMs: 5000,
-      });
+  
+  confirmChangePassword(): void {
+    if (!this.user?.id) {
+      return;
     }
-  });
-}
+
+    this.changePasswordError = '';
+
+    const currentPassword = this.currentPassword?.trim() ?? '';
+    const newPassword = this.newPassword?.trim() ?? '';
+    const repeatNewPassword = this.repeatNewPassword?.trim() ?? '';
+
+    if (!currentPassword || !newPassword || !repeatNewPassword) {
+      this.changePasswordError = 'All password fields are required.';
+      return;
+    }
+
+    if (newPassword !== repeatNewPassword) {
+      this.changePasswordError = 'New passwords do not match.';
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      this.changePasswordError = 'The new password must be different from the current password.';
+      return;
+    }
+
+    this.authService.changePassword({ currentPassword, newPassword }).subscribe({
+      next: () => {
+        this.closeChangePasswordModal();
+
+        this.notificationService.show({
+          type: 'success',
+          title: 'Password Updated',
+          message: 'Your password was updated successfully. Please sign in again.',
+          autoCloseMs: 5000,
+        });
+
+        this.authService.logout().subscribe({
+          next: () => {
+            this.router.navigate(['/login']);
+          },
+          error: () => {
+            this.router.navigate(['/login']);
+          }
+        });
+      },
+      error: (err) => {
+        const isIncorrectPassword = err?.status === 401;
+
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.repeatNewPassword = '';
+
+        if (isIncorrectPassword) {
+          this.changePasswordError = err.error?.msg || 'Current password is incorrect.';
+          return;
+        }
+
+        this.closeChangePasswordModal();
+
+        this.notificationService.show({
+          type: 'error',
+          title: 'Operation failed',
+          message: err.error?.msg || 'Error updating password. Please try again.',
+          autoCloseMs: 5000,
+        });
+      }
+    });
+  }
 
   confirmDeleteAccount(): void {
     this.showDeleteModal = true;
@@ -562,14 +563,29 @@ confirmChangePassword(): void {
   }
 
   refreshClassInfo(classId: number): void {
-  this.classService.getClassById(classId).subscribe({
-    next: (cls) => {
-      this.currentClass = cls;
-      this.calculateClassCapacity();
-    },
-    error: () => {
-      this.currentClass = null;
+    this.classService.getClassById(classId).subscribe({
+      next: (cls) => {
+        this.currentClass = cls;
+        this.calculateClassCapacity();
+      },
+      error: () => {
+        this.currentClass = null;
+      }
+    });
+  }
+
+  getLevelBadgePath(level: Level | null | undefined): string | null {
+    const cosmetic = level?.cosmetic?.trim();
+
+    if (!cosmetic) {
+      return null;
     }
-  });
-}
+
+    return `assets/${cosmetic}.png`;
+  }
+
+  onLevelBadgeError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+  }
 }

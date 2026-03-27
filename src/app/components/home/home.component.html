@@ -150,7 +150,18 @@
                       {{ student.name }}
                       <span class="rank-you" *ngIf="student.isCurrentUser">You</span>
                     </span>
-                    <span class="rank-level">{{ student.levelName }}</span>
+                    <span class="rank-level">
+                      <span class="home-level-inline">
+                        <img
+                          *ngIf="getLevelBadgePath(student.levelName) as badgePath"
+                          [src]="badgePath"
+                          alt=""
+                          class="home-level-inline__badge"
+                          (error)="onLevelBadgeError($event)"
+                        />
+                        <span class="home-level-inline__text">{{ student.levelName }}</span>
+                      </span>
+                    </span>
                   </div>
                   <span class="rank-points">{{ student.xp | number }} XP</span>
               </li>
@@ -256,7 +267,18 @@
             <div class="student-progress-summary">
               <div class="student-progress-kpi">
                 <span class="student-progress-kpi__label">Current level</span>
-                <span class="student-progress-kpi__value">{{ studentProgress.currentLevelName }}</span>
+                <span class="student-progress-kpi__value student-progress-kpi__value--level">
+                  <span class="home-level-inline">
+                    <img
+                      *ngIf="getLevelBadgePath(studentProgress.currentLevelName) as badgePath"
+                      [src]="badgePath"
+                      alt=""
+                      class="home-level-inline__badge"
+                      (error)="onLevelBadgeError($event)"
+                    />
+                    <span class="home-level-inline__text">{{ studentProgress.currentLevelName }}</span>
+                  </span>
+                </span>
               </div>
 
               <div class="student-progress-kpi">
@@ -272,8 +294,17 @@
 
             <div class="progress-block student-progress-block">
               <div class="progress-row">
-                <span class="progress-label">
-                  {{ studentProgress.currentLevelName }}
+                <span class="progress-label progress-label--level">
+                  <span class="home-level-inline">
+                    <img
+                      *ngIf="getLevelBadgePath(studentProgress.currentLevelName) as badgePath"
+                      [src]="badgePath"
+                      alt=""
+                      class="home-level-inline__badge"
+                      (error)="onLevelBadgeError($event)"
+                    />
+                    <span class="home-level-inline__text">{{ studentProgress.currentLevelName }}</span>
+                  </span>
                 </span>
                 <span class="progress-value">
                   {{ studentProgress.currentXp | number }} / {{ studentProgress.nextLevelXp | number }} XP
@@ -290,7 +321,18 @@
               <p class="student-progress-hint">
                 <ng-container *ngIf="studentProgress.nextLevelName; else maxLevelReached">
                   You need <strong>{{ xpToNextLevel | number }} XP</strong> to reach
-                  <strong>{{ studentProgress.nextLevelName }}</strong>.
+                  <strong>
+                    <span class="home-level-inline">
+                      <img
+                        *ngIf="getLevelBadgePath(studentProgress.nextLevelName) as badgePath"
+                        [src]="badgePath"
+                        alt=""
+                        class="home-level-inline__badge"
+                        (error)="onLevelBadgeError($event)"
+                      />
+                      <span class="home-level-inline__text">{{ studentProgress.nextLevelName }}</span>
+                    </span>
+                  </strong>.
                 </ng-container>
                 <ng-template #maxLevelReached>
                   You are already at the highest available level.
@@ -476,7 +518,18 @@
 
                 <div class="rank-content">
                   <span class="rank-name">{{ student.name }}</span>
-                  <span class="rank-level">{{ student.levelName }}</span>
+                  <span class="rank-level">
+                    <span class="home-level-inline">
+                      <img
+                        *ngIf="getLevelBadgePath(student.levelName) as badgePath"
+                        [src]="badgePath"
+                        alt=""
+                        class="home-level-inline__badge"
+                        (error)="onLevelBadgeError($event)"
+                      />
+                      <span class="home-level-inline__text">{{ student.levelName }}</span>
+                    </span>
+                  </span>
                 </div>
 
                 <span class="rank-points">{{ student.xp | number }} XP</span>

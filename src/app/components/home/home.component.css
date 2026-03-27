@@ -208,6 +208,34 @@
   box-shadow: 0 4px 12px rgba(var(--color-slate-rgb), 0.22);
 }
 
+.home-level-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  vertical-align: middle;
+}
+
+.home-level-inline__badge {
+  width: 46px;
+  height: 52px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.rank-level .home-level-inline__badge {
+  width: 23px;
+  height: auto;
+  max-height: 26px;
+}
+
+.home-level-inline__text {
+  min-width: 0;
+  color: inherit;
+}
+
 /* Leaderboard list */
 .rank-list {
   margin: 0;
@@ -286,6 +314,8 @@
 }
 
 .rank-level {
+  display: inline-flex;
+  align-items: center;
   color: var(--color-text-muted);
   font-size: 13px;
   font-weight: 600;
@@ -395,6 +425,12 @@
   font-size: 18px;
   font-weight: 900;
   color: var(--color-text);
+}
+
+.student-progress-kpi__value--level,
+.progress-label--level {
+  display: inline-flex;
+  align-items: center;
 }
 
 .student-progress-block {
