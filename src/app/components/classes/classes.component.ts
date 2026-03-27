@@ -185,10 +185,6 @@ export class ClassesComponent implements OnInit {
     this.deleteClass(classId);
   }
 
-  viewClass(classData: Class): void {
-    console.log('View class clicked: ', classData);
-  }
-
   filterClasses(): void {
     const term = this.searchText.toLowerCase().trim();
     if (!term) {

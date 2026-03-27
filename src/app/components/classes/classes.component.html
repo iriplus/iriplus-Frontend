@@ -72,7 +72,7 @@
             <th>Suggested Level</th>
             <th>Capacity</th>
             <th>Teachers</th>
-            <th>Actions</th>
+            <th *ngIf="isCoordinator">Actions</th>
           </tr>
         </thead>
 
@@ -111,8 +111,8 @@
               </div>
             </td>
 
-            <td>
-              <div class="app-actions-cell" *ngIf="isCoordinator">
+            <td *ngIf="isCoordinator">
+              <div class="app-actions-cell">
                 <button
                   type="button"
                   class="app-icon-btn app-icon-btn--edit"
@@ -140,16 +140,6 @@
                     <line x1="10" x2="10" y1="11" y2="17"></line>
                     <line x1="14" x2="14" y1="11" y2="17"></line>
                   </svg>
-                </button>
-              </div>
-
-              <div class="app-actions-cell classes__single-action" *ngIf="isTeacher">
-                <button
-                  type="button"
-                  class="btn-outline btn-rounded classes__view-btn"
-                  (click)="viewClass(c)"
-                >
-                  View Class
                 </button>
               </div>
             </td>
