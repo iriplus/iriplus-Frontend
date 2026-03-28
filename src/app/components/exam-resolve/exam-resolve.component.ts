@@ -11,7 +11,8 @@ import {
   ExamExerciseInstanceDTO,
   ExamItemDTO,
   SubmitStudentExamPayload,
-  SubmitStudentExamResponse
+  SubmitStudentExamResponse,
+  Status
 } from '../../interfaces/exam.interface';
 import { NotificationService } from '../../services/notification.service';
 import {
@@ -43,6 +44,8 @@ interface ResolveExerciseView {
   styleUrl: './exam-resolve.component.css'
 })
 export class ExamResolveComponent implements OnInit, PendingChangesComponent {
+  readonly Status = Status;
+
   studentName = '';
   exam: ExamDTO | null = null;
   examId: number | null = null;
@@ -97,6 +100,11 @@ export class ExamResolveComponent implements OnInit, PendingChangesComponent {
 
     this.examService.getFullExam(examId).subscribe({
       next: (exam) => {
+        if (exam.status !== Status.STUDENT_EXAM) {
+          this.errorMessage = "This exam is not available for resolution"
+          this.loading = false;
+          return;
+        }
         this.exam = exam;
         const exercises = exam.exercises?.length
           ? exam.exercises
@@ -115,7 +123,6 @@ export class ExamResolveComponent implements OnInit, PendingChangesComponent {
             items: exercise.items.map((item) => this.buildResolveItem(item))
           };
         });
-
         this.loading = false;
       },
       error: () => {
@@ -229,7 +236,7 @@ export class ExamResolveComponent implements OnInit, PendingChangesComponent {
     this.openConfirmDialog({
       action: 'leave-generate-exam',
       title: 'Leave exam?',
-      message: 'If you leave now, this generated exam will be deleted. Are you sure you want to leave?',
+      message: 'If you leave now, this exam will be deleted and your progress will be lost. Are you sure you want to leave?',
       confirmText: 'Leave page',
       cancelText: 'Stay here',
       variant: 'danger',
@@ -278,7 +285,7 @@ export class ExamResolveComponent implements OnInit, PendingChangesComponent {
       this.leaveConfirmation$ = undefined;
     };
 
-    if (examId == null) {
+    if (examId == null || !this.exam || this.exam.status !== Status.STUDENT_EXAM) {
       finishNavigation();
       return;
     }
@@ -301,11 +308,11 @@ export class ExamResolveComponent implements OnInit, PendingChangesComponent {
       return false;
     }
 
-    if (this.submitting) {
-      return true;
+    if (!this.exam) {
+      return false;
     }
 
-    return this.examId !== null;
+    return this.exam.status === Status.STUDENT_EXAM && !this.submitting;
   }
 
   private openConfirmDialog(config: Omit<ConfirmDialogState, 'open'>): void {

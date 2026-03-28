@@ -291,18 +291,16 @@
                 type="button"
                 (click)="onReviseExam()"
               >
-                Revise Exam
+                {{ reviseActionLabel }}
               </button>
-
               <button
                 *ngIf="canReview"
                 class="btn-primary btn-rounded"
                 type="button"
                 (click)="onReviewExam()"
               >
-                Review Exam
+                {{ reviewActionLabel }}
               </button>
-
               <div class="view-exam__export" *ngIf="canExport">
                 <button
                   class="btn-outline btn-rounded view-exam__export-trigger"

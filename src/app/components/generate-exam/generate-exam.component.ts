@@ -122,7 +122,7 @@ export class GenerateExamComponent implements OnInit, PendingChangesComponent {
       return '—';
     }
 
-    return this.generatedExam.status === 'Generating'
+    return this.generatedExam.status === Status.GENERATING
       ? 'Draft'
       : this.generatedExam.status;
   }
@@ -416,6 +416,10 @@ generateExam(): void {
       return;
     }
 
+    if (this.generatedExam.status !== Status.GENERATING && this.generatedExam.status !== Status.ON_CORRECTION) {
+      return;
+    }
+
     const feedback = this.changeRequest.value.trim();
 
     if (!feedback) {
@@ -549,7 +553,7 @@ generateExam(): void {
     this.openConfirmDialog({
       action: 'leave-generate-exam',
       title: 'Leave generated exam?',
-      message:'If you leave the page now, you may not be able to retrieve the generated exam. Are you sure you want to leave?',
+      message:'If you leave the page now, the generated draft will be deleted and you will lose your unsaved work. Are you sure you want to leave?',
       confirmText: 'Leave page',
       cancelText: 'Stay here',
       variant: 'danger',
@@ -702,7 +706,7 @@ generateExam(): void {
     }
 
     if (this.step === 'preview' && !!this.generatedExam) {
-      return this.generatedExam.status === 'Generating';
+      return this.generatedExam.status === Status.GENERATING;
     }
 
     return false;

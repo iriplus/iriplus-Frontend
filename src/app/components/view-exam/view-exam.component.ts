@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ExamService } from '../../services/exam.service';
 import { AuthService } from '../../services/auth.service';
-import { ExamDTO, ExamItemDTO, ExamReviewDTO } from '../../interfaces/exam.interface';
+import { ExamDTO, ExamItemDTO, ExamReviewDTO, Status } from '../../interfaces/exam.interface';
 import { UserType } from '../../interfaces/user.interface';
 
 @Component({
@@ -14,6 +14,8 @@ import { UserType } from '../../interfaces/user.interface';
 })
 
 export class ViewExamComponent implements OnInit {
+  readonly Status = Status;
+
   exam: ExamDTO | null = null;
   examReview: ExamReviewDTO | null = null;
 
@@ -30,22 +32,32 @@ export class ViewExamComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCurrentUser();
-    this.loadExam();
+    this.initializePage();
   }
 
-  loadCurrentUser(): void {
+  private initializePage(): void {
+    const cachedUser = this.authService.getCurrentUser();
+
+    if (cachedUser) {
+      this.userType = this.normalizeUserType(cachedUser.type);
+      this.loadExam();
+      return;
+    }
+
     this.authService.loadMe().subscribe({
       next: (user) => {
         if (!user) {
+          this.loading = false;
           this.error = 'Unable to load current user.';
           return;
         }
 
         this.userType = this.normalizeUserType(user.type);
+        this.loadExam();
       },
       error: (err) => {
         console.error('Error loading current user:', err);
+        this.loading = false;
         this.error = 'Error loading current user.';
       }
     });
@@ -55,7 +67,7 @@ export class ViewExamComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     const examId = Number(idParam);
 
-    if (!idParam || Number.isNaN(examId)) {
+    if (!idParam || Number.isNaN(examId) || examId <= 0) {
       this.loading = false;
       this.error = 'Invalid exam id.';
       return;
@@ -66,33 +78,32 @@ export class ViewExamComponent implements OnInit {
     this.exam = null;
     this.examReview = null;
 
-    const examStatus = history.state?.['examStatus'] as string | undefined;
+    this.examService.getFullExam(examId).subscribe({
+      next: (response: ExamDTO) => {
+        if (this.isStudent && response.status === Status.SOLVED) {
+          this.examService.getExamReview(examId).subscribe({
+            next: (reviewResponse: ExamReviewDTO) => {
+              this.examReview = reviewResponse;
+              this.loading = false;
+            },
+            error: (err) => {
+              console.error('Error loading exam review:', err);
+              this.error = 'We could not load the exam correction. Please try again.';
+              this.loading = false;
+            }
+          });
+          return;
+        }
 
-    if (examStatus === 'Solved') {
-      this.examService.getExamReview(examId).subscribe({
-        next: (response: ExamReviewDTO) => {
-          this.examReview = response;
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error loading exam review:', err);
-          this.error = 'We could not load the exam correction. Please try again.';
-          this.loading = false;
-        }
-      });
-    } else {
-      this.examService.getFullExam(examId).subscribe({
-        next: (response: ExamDTO) => {
-          this.exam = response;
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error loading full exam:', err);
-          this.error = 'We could not load the exam. Please try again.';
-          this.loading = false;
-        }
-      });
-    }
+        this.exam = response;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading full exam:', err);
+        this.error = 'We could not load the exam. Please try again.';
+        this.loading = false;
+      }
+    });
   }
 
   get isStudent(): boolean {
@@ -125,17 +136,38 @@ export class ViewExamComponent implements OnInit {
 
   get canRevise(): boolean {
     const status = this.exam?.status ?? this.examReview?.status;
-    return this.isTeacher && this.normalizeStatus(status) === 'pending correction';
+    return this.isTeacher && (
+      status === Status.PENDING_CORRECTION ||
+      status === Status.ON_CORRECTION
+    );
   }
 
   get canReview(): boolean {
     const status = this.exam?.status ?? this.examReview?.status;
-    return this.isCoordinator && this.normalizeStatus(status) === 'pending review';
+    return this.isCoordinator && (
+      status === Status.PENDING_REVIEW ||
+      status === Status.ON_REVIEW
+    );
+  }
+
+  get reviseActionLabel(): string {
+    if (this.exam?.status === Status.ON_CORRECTION) {
+      return 'Continue Revision';
+    }
+
+    return 'Revise Exam';
+  }
+
+  get reviewActionLabel(): string {
+    if (this.exam?.status === Status.ON_REVIEW) {
+      return 'Continue Review';
+    }
+
+    return 'Review Exam';
   }
 
   get canExport(): boolean {
-    const status = this.exam?.status ?? this.examReview?.status;
-    return !this.isStudent && this.normalizeStatus(status) === 'accepted';
+    return !this.isStudent && this.exam?.status === Status.ACCEPTED;
   }
 
   get pageEyebrow(): string {
@@ -237,11 +269,49 @@ export class ViewExamComponent implements OnInit {
   }
 
   onReviseExam(): void {
-    console.log('Revise Exam clicked');
+    if (!this.exam) {
+      return;
+    }
+
+    if (this.exam.status === Status.PENDING_CORRECTION) {
+      this.examService.setOnCorrection(this.exam.id).subscribe({
+        next: () => {
+          this.router.navigate(['/exam-revise', this.exam!.id]);
+        },
+        error: (err) => {
+          console.error('Error setting exam on correction:', err);
+          this.error = 'We could not open the exam revision. Please try again.';
+        }
+      });
+      return;
+    }
+
+    if (this.exam.status === Status.ON_CORRECTION) {
+      this.router.navigate(['/exam-revise', this.exam.id]);
+    }
   }
 
   onReviewExam(): void {
-    console.log('Review Exam clicked');
+    if (!this.exam) {
+      return;
+    }
+
+    if (this.exam.status === Status.PENDING_REVIEW) {
+      this.examService.setOnReview(this.exam.id).subscribe({
+        next: () => {
+          this.router.navigate(['/exam-review', this.exam!.id]);
+        },
+        error: (err) => {
+          console.error('Error setting exam on review:', err);
+          this.error = 'We could not open the exam review. Please try again.';
+        }
+      });
+      return;
+    }
+
+    if (this.exam.status === Status.ON_REVIEW) {
+      this.router.navigate(['/exam-review', this.exam.id]);
+    }
   }
 
   get exportExamId(): number {
@@ -270,10 +340,6 @@ export class ViewExamComponent implements OnInit {
 
   trackByIndex(index: number): number {
     return index;
-  }
-
-  private normalizeStatus(status: string | undefined): string {
-    return (status || '').trim().toLowerCase();
   }
 
   private normalizeUserType(value: unknown): UserType {

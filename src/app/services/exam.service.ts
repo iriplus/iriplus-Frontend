@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ExamDTO, ExamReviewDTO, SubmitStudentExamPayload, SubmitStudentExamResponse } from '../interfaces/exam.interface';
 
@@ -84,16 +84,6 @@ export class ExamService {
 
   deleteExam(examId: number): Observable<any> {
     return this.http.delete<any>(`${this.EXAM_URL}/${examId}`, { withCredentials: true });
-  }
-
-
-  leaveReview(examId: number): Observable<any> {
-  return this.http.patch(`${this.EXAM_URL}/${examId}/leave-review`,{},{ withCredentials: true });
-  }
-
-
-  leaveCorrection(examId: number): Observable<any> {
-    return this.http.patch(`${this.EXAM_URL}/${examId}/leave-correction`,{},{ withCredentials: true });
   }
 
 
