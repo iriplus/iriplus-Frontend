@@ -380,37 +380,28 @@
             <td>
               <div class="exams-actions" *ngIf="isCoordinator">
                 <button
-                  *ngIf="exam.status === 'Pending Review' && (!exam.coordinator_id || exam.coordinator_id === currentUserId)"
-                  class="btn-action btn-review"
-                  (click)="assignExam(exam.id)"
+                  class="btn-action"
+                  [ngClass]="getCoordinatorActionClass(exam)"
+                  (click)="openCoordinatorExam(exam)"
                 >
-                  {{ exam.coordinator_id === currentUserId ? 'Continue Review' : 'Review' }}
-                </button>
-
-                <button
-                  *ngIf="exam.status !== 'Pending Review'"
-                  class="btn-action btn-view"
-                  (click)="viewExam(exam.id)"
-                >
-                  View Exam
+                  {{ getCoordinatorActionLabel(exam) }}
                 </button>
               </div>
               <div class="exams-actions" *ngIf="isTeacher">
                 <button
                   class="btn-action"
-                  [ngClass]="exam.status === 'Pending Correction' ? 'btn-revise' : 'btn-view'"
+                  [ngClass]="getTeacherActionClass(exam)"
                   (click)="openTeacherExam(exam)"
                 >
                   {{ getTeacherActionLabel(exam) }}
                 </button>
               </div>
-
               <div class="exams-actions" *ngIf="isStudent">
                 <button
                   class="btn-action btn-view"
                   (click)="openStudentExam(exam)"
                 >
-                  {{ exam.status === 'Solved' ? 'View Correction' : 'View Exam' }}
+                  {{ exam.status === Status.SOLVED ? 'View Correction' : 'View Exam' }}
                 </button>
               </div>
             </td>

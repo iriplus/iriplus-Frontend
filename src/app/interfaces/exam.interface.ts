@@ -5,7 +5,9 @@ export enum Status {
   PENDING_CORRECTION = 'Pending Correction',
   ON_CORRECTION = 'On Correction',
   STUDENT_EXAM = 'Student Exam',
-  GENERATING = 'Generating'
+  GENERATING = 'Generating',
+  TEST_EXAM = 'Test Exam',
+  SOLVED = 'Solved'
 }
 
 export interface ExamItemDTO {
@@ -42,7 +44,7 @@ export interface SubmitStudentExamResponse {
 
 export interface ExamDTO {
   id: number;
-  status: string;
+  status: Status;
   context: string;
   class_id: number;
   exercises: ExamExerciseInstanceDTO[];
@@ -102,7 +104,7 @@ export interface ExamReviewScoreDetailDTO {
 
 export interface ExamReviewDTO {
   id: number;
-  status: string;
+  status: Status;
   score: number;
   xp_gained?: number;
   context: string;

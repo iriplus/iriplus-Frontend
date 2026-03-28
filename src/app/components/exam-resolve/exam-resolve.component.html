@@ -8,14 +8,14 @@
 
     <div *ngIf="!loading && errorMessage" class="resolve-exam__error">
       <p>{{ errorMessage }}</p>
-      <button class="btn-outline btn-rounded" type="button" (click)="goBackToExams()">
+      <button class="btn-outline btn-rounded" type="button" (click)="goBackToExams()" [disabled]="submitting">
         ← Back to exams
       </button>
     </div>
 
     <ng-container *ngIf="!loading && !errorMessage && exam">
       <div class="resolve-exam__topbar">
-        <button class="btn-outline btn-rounded" type="button" (click)="goBackToExams()">
+        <button class="btn-outline btn-rounded" type="button" (click)="goBackToExams()" [disabled]="submitting">
           ← Back to exams
         </button>
 

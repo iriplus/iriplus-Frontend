@@ -15,12 +15,12 @@
 
       <!-- Top Bar -->
       <div class="exam-review__topbar">
-        <button class="btn-outline btn-rounded" (click)="confirmLater()" type="button">
+        <button class="btn-outline btn-rounded" (click)="openLater()" type="button">
           ← Back to exams
         </button>
 
         <div class="exam-review__topbar-right">
-          <span class="exam-review__status" [ngClass]="{ 'pulse': exam.status === 'On Review' }">
+          <span class="exam-review__status" [ngClass]="{ 'pulse': exam.status === Status.ON_REVIEW}">
             <span class="exam-review__status-dot"></span>
             {{ getStatusLabel(exam.status) }}
           </span>
@@ -113,7 +113,7 @@
       </section>
 
       <!-- Action bar -->
-      <div class="exam-review__actionbar" *ngIf="exam.status === 'On Review' || exam.status === 'Pending Review'">
+      <div class="exam-review__actionbar" *ngIf="exam.status === Status.ON_REVIEW">
         <div class="exam-review__action-hint"><i class="bi bi-exclamation-triangle-fill"></i>
            <span>You are reviewing this exam. Select an action.</span>
         </div>

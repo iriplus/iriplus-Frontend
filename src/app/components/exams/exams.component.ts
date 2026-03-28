@@ -17,7 +17,7 @@ interface ExamListItem {
   score?: number | null;
   exp_gained?: number | null;
   date_created: string;
-  status: string;
+  status: Status;
 }
 
 @Component({
@@ -29,6 +29,8 @@ interface ExamListItem {
 })
 
 export class ExamsComponent implements OnInit {
+  readonly Status = Status;
+
   exams: ExamListItem[] = [];
   filteredExams: ExamListItem[] = [];
   errorMessage = '';
@@ -93,19 +95,19 @@ export class ExamsComponent implements OnInit {
   }
 
   get pendingExams(): number {
-    return this.exams.filter(e => e.status === 'Pending Review').length;
+    return this.exams.filter(e => e.status === Status.PENDING_REVIEW).length;
   }
 
   get onReviewExams(): number {
-    return this.exams.filter(e => e.status === 'On Review').length;
+    return this.exams.filter(e => e.status === Status.ON_REVIEW).length;
   }
 
   get pendingCorrectionExams(): number {
-    return this.exams.filter(e => e.status === 'Pending Correction').length;
+    return this.exams.filter(e => e.status === Status.PENDING_CORRECTION).length;
   }
 
   get acceptedExams(): number {
-    return this.exams.filter(e => e.status === 'Accepted').length;
+    return this.exams.filter(e => e.status === Status.ACCEPTED).length;
   }
 
   get averageScore(): number {
@@ -271,10 +273,6 @@ export class ExamsComponent implements OnInit {
     });
   }
 
-  viewExam(examId: number): void {
-    this.router.navigate([`/view-exam/${examId}`]);
-  }
-
   buildClasses(): void {
     const uniqueClasses = [
       ...new Set(
@@ -350,35 +348,90 @@ export class ExamsComponent implements OnInit {
     return name ? name.charAt(0).toUpperCase() : 'U';
   }
 
+  getCoordinatorActionLabel(exam: ExamListItem): string {
+    if (exam.status === Status.PENDING_REVIEW) {
+      return 'Review Exam';
+    }
+
+    if (exam.status === Status.ON_REVIEW) {
+      return 'Continue Review';
+    }
+
+    return 'View Exam';
+  }
+
+  getCoordinatorActionClass(exam: ExamListItem): string {
+    if (exam.status === Status.PENDING_REVIEW || exam.status === Status.ON_REVIEW) {
+      return 'btn-review';
+    }
+
+    return 'btn-view';
+  }
+
+  openCoordinatorExam(exam: ExamListItem): void {
+    if (exam.status === Status.PENDING_REVIEW) {
+      this.examService.setOnReview(exam.id).subscribe({
+        next: () => {
+          this.router.navigate(['/exam-review', exam.id]);
+        },
+        error: (err) => {
+          console.error('Error setting exam on review:', err);
+          this.errorMessage = 'Error opening exam review.';
+        }
+      });
+      return;
+    }
+
+    if (exam.status === Status.ON_REVIEW) {
+      this.router.navigate(['/exam-review', exam.id]);
+      return;
+    }
+
+    this.router.navigate([`/view-exam/${exam.id}`]);
+  }
+
   getTeacherActionLabel(exam: ExamListItem): string {
-    return exam.status === 'Pending Correction' ? 'Revise Exam' : 'View Exam';
+    if (exam.status === Status.PENDING_CORRECTION) {
+      return 'Revise Exam';
+    }
+
+    if (exam.status === Status.ON_CORRECTION) {
+      return 'Continue Revision';
+    }
+
+    return 'View Exam';
   }
 
-  assignExam(id: number): void {
-    this.examService.setOnReview(id).subscribe({
-      next: () => {
-        this.router.navigate(['/exam-review', id]);
-      },
-      error: (err) => {
-        console.error('Error assigning exam:', err);
-        this.errorMessage = 'Error assigning exam.';
-      }
-    });
-  }
+  getTeacherActionClass(exam: ExamListItem): string {
+    if (
+      exam.status === Status.PENDING_CORRECTION ||
+      exam.status === Status.ON_CORRECTION
+    ) {
+      return 'btn-revise';
+    }
 
-  continueReview(id: number): void {
-    this.router.navigate(['/exam-review', id]);
+    return 'btn-view';
   }
-
+  
   openTeacherExam(exam: ExamListItem): void {
     if (exam.status === Status.PENDING_CORRECTION) {
       this.examService.setOnCorrection(exam.id).subscribe({
         next: () => {
           this.router.navigate([`/exam-revise/${exam.id}`]);
+        },
+        error: (err) => {
+          console.error('Error setting exam on correction:', err);
+          this.errorMessage = 'Error opening exam revision.';
         }
       });
       return;
     }
+
+    if (exam.status === Status.ON_CORRECTION) {
+      this.router.navigate([`/exam-revise/${exam.id}`]);
+      return;
+    }
+
     this.router.navigate([`/view-exam/${exam.id}`]);
   }
 
@@ -390,21 +443,21 @@ export class ExamsComponent implements OnInit {
     this.router.navigate(['/generate-exam-student']);
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(status: Status): string {
     switch (status) {
-      case 'Pending Review':
+      case Status.PENDING_REVIEW:
         return 'status-pending';
-      case 'On Review':
+      case Status.ON_REVIEW:
         return 'status-review';
-      case 'Accepted':
+      case Status.ACCEPTED:
         return 'status-accepted';
-      case 'Pending Correction':
+      case Status.PENDING_CORRECTION:
         return 'status-correction';
-      case 'On Correction':
+      case Status.ON_CORRECTION:
         return 'status-on-correction';
-      case 'Test Exam':
+      case Status.TEST_EXAM:
         return 'status-test';
-      case 'Student Exam':
+      case Status.STUDENT_EXAM:
         return 'status-student';
       default:
         return 'status-default';
