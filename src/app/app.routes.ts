@@ -25,6 +25,8 @@ import { TuitionsComponent } from './components/tuitions/tuitions.component';
 import { WritingReviewComponent } from './components/writing-review/writing-review.component';
 import { ExercisesComponent } from './components/exercises/exercises.component';
 import { PendingChangesGuard } from './guards/can-deactivate.guard';
+import { Status } from './interfaces/exam.interface';
+import { examStatusGuard } from './guards/exam-status.guard';
 
 export const routes: Routes = [
   {
@@ -84,21 +86,30 @@ export const routes: Routes = [
       {
         path: 'exam-review/:id',
         component: ExamReviewComponent,
-        canActivate: [roleGuard],
-        data: { allowedRoles: [UserType.COORDINATOR] }
+        canActivate: [roleGuard, examStatusGuard],
+        data: { 
+          allowedRoles: [UserType.COORDINATOR],
+          allowedExamStatuses: [Status.ON_REVIEW]
+        }
       },
       {
         path: 'exam-revise/:id',
         component: ExamReviseComponent,
-        canActivate: [roleGuard],
-        data: { allowedRoles: [UserType.TEACHER] }
+        canActivate: [roleGuard, examStatusGuard],
+        data: { 
+          allowedRoles: [UserType.TEACHER],
+          allowedExamStatuses: [Status.ON_CORRECTION]
+        }
       },
       {
         path: 'exam-resolve/:id',
         component: ExamResolveComponent,
-        canActivate: [roleGuard],
+        canActivate: [roleGuard, examStatusGuard],
         canDeactivate: [PendingChangesGuard],
-        data: { allowedRoles: [UserType.STUDENT] }
+        data: { 
+          allowedRoles: [UserType.STUDENT],
+          allowedExamStatuses: [Status.STUDENT_EXAM]
+        }
       },
       {
         path: 'writing-review',
