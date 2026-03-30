@@ -36,7 +36,6 @@ export class WritingReviewComponent {
       return;
     }
 
-    // Prevent new submissions once feedback is already available
     if (this.feedback) {
       return;
     }
@@ -47,6 +46,7 @@ export class WritingReviewComponent {
     if (!trimmedPrompt || !trimmedSubmission) {
       this.errorMessage =
         'Please fill in both the exercise prompt and your writing.';
+
       this.notificationService.show({
         type: 'error',
         title: 'Missing information',
@@ -110,7 +110,8 @@ export class WritingReviewComponent {
   }
 
   onPrint(): void {
-    window.print();
+    requestAnimationFrame(() => {
+      window.print();
+    });
   }
 }
-
