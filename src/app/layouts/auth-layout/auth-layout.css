@@ -8,6 +8,26 @@
 /* Left panel */
 .auth-left {
   flex: 3; /*0*/
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-left-image {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(39, 83, 47, 0.7) 0%,
+      rgba(79, 102, 61, 0.62) 20%,
+      rgba(158, 178, 143, 0.5) 75%
+    ),
+    url("/assets/auth.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-blend-mode: multiply;
+  filter: grayscale(30%) saturate(70%) contrast(95%);
 }
 
 /* Right panel */
