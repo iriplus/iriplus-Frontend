@@ -13,6 +13,7 @@ import { Status } from '../../interfaces/exam.interface';
   styleUrl: './exam-review.component.css',
 })
 export class ExamReviewComponent {
+  readonly Status = Status;
   examId!: number;
 
   loading = true;
@@ -74,19 +75,15 @@ ngOnInit(): void {
   }
 
   fetchFullExam(): void {
-  console.log('Fetching full exam with id:', this.examId);
-
   this.examService.getFullExam(this.examId).subscribe({
     next: (data) => {
-      console.log('FULL EXAM RESPONSE:', data);
-
+      if (data.status !== Status.ON_REVIEW) {
+        this.errorMessage = 'This exam is not currently on review';
+        this.loading = false;
+        return;
+      }
       this.exam = this.mapHeader(data);
       this.sections = this.mapSections(data);
-
-      console.log('Mapped header:', this.exam);
-      console.log('Mapped sections:', this.sections);
-      console.log("notas", this.exam.notes)
-
       this.loading = false;
     },
     error: (err) => {
@@ -99,9 +96,15 @@ ngOnInit(): void {
 
   // ====== BOTONES ======
 
-  openAccept(): void { this.showAcceptModal = true; }
-  openCorrections(): void { this.showCorrectionModal = true; }
-  openLater(): void {console.log('openLater clicked'); console.log('status actual:', this.exam?.status); this.showLaterModal = true;}
+  openAccept(): void { 
+    this.showAcceptModal = true; 
+  }
+  openCorrections(): void { 
+    this.showCorrectionModal = true; 
+  }
+  openLater(): void {
+    this.showLaterModal = true;
+  }
 
   confirmAccept(): void {
   if (!this.examId) return;
@@ -134,18 +137,8 @@ ngOnInit(): void {
 }
 
 confirmLater(): void {
-  if (!this.examId) return;
-  
-  this.examService.leaveReview(this.examId).subscribe({
-    next: () => {
-      this.showLaterModal = false;
-      this.router.navigate(['/exam']); 
-    },
-    error: (err) => {
-      console.error('Error leaving review:', err);
-      this.errorMessage = 'No se pudo dejar el examen pendiente de revisión';
-    }
-  });
+  this.showLaterModal = false;
+  this.router.navigate(['/exam'])
 }
 
 private mapHeader(full: any) {
@@ -161,6 +154,7 @@ private mapHeader(full: any) {
     status: full.status,
     reviewerName: full.coordinator_full_name ?? '',
     notes: full.notes ?? '',
+    coordinator_id: full.coordinator_id ?? null,
   };
 }
   
@@ -181,13 +175,18 @@ private mapSections(full: any): any[] {
     return String.fromCharCode(65 + index);
   }
 
-  getStatusLabel(status: string) {
+  getStatusLabel(status: Status): string {
     switch (status) {
-      case 'Pending Review': return 'Pendiente Revisión';
-      case 'On Review': return 'En Revisión';
-      case 'Accepted': return 'Aceptado';
-      case 'Pending Correction': return 'Pendiente Corrección';
-      default: return status;
+      case Status.PENDING_REVIEW:
+        return 'Pending Review';
+      case Status.ON_REVIEW:
+        return 'On Review';
+      case Status.ACCEPTED:
+        return 'Accepted';
+      case Status.PENDING_CORRECTION:
+        return 'Pending Correction';
+      default:
+        return status;
     }
   }
 }

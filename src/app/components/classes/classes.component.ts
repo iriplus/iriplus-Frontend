@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClassService } from '../../services/class.service';
@@ -17,7 +17,8 @@ import { ConfirmDialogComponent } from '../ui/confirm-dialog/confirm-dialog.comp
   templateUrl: './classes.component.html',
   styleUrls: ['./classes.component.css']
 })
-export class ClassesComponent implements OnInit {
+
+export class ClassesComponent implements OnInit, AfterViewInit {
   selectedClass: Class | null = null;
   classes: Class[] = [];
   filteredClasses: Class[] = [];
@@ -59,8 +60,10 @@ export class ClassesComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.getUserType()
     this.currentUserId = this.authService.getCurrentUserId();
-
     this.loadClasses();
+  }
+
+  ngAfterViewInit(): void {
     this.registerModalReset();
   }
 
@@ -161,6 +164,20 @@ export class ClassesComponent implements OnInit {
     });
   }
 
+  openNewClass(): void {
+    if (!this.isCoordinator) {
+      return;
+    }
+
+    this.selectedClass = null;
+
+    const modalEl = document.getElementById('newClassModal');
+    if (modalEl) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+    }
+  }
+
   openDeleteConfirm(classData: Class): void {
     if (!this.isCoordinator) {
       return;
@@ -183,10 +200,6 @@ export class ClassesComponent implements OnInit {
     const classId = this.classToDelete.id;
     this.closeDeleteConfirm();
     this.deleteClass(classId);
-  }
-
-  viewClass(classData: Class): void {
-    console.log('View class clicked: ', classData);
   }
 
   filterClasses(): void {

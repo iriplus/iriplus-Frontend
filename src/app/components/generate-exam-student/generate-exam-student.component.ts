@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { ExamService } from '../../services/exam.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../services/auth.service';
 import { Exercise } from '../../interfaces/exercise.interface';
+import { PendingChangesComponent } from '../../guards/can-deactivate.guard';
 
 type Step = 'form' | 'loading';
 
@@ -17,7 +17,7 @@ type Step = 'form' | 'loading';
   templateUrl: './generate-exam-student.component.html',
   styleUrl: './generate-exam-student.component.css'
 })
-export class GenerateExamStudentComponent implements OnInit {
+export class GenerateExamStudentComponent implements OnInit, PendingChangesComponent {
   step: Step = 'form';
   exerciseTypes: Exercise[] = [];
   classId: number | null = null;
@@ -25,12 +25,16 @@ export class GenerateExamStudentComponent implements OnInit {
 
   form: FormGroup;
 
+  private allowImmediateNavigation = false;
+  private generationCancelled = false;
+  private generationInProgress = false;
+
   constructor(
-    private fb: FormBuilder,
-    private examService: ExamService,
-    private exerciseService: ExerciseService,
-    private authService: AuthService,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly examService: ExamService,
+    private readonly exerciseService: ExerciseService,
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {
     this.form = this.fb.group({
       exerciseTypeIds: [[], Validators.required]
@@ -47,7 +51,7 @@ export class GenerateExamStudentComponent implements OnInit {
         if (res?.student_class_id) {
           this.classId = res.student_class_id;
         } else {
-          this.errorMessage = 'You are not enrolled in a course. Please contact your coordinator.';
+          this.errorMessage = 'You are not enrolled in a class. Please contact your coordinator.';
         }
       },
       error: () => {
@@ -56,7 +60,9 @@ export class GenerateExamStudentComponent implements OnInit {
     });
 
     this.exerciseService.getExercises().subscribe({
-      next: (res) => this.exerciseTypes = res,
+      next: (res) => {
+        this.exerciseTypes = res;
+      },
       error: () => {
         this.errorMessage = 'Error loading exercise types.';
       }
@@ -68,44 +74,86 @@ export class GenerateExamStudentComponent implements OnInit {
     const current = (this.form.value.exerciseTypeIds as number[]) || [];
 
     if (target.checked) {
-      this.form.patchValue({ exerciseTypeIds: [...current, id] });
+      if (!current.includes(id)) {
+        this.form.patchValue({ exerciseTypeIds: [...current, id]})
+      }
     } else {
-      this.form.patchValue({ exerciseTypeIds: current.filter((e: number) => e !== id) });
+      this.form.patchValue({
+        exerciseTypeIds: current.filter((value: number) => value !== id)
+      });
     }
+
+    this.form.get('exerciseTypeIds')?.markAsTouched();
+    this.form.get('exerciseTypeIds')?.updateValueAndValidity();
   }
 
   generateExam(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    if (this.classId == null) {
-      this.errorMessage = 'You are not enrolled in a course.';
-      return;
-    }
-
-    this.errorMessage = '';
-    this.step = 'loading';
-
-    const exam_data = {
-      class_id: this.classId,
-      exercise_type_ids: this.form.value.exerciseTypeIds as number[]
-    };
-
-    this.examService.generateStudentExam(exam_data).subscribe({
-      next: (res) => {
-        const exam_id = res.exam_id;
-        this.router.navigate(['/exam-resolve', exam_id]);
-      },
-      error: () => {
-        this.errorMessage = 'Error generating exam. Please try again.';
-        this.step = 'form';
-      }
-    });
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  if (this.classId == null) {
+    this.errorMessage = 'You are not enrolled in a class.';
+    return;
+  }
+
+  this.errorMessage = '';
+  this.step = 'loading';
+  this.allowImmediateNavigation = false;
+  this.generationCancelled = false;
+  this.generationInProgress = true;
+
+  const exam_data = {
+    class_id: this.classId,
+    exercise_type_ids: this.form.value.exerciseTypeIds as number[]
+  };
+
+  this.examService.generateStudentExam(exam_data).subscribe({
+    next: (res) => {
+      this.generationInProgress = false;
+
+      if (this.generationCancelled) {
+        return;
+      }
+
+      this.allowImmediateNavigation = true;
+      this.router.navigate(['/exam-resolve', res.exam_id]);
+    },
+    error: () => {
+      this.generationInProgress = false;
+
+      if (this.generationCancelled) {
+        return;
+      }
+
+      this.errorMessage = 'Error generating exam. Please try again.';
+      this.step = 'form';
+    }
+  });
+}
 
   cancel(): void {
     this.router.navigate(['/exam']);
+  }
+
+  canDeactivate(): boolean {
+    return !this.shouldBlockLeaving();
+  }
+
+  private shouldBlockLeaving(): boolean {
+    if (this.allowImmediateNavigation) {
+      return false;
+    }
+
+    return this.step === 'loading' && this.generationInProgress;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBrowserUnload(event: BeforeUnloadEvent): void {
+    if (this.shouldBlockLeaving()) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
   }
 }

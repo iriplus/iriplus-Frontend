@@ -219,6 +219,21 @@
   flex-shrink: 0;
 }
 
+.level-icon--badge {
+  width: 46px;
+  height: 52px;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.level-icon__badge {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .level-info {
   display: flex;
   flex-direction: column;
@@ -706,4 +721,30 @@
 
 .app-header{
   margin-bottom: 5px;
+}
+
+.profile-level-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  vertical-align: middle;
+}
+
+.profile-level-inline--right {
+  justify-content: flex-end;
+}
+
+.profile-level-inline--compact {
+  gap: 6px;
+}
+
+.profile-level-inline__badge {
+  width: 22px;
+  height: auto;
+  max-height: 26px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  background: transparent;
 }

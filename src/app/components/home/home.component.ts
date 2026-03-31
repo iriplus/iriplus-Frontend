@@ -9,6 +9,8 @@ import { AnalyticsService } from '../../services/analytics.service';
 import { UserType } from '../../interfaces/user.interface';
 import { ExamService } from '../../services/exam.service';
 import { Status } from '../../interfaces/exam.interface';
+import { Level } from '../../interfaces/level.interface';
+import { LevelService } from '../../services/level.service';
 
 type LeaderboardScope = 'COURSE' | 'GLOBAL';
 
@@ -31,10 +33,12 @@ export class HomeComponent implements OnInit {
   coordinatorStats: CoordinatorAnalyticsStats | null = null;
   teacherDashboard: TeacherDashboard | null = null;
 
+  private readonly levelBadgeByDescription = new Map<string, string>();
+
   private readonly emptyStudentCourse: StudentCourseSummary = {
-    name: 'No active course assigned',
+    name: 'No active class assigned',
     description:
-      'You are not assigned to an active course yet. Please contact the institute staff if this looks incorrect.',
+      'You are not assigned to an active class yet. Please contact the institute staff if this looks incorrect.',
     teachers: ['Not assigned yet'],
     studentsEnrolled: 0,
     englishLevel: 'Not assigned',
@@ -42,9 +46,9 @@ export class HomeComponent implements OnInit {
 
   private readonly emptyTeacherCourse: TeacherCourseDashboard = {
     id: 0,
-    name: 'No active courses assigned',
+    name: 'No active classes assigned',
     description:
-      'You are not assigned to any active course yet.',
+      'You are not assigned to any active class yet.',
     teachers: [],
     studentsEnrolled: 0,
     englishLevel: 'Not assigned',
@@ -77,6 +81,7 @@ export class HomeComponent implements OnInit {
     private readonly analyticsService: AnalyticsService,
     private readonly notificationService: NotificationService,
     private readonly examService: ExamService,
+    private readonly levelService: LevelService,
     private readonly router: Router,
   ) {}
 
@@ -96,6 +101,7 @@ export class HomeComponent implements OnInit {
     this.isLoadingUser = true;
     this.isLoadingDashboard = false;
 
+    this.levelBadgeByDescription.clear();
     this.notificationService.clear();
 
     this.authService.loadMe().subscribe({
@@ -108,6 +114,10 @@ export class HomeComponent implements OnInit {
         this.userType = user.type;
 
         if (this.isCoordinator || this.isStudent || this.isTeacher) {
+          if (this.isStudent || this.isTeacher) {
+            this.loadLevelBadges();
+          }
+
           this.loadHomeAnalytics();
           return;
         }
@@ -279,6 +289,52 @@ export class HomeComponent implements OnInit {
     return apiError?.error?.message || apiError?.error?.msg || fallback;
   }
 
+  private loadLevelBadges(): void {
+    this.levelService.getLevels().subscribe({
+      next: (levels: Level[]) => {
+        this.levelBadgeByDescription.clear();
+
+        levels.forEach((level) => {
+          const normalizedDescription = this.normalizeLevelDescription(
+            level.description
+          );
+          const cosmetic = level.cosmetic?.trim();
+
+          if (!normalizedDescription || !cosmetic) {
+            return;
+          }
+
+          this.levelBadgeByDescription.set(
+            normalizedDescription,
+            `assets/${cosmetic}.png`
+          );
+        });
+      },
+      error: (err: unknown) => {
+        console.error('Error loading level badges:', err);
+      },
+    });
+  }
+
+  private normalizeLevelDescription(levelName: string | null | undefined): string {
+    return levelName?.trim().toLowerCase() ?? '';
+  }
+
+  getLevelBadgePath(levelName: string | null | undefined): string | null {
+    const normalizedLevelName = this.normalizeLevelDescription(levelName);
+
+    if (!normalizedLevelName) {
+      return null;
+    }
+
+    return this.levelBadgeByDescription.get(normalizedLevelName) ?? null;
+  }
+
+  onLevelBadgeError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+  }
+
   get isPageLoading(): boolean {
     return this.isLoadingUser || this.isLoadingDashboard;
   }
@@ -357,6 +413,14 @@ export class HomeComponent implements OnInit {
 
   get lastExams(): StudentLastExam[] {
     return this.studentDashboard?.lastExams ?? [];
+  }
+
+  get shouldScrollStudentLeaderboard(): boolean {
+    return this.visibleLeaderboard.length > 5;
+  }
+
+  get shouldScrollTeacherLeaderboard(): boolean {
+    return this.selectedTeacherCourse.leaderboard.length > 5;
   }
 
   private readonly chartWidth = 360;

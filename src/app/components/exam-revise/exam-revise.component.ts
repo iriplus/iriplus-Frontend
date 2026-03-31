@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Location, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExamDTO, Status } from '../../interfaces/exam.interface';
@@ -35,7 +35,6 @@ export class ExamReviseComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly examService: ExamService,
-    private readonly location: Location,
     private readonly router: Router
   ) {}
 
@@ -99,28 +98,22 @@ export class ExamReviseComponent implements OnInit {
   }
 
   goBack(): void {
-    this.examService.leaveCorrection(this.examId).subscribe({
-      next: () => {
-        this.location.back();
-      }
-    });
+    this.router.navigate(['/exam'])
   }
 
   discardChanges(): void {
-    if (!this.originalExam || !this.isEditable || this.refining) {
+    if (!this.originalExam || !this.isEditable || this.refining || this.saving) {
       return;
     }
 
     this.exam = this.cloneExam(this.originalExam);
-    
-    this.examService.leaveCorrection(this.examId).subscribe({
-      next: () => {
-        this.saveError = '';
-        this.refineError = '';
-        this.successMessage = '';
-        this.location.back();
-      }
-    })
+    this.saveError = '';
+    this.refineError = '';
+    this.successMessage = '';
+    this.showAiRequest = false;
+    this.changeRequest.setValue('');
+    this.changeRequest.markAsPristine();
+    this.changeRequest.markAsUntouched();
   }
 
   openAiRequest(): void {
@@ -277,6 +270,11 @@ export class ExamReviseComponent implements OnInit {
 
     this.examService.getFullExam(examId).subscribe({
       next: (exam) => {
+        if (exam.status !== Status.ON_CORRECTION) {
+          this.loadError = 'This exam is not currently on correction'
+          this.loading = false;
+          return;
+        }
         this.exam = this.cloneExam(exam);
         this.originalExam = this.cloneExam(exam);
         this.loading = false;
@@ -325,7 +323,7 @@ export class ExamReviseComponent implements OnInit {
 
   private readEditableContent(event: Event): string {
     const target = event.target as HTMLElement | null;
-    return (target?.innerText ?? '').replace(/\u00A0/g, ' ');
+    return (target?.innerText ?? '').replace(/\u00A0/g, ' ').trim();
   }
 
   private resolveExamIdFromResponse(response: unknown, fallbackExamId: number): number {

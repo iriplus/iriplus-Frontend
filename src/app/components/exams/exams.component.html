@@ -59,7 +59,7 @@
           [(ngModel)]="selectedStatus"
           (change)="applyFilters()"
         >
-          <option value="ALL">All states</option>
+          <option value="ALL">All statuses</option>
           <option value="Pending Review">Pending Review</option>
           <option value="On Review">On Review</option>
           <option value="Accepted">Accepted</option>
@@ -76,19 +76,16 @@
           <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
         </svg>
 
-        <input
-          type="text"
+        <select
           class="app-input app-input--icon-left exams-filter__control"
-          placeholder="All classes"
-          list="coursesList"
           [(ngModel)]="selectedClass"
-          (input)="applyFilters()"
-        />
-
-        <datalist id="coursesList">
+          (change)="applyFilters()"
+        > 
           <option value="ALL">All classes</option>
-          <option *ngFor="let cls of classes" [value]="cls.description"></option>
-        </datalist>
+          <option *ngFor="let cls of classes" [value]="cls.description">
+            {{ cls.description }}
+          </option>
+        </select>
       </div>
 
       <button
@@ -383,37 +380,28 @@
             <td>
               <div class="exams-actions" *ngIf="isCoordinator">
                 <button
-                  *ngIf="exam.status === 'Pending Review' && (!exam.coordinator_id || exam.coordinator_id === currentUserId)"
-                  class="btn-action btn-review"
-                  (click)="assignExam(exam.id)"
+                  class="btn-action"
+                  [ngClass]="getCoordinatorActionClass(exam)"
+                  (click)="openCoordinatorExam(exam)"
                 >
-                  {{ exam.coordinator_id === currentUserId ? 'Continue Review' : 'Review' }}
-                </button>
-
-                <button
-                  *ngIf="exam.status !== 'Pending Review'"
-                  class="btn-action btn-view"
-                  (click)="viewExam(exam.id)"
-                >
-                  View Exam
+                  {{ getCoordinatorActionLabel(exam) }}
                 </button>
               </div>
               <div class="exams-actions" *ngIf="isTeacher">
                 <button
                   class="btn-action"
-                  [ngClass]="exam.status === 'Pending Correction' ? 'btn-revise' : 'btn-view'"
+                  [ngClass]="getTeacherActionClass(exam)"
                   (click)="openTeacherExam(exam)"
                 >
                   {{ getTeacherActionLabel(exam) }}
                 </button>
               </div>
-
               <div class="exams-actions" *ngIf="isStudent">
                 <button
                   class="btn-action btn-view"
                   (click)="openStudentExam(exam)"
                 >
-                  {{ exam.status === 'Solved' ? 'View Correction' : 'View Exam' }}
+                  {{ exam.status === Status.SOLVED ? 'View Correction' : 'View Exam' }}
                 </button>
               </div>
             </td>

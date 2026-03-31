@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,6 +12,7 @@ import { ExamDTO, Status } from '../../interfaces/exam.interface';
 import { Exercise } from '../../interfaces/exercise.interface';
 import { UserType } from '../../interfaces/user.interface';
 import { ConfirmDialogComponent, ConfirmVariant, ConfirmDialogState } from '../ui/confirm-dialog/confirm-dialog.component';
+import { PendingChangesComponent } from '../../guards/can-deactivate.guard';
 
 type Step = 'form' | 'loading' | 'preview';
 
@@ -22,7 +24,7 @@ type Step = 'form' | 'loading' | 'preview';
   styleUrl: './generate-exam.component.css'
 })
 
-export class GenerateExamComponent implements OnInit {
+export class GenerateExamComponent implements OnInit, PendingChangesComponent {
   step: Step = 'form';
 
   classes: Class[] = [];
@@ -38,6 +40,9 @@ export class GenerateExamComponent implements OnInit {
 
   form: FormGroup;
 
+  private leaveConfirmation$?: Subject<boolean>;
+  private allowImmediateNavigation = false;
+
   changeRequest = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required],
@@ -52,6 +57,9 @@ export class GenerateExamComponent implements OnInit {
     cancelText: 'Cancel',
     variant: 'default',
   };
+
+  private generationCancelled = false;
+  private generationInProgress = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -114,7 +122,7 @@ export class GenerateExamComponent implements OnInit {
       return '—';
     }
 
-    return this.generatedExam.status === 'Generating'
+    return this.generatedExam.status === Status.GENERATING
       ? 'Draft'
       : this.generatedExam.status;
   }
@@ -157,61 +165,82 @@ export class GenerateExamComponent implements OnInit {
     control?.markAsTouched();
     control?.updateValueAndValidity();
   }
-
-  generateExam(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.step = 'loading';
-
-    const examData = {
-      class_id: this.form.value.classId,
-      context: this.form.value.context,
-      exercise_type_ids: this.form.value.exerciseTypeIds,
-    };
-
-    this.examService.generateExam(examData).subscribe({
-      next: (response) => {
-        const examId = this.resolveExamIdFromResponse(response, 0);
-
-        if (!examId) {
-          this.step = 'form';
-          this.notificationService.show({
-            type: 'error',
-            title: 'Generation Error',
-            message: 'The generated exam id could not be resolved.',
-            autoCloseMs: 5000,
-          });
-          return;
-        }
-
-        this.examService.getFullExam(examId).subscribe({
-          next: (exam) => {
-            this.generatedExam = this.cloneExam(exam);
-            this.originalExam = this.cloneExam(exam);
-            this.step = 'preview';
-
-            this.notificationService.show({
-              type: 'success',
-              title: 'Draft Generated',
-              message: 'The exam draft was generated successfully.',
-              autoCloseMs: 3500,
-            });
-          },
-          error: (error) => {
-            this.step = 'form';
-            this.notifyApiError(error, 'The generated exam could not be loaded.');
-          },
-        });
-      },
-      error: (error) => {
-        this.step = 'form';
-        this.notifyApiError(error, 'The exam could not be generated.');
-      },
-    });
+generateExam(): void {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  this.generationCancelled = false;
+  this.generationInProgress = true;
+  this.step = 'loading';
+
+  const examData = {
+    class_id: this.form.value.classId,
+    context: this.form.value.context,
+    exercise_type_ids: this.form.value.exerciseTypeIds,
+  };
+
+  this.examService.generateExam(examData).subscribe({
+    next: (response) => {
+      this.generationInProgress = false;
+
+      if (this.generationCancelled) {
+        return;
+      }
+
+      const examId = this.resolveExamIdFromResponse(response, 0);
+
+      if (!examId) {
+        this.step = 'form';
+        this.notificationService.show({
+          type: 'error',
+          title: 'Generation Error',
+          message: 'The generated exam id could not be resolved.',
+          autoCloseMs: 5000,
+        });
+        return;
+      }
+
+      this.examService.getFullExam(examId).subscribe({
+        next: (exam) => {
+          if (this.generationCancelled) {
+            return;
+          }
+
+          this.generatedExam = this.cloneExam(exam);
+          this.originalExam = this.cloneExam(exam);
+          this.step = 'preview';
+
+          this.notificationService.show({
+            type: 'success',
+            title: 'Draft Generated',
+            message: 'The exam draft was generated successfully.',
+            autoCloseMs: 3500,
+          });
+        },
+        error: (error) => {
+          if (this.generationCancelled) {
+            return;
+          }
+
+          this.generationInProgress = false;
+          this.step = 'form';
+          this.notifyApiError(error, 'The generated exam could not be loaded.');
+        },
+      });
+    },
+    error: (error) => {
+      if (this.generationCancelled) {
+        return;
+      }
+
+      this.generationInProgress = false;
+      this.step = 'form';
+      this.notifyApiError(error, 'The exam could not be generated.');
+    },
+  });
+}
 
   openDiscardManualEditsConfirm(): void {
     if (!this.originalExam || this.saving || this.refining) {
@@ -256,11 +285,72 @@ export class GenerateExamComponent implements OnInit {
 
     if (action === 'delete-draft') {
       this.deleteDraft();
+      return;
+    }
+
+    if (action === 'leave-generate-exam') {
+      this.confirmLeaveAndCleanup();
     }
   }
 
+  private confirmLeaveAndCleanup(): void {
+  if (!this.leaveConfirmation$) {
+    return;
+  }
+  
+  this.generationCancelled = true;
+  this.generationInProgress = false;
+
+  const finishNavigation = (): void => {
+    this.allowImmediateNavigation = true;
+    this.leaveConfirmation$?.next(true);
+    this.leaveConfirmation$?.complete();
+    this.leaveConfirmation$ = undefined;
+  };
+
+  const cancelNavigation = (): void => {
+    this.leaveConfirmation$?.next(false);
+    this.leaveConfirmation$?.complete();
+    this.leaveConfirmation$ = undefined;
+  };
+
+  const shouldDeleteDraft =
+    !!this.generatedExam &&
+    this.generatedExam.status === Status.GENERATING;
+
+  if (!shouldDeleteDraft) {
+    finishNavigation();
+    return;
+  }
+
+  this.examService.deleteExam(this.generatedExam!.id).subscribe({
+    next: () => {
+      this.notificationService.show({
+        type: 'success',
+        title: 'Draft Deleted',
+        message: 'The generated exam was deleted successfully.',
+        autoCloseMs: 3500,
+      });
+
+      this.clearLocalState();
+      finishNavigation();
+    },
+    error: (error) => {
+      this.notifyApiError(error, 'The generated exam could not be deleted.');
+      cancelNavigation();
+    },
+  });
+}
+
   onConfirmDialogCancelled(): void {
+    const action = this.confirmDialog.action;
     this.closeConfirmDialog();
+
+    if (action === 'leave-generate-exam') {
+      this.leaveConfirmation$?.next(false);
+      this.leaveConfirmation$?.complete();
+      this.leaveConfirmation$ = undefined;
+    }
   }
 
   private discardManualEdits(): void {
@@ -294,7 +384,9 @@ export class GenerateExamComponent implements OnInit {
           autoCloseMs: 3500,
         });
 
-        this.resetFlow();
+        this.allowImmediateNavigation = true;
+        this.clearLocalState();
+        this.router.navigate(['/exam']);
       },
       error: (error) => {
         this.notifyApiError(error, 'The draft could not be deleted.');
@@ -321,6 +413,10 @@ export class GenerateExamComponent implements OnInit {
 
   requestAiChanges(): void {
     if (!this.generatedExam || this.saving || this.refining) {
+      return;
+    }
+
+    if (this.generatedExam.status !== Status.GENERATING && this.generatedExam.status !== Status.ON_CORRECTION) {
       return;
     }
 
@@ -433,6 +529,7 @@ export class GenerateExamComponent implements OnInit {
           autoCloseMs: 3500,
         });
 
+        this.allowImmediateNavigation = true;
         this.router.navigate(['/exam']);
       },
       error: (error) => {
@@ -443,10 +540,29 @@ export class GenerateExamComponent implements OnInit {
   }
 
   cancel(): void {
-    this.resetFlow();
+    this.router.navigate(['/exam']);
   }
 
-  resetFlow(): void {
+  canDeactivate(): boolean | Observable<boolean> {
+    if (!this.shouldWarnBeforeLeaving()) {
+      return true;
+    }
+
+    this.leaveConfirmation$ = new Subject<boolean>();
+
+    this.openConfirmDialog({
+      action: 'leave-generate-exam',
+      title: 'Leave generated exam?',
+      message:'If you leave the page now, the generated draft will be deleted and you will lose your unsaved work. Are you sure you want to leave?',
+      confirmText: 'Leave page',
+      cancelText: 'Stay here',
+      variant: 'danger',
+    });
+
+    return this.leaveConfirmation$.asObservable();
+  }
+
+  private clearLocalState(): void {
     this.step = 'form';
     this.generatedExam = null;
     this.originalExam = null;
@@ -462,7 +578,10 @@ export class GenerateExamComponent implements OnInit {
 
     this.resetChangeRequest();
     this.closeConfirmDialog();
-    this.router.navigate(['/exam']);
+  }
+
+  resetFlow(): void {
+    this.clearLocalState();
   }
 
   private getEditableContentValidationError(): string | null {
@@ -571,5 +690,33 @@ export class GenerateExamComponent implements OnInit {
     }
 
     return fallback;
+  }
+
+   private shouldWarnBeforeLeaving(): boolean {
+    if (this.allowImmediateNavigation) {
+      return false;
+    }
+
+    if (this.saving || this.refining) {
+      return true;
+    }
+
+    if (this.step === 'loading') {
+      return true;
+    }
+
+    if (this.step === 'preview' && !!this.generatedExam) {
+      return this.generatedExam.status === Status.GENERATING;
+    }
+
+    return false;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+    handleBeforeUnload(event: BeforeUnloadEvent): void {
+      if (this.shouldWarnBeforeLeaving()) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
   }
 }

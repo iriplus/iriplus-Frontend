@@ -1,3 +1,11 @@
+.screen-only {
+  display: block;
+}
+
+.print-only {
+  display: none;
+}
+
 .writing-page {
   display: flex;
   justify-content: center;
@@ -177,10 +185,12 @@
   font-size: 0.9rem;
   white-space: pre-wrap;
   color: var(--color-text);
+  word-break: break-word;
 }
 
 .writing-submission__text--mono {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
 }
 
 .writing-sidebar {
@@ -264,7 +274,9 @@
   margin: 0;
   font-size: 0.9rem;
   white-space: pre-wrap;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  word-break: break-word;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
   color: #111827;
 }
 
@@ -307,71 +319,279 @@
   margin: 0;
   font-size: 0.85rem;
   color: #374151;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .writing-corrections__text--corrected {
   font-weight: 600;
 }
+/* print-only content */
+.writing-print {
+  color: var(--color-text);
+}
 
-@media (max-width: 960px) {
-  .writing-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.writing-print__header {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid rgba(var(--color-slate-rgb), 0.18);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(224, 205, 149, 0.32) 0%,
+      rgba(248, 245, 231, 0.95) 100%
+    );
+  position: relative;
+  overflow: hidden;
+}
 
-  .writing-sidebar {
-    order: 2;
-  }
+.writing-print__header::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 8px;
+  background: linear-gradient(
+    180deg,
+    var(--color-slate) 0%,
+    var(--color-sage) 100%
+  );
+}
+
+.writing-print__eyebrow {
+  margin: 0 0 0.3rem;
+  padding-left: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-slate);
+}
+
+.writing-print__title {
+  margin: 0;
+  padding-left: 0.4rem;
+  font-size: 1.85rem;
+  line-height: 1.12;
+  color: var(--color-slate-dark);
+}
+
+.writing-print__subtitle {
+  margin: 0.45rem 0 0;
+  padding-left: 0.4rem;
+  font-size: 0.96rem;
+  color: var(--color-text-muted);
+}
+
+.writing-print__section {
+  margin-bottom: 1rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.writing-print__section-title {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-slate-dark);
+}
+
+.writing-print__box,
+.writing-print__correction-card {
+  border-radius: var(--radius-md);
+  background: var(--color-white-cream);
+  color: var(--color-text);
+  box-shadow: none;
+}
+
+.writing-print__box {
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(var(--color-slate-rgb), 0.14);
+  border-left: 6px solid var(--color-sage);
+  white-space: normal;
+  word-break: break-word;
+}
+
+.writing-print__box--pre {
+  white-space: pre-wrap;
+}
+
+.writing-print__list {
+  margin: 0;
+  padding: 0.85rem 1rem 0.85rem 2rem;
+  border: 1px solid rgba(var(--color-slate-rgb), 0.12);
+  border-left: 6px solid var(--color-beige);
+  border-radius: var(--radius-md);
+  background: rgba(252, 250, 244, 0.98);
+}
+
+.writing-print__list li {
+  margin-bottom: 0.35rem;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.writing-print__correction-card {
+  margin-bottom: 0.85rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(39, 83, 47, 0.14);
+  border-top: 5px solid var(--color-terracotta);
+}
+
+.writing-print__correction-label {
+  margin: 0 0 0.2rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-slate-dark);
+}
+
+.writing-print__correction-text {
+  margin: 0 0 0.7rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text);
+}
+
+.writing-print__correction-text--corrected {
+  font-weight: 600;
+  color: var(--color-slate);
+}
+
+.writing-print__level-pill {
+  display: inline-block;
+  padding: 0.38rem 0.85rem;
+  border: 1px solid rgba(var(--color-slate-rgb), 0.22);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--color-slate-dark);
+  background: rgba(158, 178, 143, 0.18);
+}
+
+@page {
+  size: A4;
+  margin: 14mm;
 }
 
 @media print {
+  html,
   body {
-    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: var(--color-ivory) !important;
+    color: var(--color-text) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  .app-page,
-  .app-card {
-    box-shadow: none !important;
-    background: #ffffff !important;
-  }
-
-  .btn-primary,
-  .btn-outline,
-  .writing-header__back,
-  .writing-sidebar__print-btn,
-  .writing-form__hint {
+  .screen-only {
     display: none !important;
   }
 
-  .writing-page {
-    padding: 0;
+  .print-only {
+    display: block !important;
   }
 
+  .app-page,
+  .app-card,
+  .writing-page,
   .writing-card {
-    max-width: 100%;
+    box-shadow: none !important;
+    background: var(--color-ivory) !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
   }
 
-  .writing-layout {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.9fr);
+  .writing-print {
+    display: block !important;
+    font-size: 11.6pt;
+    line-height: 1.48;
+    color: var(--color-text) !important;
   }
 
-  .writing-feedback {
-    max-height: none;
-    overflow: visible;
+  .writing-print__header {
+    background:
+      linear-gradient(
+        135deg,
+        rgba(224, 205, 149, 0.38) 0%,
+        rgba(248, 245, 231, 1) 100%
+      ) !important;
+    border: 1px solid rgba(39, 83, 47, 0.18) !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
-  .writing-form {
-    box-shadow: none;
-    background: transparent;
+  .writing-print__title {
+    font-size: 22pt;
+    color: var(--color-slate-dark) !important;
   }
 
-  .writing-submission {
-    background: transparent;
-    color: #000000;
+  .writing-print__eyebrow,
+  .writing-print__section-title,
+  .writing-print__correction-label {
+    color: var(--color-slate-dark) !important;
   }
 
-  .writing-sidebar {
-    box-shadow: none;
-    background: transparent;
+  .writing-print__subtitle,
+  .writing-print__correction-text,
+  .writing-print__list li,
+  .writing-print__box {
+    color: var(--color-text) !important;
+  }
+
+  .writing-print__box,
+  .writing-print__list,
+  .writing-print__correction-card,
+  .writing-print__level-pill {
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .writing-print__box {
+    background: var(--color-white-cream) !important;
+    border: 1px solid rgba(39, 83, 47, 0.14) !important;
+    border-left: 6px solid var(--color-sage) !important;
+  }
+
+  .writing-print__list {
+    background: rgba(252, 250, 244, 1) !important;
+    border: 1px solid rgba(39, 83, 47, 0.12) !important;
+    border-left: 6px solid var(--color-beige) !important;
+  }
+
+  .writing-print__correction-card {
+    background: #fffdfa !important;
+    border: 1px solid rgba(39, 83, 47, 0.14) !important;
+    border-top: 5px solid var(--color-terracotta) !important;
+  }
+
+  .writing-print__correction-text--corrected {
+    color: var(--color-slate) !important;
+  }
+
+  .writing-print__level-pill {
+    background: rgba(158, 178, 143, 0.18) !important;
+    border: 1px solid rgba(39, 83, 47, 0.2) !important;
+    color: var(--color-slate-dark) !important;
+  }
+
+  .writing-layout,
+  .writing-main,
+  .writing-sidebar,
+  .writing-feedback,
+  .writing-feedback__block,
+  .writing-feedback__corrected,
+  .writing-corrections,
+  .writing-submission,
+  .writing-submission__content,
+  .writing-submission__block {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    position: static !important;
   }
 }
-

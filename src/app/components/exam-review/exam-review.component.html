@@ -1,104 +1,108 @@
-<div class="page">
-  <div class="card">
+<div class="app-page app-page--gradient exam-review-page">
+  <div class="app-card app-card--xl exam-review">
 
     <!-- Loading / Error -->
-    <div *ngIf="loading" class="stateBox">Loading exam...</div>
-    <div *ngIf="!loading && errorMessage" class="stateBox error">
-      {{ errorMessage }}
+    <div *ngIf="loading" class="exam-review__state">
+      <p class="exam-review__state-text">Loading exam...</p>
+    </div>
+    <div *ngIf="!loading && errorMessage" class="exam-review__state exam-review__state--error">
+      <div class="app-error">
+        {{ errorMessage }}
+      </div>
     </div>
 
     <ng-container *ngIf="!loading && exam">
 
       <!-- Top Bar -->
-      <div class="topbar">
-        <button class="btn btn-outline" (click)="confirmLater()" type="button">
+      <div class="exam-review__topbar">
+        <button class="btn-outline btn-rounded" (click)="openLater()" type="button">
           ← Back to exams
         </button>
 
-        <span class="badge" [ngClass]="{ 'pulse': exam.status === 'On Review' }">
-        <span class="badgeDot"></span>
-          {{ getStatusLabel(exam.status) }}
-        </span>
+        <div class="exam-review__topbar-right">
+          <span class="exam-review__status" [ngClass]="{ 'pulse': exam.status === Status.ON_REVIEW}">
+            <span class="exam-review__status-dot"></span>
+            {{ getStatusLabel(exam.status) }}
+          </span>
+        </div>
       </div>
 
       <!-- Header -->
-      <div class="header">
-        <div class="headerText">
-          <h1>{{ exam.title }}</h1>
-          <p class="muted" *ngIf="exam.description">
-            {{ exam.description }}
-          </p>
-        </div>
-      </div>
+      <header class="app-header app-header--left exam-review__header">
+        <h1 class="app-header__title">{{ exam.title }}</h1>
+        <p class="app-header__subtitle" *ngIf="exam.description">
+          {{ exam.description }}
+        </p>
+      </header>
 
       <!-- Meta -->
-      <div class="metaGrid">
-        <div class="metaItem">
-          <div class="metaIcon" aria-hidden="true"><i class="bi bi-person-lines-fill"></i></div>
+      <section class="exam-review__meta-grid">
+        <div class="exam-review__meta-card">
+          <div class="exam-review__meta-icon" aria-hidden="true"><i class="bi bi-person-lines-fill"></i></div>
           <div>
-            <div class="metaLabel">TEACHER</div>
-            <div class="metaValue">{{ exam.teacherName }}</div>
+            <span class="exam-review__meta-label">TEACHER</span>
+            <span class="exam-review__meta-value">{{ exam.teacherName }}</span>
           </div>
         </div>
 
-        <div class="metaItem">
-          <div class="metaIcon" aria-hidden="true"><i class="bi bi-archive-fill"></i></div>
+        <div class="exam-review__meta-card">
+          <div class="exam-review__meta-icon" aria-hidden="true"><i class="bi bi-archive-fill"></i></div>
           <div>
-            <div class="metaLabel">CLASS</div>
-            <div class="metaValue">{{ exam.className }}</div>
+            <span class="exam-review__meta-label">CLASS</span>
+            <span class="exam-review__meta-value">{{ exam.className }}</span>
           </div>
         </div>
 
-        <div class="metaItem">
-          <div class="metaIcon" aria-hidden="true"><i class="bi bi-calendar-week"></i></div>
+        <div class="exam-review__meta-card">
+          <div class="exam-review__meta-icon" aria-hidden="true"><i class="bi bi-calendar-week"></i></div>
           <div>
-            <div class="metaLabel">CREATION DATE</div>
-            <div class="metaValue">{{ exam.date }}</div>
+            <span class="exam-review__meta-label">CREATION DATE</span>
+            <span class="exam-review__meta-value">{{ exam.date }}</span>
           </div>
         </div>
-
-      </div>
+      </section>
 
       <!-- Notes -->
-      <div class="notesBox">
-        <div class="notesTitle">
+      <div class="exam-review__notes-card">
+        <div class="exam-review__notes-title">
           <i class="bi bi-exclamation-triangle-fill"></i> <span>Notes from the last review</span>
         </div>
-        <p>{{ exam.notes }}</p>
+        <p class="exam-review__notes-text">{{ exam.notes }}</p>
       </div>
 
       <!-- Content -->
-      <div class="content">
-        <div class="contentHeader">
-          <h2>Exam Content</h2>
-          <div class="pills">
-            <span class="pill">{{ sections.length }} sections</span>
+      <section class="exam-review__panel">
+        <div class="exam-review__panel-header">
+          <div>
+            <h2 class="exam-review__panel-title">Exam Content</h2>
+          </div>
+          <div class="exam-review__panel-pills">
+            <span class="exam-review__pill">{{ sections.length }} sections</span>
           </div>
         </div>
 
         <!-- Sections -->
-        <div *ngFor="let section of sections; let i = index" class="section">
-          
-          <p class="sectionInstr" *ngIf="section.instructions">
+        <div *ngFor="let section of sections; let i = index" class="exam-review__section">
+          <p class="exam-review__section-instructions" *ngIf="section.instructions">
             {{ section.instructions }}
           </p>
 
           <!-- Questions -->
-          <div class="questions">
+          <div class="exam-review__questions">
             <div
               *ngFor="let q of section.questions; let j = index"
-              class="question"
+              class="exam-review__question"
             >
-              <div class="qIndex">{{ j + 1 }}</div>
+              <div class="exam-review__question-index">{{ j + 1 }}</div>
 
-              <div class="qBody">
+              <div class="exam-review__question-body">
                 <!-- Full question text (with embedded options) -->
-                <p class="qText">{{ q.question }}</p>
+                <p class="exam-review__question-text">{{ q.question }}</p>
 
                 <!-- Correct answer -->
-                <div class="tfRow">
-                  <span class="tfLabel">Correct answer:</span>
-                  <span class="tfBadge tfTrue">
+                <div class="exam-review__answer-row">
+                  <span class="exam-review__answer-label">Correct answer:</span>
+                  <span class="exam-review__answer-badge exam-review__answer-badge--true">
                     {{ q.answer }}
                   </span>
                 </div>
@@ -106,28 +110,28 @@
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Action bar -->
-      <div class="actionbar" *ngIf="exam.status === 'On Review' || exam.status === 'Pending Review'">
-        <div class="actionHint"><i class="bi bi-exclamation-triangle-fill"></i>
+      <div class="exam-review__actionbar" *ngIf="exam.status === Status.ON_REVIEW">
+        <div class="exam-review__action-hint"><i class="bi bi-exclamation-triangle-fill"></i>
            <span>You are reviewing this exam. Select an action.</span>
         </div>
-        <div class="actionButtons">
+        <div class="exam-review__action-buttons">
           <button
-            class="btn btn-warn"
+            class="btn-warn btn-rounded"
             type="button"
             (click)="openLater()">
             <i class="bi bi-stopwatch"></i> Review later
           </button>
           <button
-            class="btn btn-danger"
+            class="btn-danger btn-rounded"
             type="button"
             (click)="openCorrections()">
             <i class="bi bi-pencil-fill"></i> Send corrections
           </button>
           <button
-            class="btn btn-primary"
+            class="btn-primary btn-rounded"
             type="button"
             (click)="openAccept()">
             <i class="bi bi-check-square-fill"></i> Accept exam
@@ -183,7 +187,7 @@
       ></textarea>
 
       <div class="helpText">
-        This message will be sent to the responsible teacher.
+        This message will be sent to the teacher in charge of the exam.
       </div>
 
       <div class="warningBox">
@@ -194,14 +198,14 @@
     <div class="exam-review-modal__actions">
       <button
         type="button"
-        class="btn-outline btn-lg"
+        class="btn-outline btn-rounded btn-lg"
         (click)="showCorrectionModal = false"
       >
         Cancel
       </button>
       <button
         type="button"
-        class="btn btn-danger"
+        class="btn-danger btn-rounded btn-lg"
         [disabled]="!correctionNotes.trim()"
         (click)="sendCorrection()"
       >
@@ -252,14 +256,14 @@
     <div class="exam-review-modal__actions">
       <button
         type="button"
-        class="btn-outline btn-lg"
+        class="btn-outline btn-rounded btn-lg"
         (click)="showAcceptModal = false"
       >
         Cancel
       </button>
       <button
         type="button"
-        class="btn-primary btn-lg"
+        class="btn-primary btn-rounded btn-lg"
         (click)="confirmAccept()"
       >
         <i class="bi bi-check-lg"></i> Confirm
@@ -308,14 +312,14 @@
     <div class="exam-review-modal__actions">
       <button
         type="button"
-        class="btn-outline btn-lg"
+        class="btn-outline btn-rounded btn-lg"
         (click)="showLaterModal = false"
       >
         Continue reviewing
       </button>
       <button
         type="button"
-        class="btn-primary btn-lg"
+        class="btn-primary btn-rounded btn-lg"
         (click)="confirmLater()"
       >
         <i class="bi bi-clock-history"></i> Exit

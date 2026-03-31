@@ -85,7 +85,6 @@
             class="app-input app-input--icon-left app-search__input"
             placeholder="Search by name, DNI or status..."
             [(ngModel)]="searchTerm"
-            (input)="filterTable()"
           />
           <button
             *ngIf="searchTerm"
