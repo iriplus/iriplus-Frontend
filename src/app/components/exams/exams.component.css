@@ -96,7 +96,7 @@
 }
 
 .exams-stat-icon--pendingcorrection {
-  background: linear-gradient(135deg, #b8935c 0%, #8b713d 100%);
+  background: linear-gradient(135deg, #b8695c 0%, #8b3d3d  100%);
 }
 
 .exams-stat-icon--accepted {
@@ -129,10 +129,8 @@
 }
 
 /* Results info */
-.exams-results {
-  margin-bottom: 15px;
-  color: var(--color-text-muted);
-  font-size: 14px;
+.exams-results.app-stats-bar {
+  margin-top: 18px;
 }
 
 /* Table specifics */

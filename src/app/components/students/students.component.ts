@@ -16,6 +16,9 @@ import { ConfirmDialogComponent } from '../ui/confirm-dialog/confirm-dialog.comp
 export class StudentsComponent implements OnInit {
   students: User[] = [];
   filteredStudents: User[] = [];
+  paginatedStudents: User[] = [];
+  currentPage = 1;
+  pageSize = 10;
   searchTerm = '';
   showDisableConfirm = false;
   studentToDisable: User | null = null;
@@ -59,6 +62,10 @@ export class StudentsComponent implements OnInit {
     this.filterStudents();
   }
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredStudents.length / this.pageSize));
+  }
+
   filterStudents(): void {
     const term = this.searchTerm.trim().toLowerCase();
 
@@ -97,6 +104,39 @@ export class StudentsComponent implements OnInit {
 
       return true;
     });
+
+    this.currentPage = 1;
+    this.updatePaginatedData();
+  }
+
+  updatePaginatedData(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedStudents = this.filteredStudents.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePaginatedData();
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedData();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedData();
+    }
   }
 
   disableStudent(studentId: number): void {
