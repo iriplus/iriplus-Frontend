@@ -376,7 +376,7 @@
                   </tr>
 
                   <tr *ngFor="let exam of lastExams">
-                    <td>{{ exam.completedAt }}</td>
+                    <td>{{ exam.completedAt | date:'dd/MM/yyyy'}}</td>
 
                     <td>
                       <div class="feedback-context">
@@ -691,7 +691,7 @@
 
               <tbody>
                 <tr *ngFor="let exam of pendingCorrectionExams">
-                  <td>{{ exam.generationDate }}</td>
+                  <td>{{ exam.generationDate | date:'dd/MM/yyyy'}}</td>
 
                   <td>
                     <div class="feedback-context">
@@ -744,7 +744,7 @@
 
               <tbody>
                 <tr *ngFor="let exam of pendingReviewExams">
-                  <td>{{ exam.generationDate }}</td>
+                  <td>{{ exam.generationDate | date:'dd/MM/yyyy'}}</td>
 
                   <td>
                     <div class="feedback-context">
