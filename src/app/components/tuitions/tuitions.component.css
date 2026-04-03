@@ -123,6 +123,12 @@
   margin-bottom: 12px;
 }
 
+.tuitions__stats.app-stats-bar {
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+}
+
 /* Status filter (same pattern as exams screen) */
 .tuitions__filter {
   position: relative;

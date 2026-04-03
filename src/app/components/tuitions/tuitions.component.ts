@@ -32,6 +32,10 @@ export class TuitionsComponent implements OnInit {
 
   searchTerm = '';
   statusFilter: 'ALL' | 'upToDate' | 'delinquent' | 'noData' = 'ALL';
+  filteredTableData: TuitionStudent[] = [];
+  paginatedTableData: TuitionStudent[] = [];
+  currentPage = 1;
+  pageSize = 10;
 
   readonly statusFilterOptions: { value: 'ALL' | 'upToDate' | 'delinquent' | 'noData'; label: string }[] = [
     { value: 'ALL', label: 'All statuses' },
@@ -80,11 +84,15 @@ export class TuitionsComponent implements OnInit {
           }
           this.tuitionData = tuition;
           this.analyticsError = null;
+          this.filterTable();
         },
         error: (err: HttpErrorResponse) => {
           const msg = this.toAnalyticsErrorMessage(err);
           this.analyticsError = msg;
           this.tuitionData = null;
+          this.filteredTableData = [];
+          this.paginatedTableData = [];
+          this.currentPage = 1;
           this.notificationService.show({
             type: 'error',
             title: 'Tuition analytics unavailable',
@@ -197,7 +205,15 @@ export class TuitionsComponent implements OnInit {
     ];
   }
 
-  get filteredTableData(): TuitionStudent[] {
+  private normalizeText(value: unknown): string {
+    return String(value ?? '').toLowerCase();
+  }
+
+  private normalizeStatus(value: unknown): string {
+    return this.normalizeText(value).replace(/[\s_]/g, '');
+  }
+
+  filterTable(): void {
     let students = this.tuitionData?.students ?? [];
 
     if (this.statusFilter !== 'ALL') {
@@ -215,41 +231,68 @@ export class TuitionsComponent implements OnInit {
     const rawTerm = this.normalizeText(this.searchTerm).trim();
     const normalizedTerm = this.normalizeStatus(this.searchTerm);
 
-    if (!rawTerm) return students;
+    if (rawTerm) {
+      students = students.filter((s) => {
+        const fullName = this.normalizeText(s.fullName);
+        const composedName = this.normalizeText(`${s.name ?? ''} ${s.surname ?? ''}`);
+        const dni = this.normalizeText(s.dni);
+        const lastPaidMonth = this.normalizeText(s.lastPaidMonth);
+        const statusLabel = this.normalizeText(this.getStatusLabel(s.status));
+        const normalizedStatus = this.normalizeStatus(s.status);
 
-    return students.filter((s) => {
-      const fullName = this.normalizeText(s.fullName);
-      const composedName = this.normalizeText(`${s.name ?? ''} ${s.surname ?? ''}`);
-      const dni = this.normalizeText(s.dni);
-      const lastPaidMonth = this.normalizeText(s.lastPaidMonth);
-      const statusLabel = this.normalizeText(this.getStatusLabel(s.status));
-      const normalizedStatus = this.normalizeStatus(s.status);
+        return (
+          fullName.includes(rawTerm) ||
+          composedName.includes(rawTerm) ||
+          dni.includes(rawTerm) ||
+          lastPaidMonth.includes(rawTerm) ||
+          statusLabel.includes(rawTerm) ||
+          normalizedStatus.includes(normalizedTerm)
+        );
+      });
+    }
 
-      return (
-        fullName.includes(rawTerm) ||
-        composedName.includes(rawTerm) ||
-        dni.includes(rawTerm) ||
-        lastPaidMonth.includes(rawTerm) ||
-        statusLabel.includes(rawTerm) ||
-        normalizedStatus.includes(normalizedTerm)
-      );
-    });
-  }
-
-  private normalizeText(value: unknown): string {
-    return String(value ?? '').toLowerCase();
-  }
-
-  private normalizeStatus(value: unknown): string {
-    return this.normalizeText(value).replace(/[\s_]/g, '');
-  }
-
-  filterTable(): void {
-    // Filtering is done via getter filteredTableData; this method is kept for (input) binding.
+    this.filteredTableData = students;
+    this.currentPage = 1;
+    this.updatePaginatedData();
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+    this.filterTable();
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredTableData.length / this.pageSize));
+  }
+
+  updatePaginatedData(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedTableData = this.filteredTableData.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePaginatedData();
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedData();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedData();
+    }
   }
 
   getStatusLabel(status: string): string {

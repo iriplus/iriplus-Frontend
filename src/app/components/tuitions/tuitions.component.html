@@ -85,6 +85,7 @@
             class="app-input app-input--icon-left app-search__input"
             placeholder="Search by name, DNI or status..."
             [(ngModel)]="searchTerm"
+            (input)="filterTable()"
           />
           <button
             *ngIf="searchTerm"
@@ -110,6 +111,7 @@
           <select
             class="app-input app-input--icon-left tuitions__filter-control"
             [(ngModel)]="statusFilter"
+            (change)="filterTable()"
             aria-label="Filter by status"
           >
             <option *ngFor="let opt of statusFilterOptions" [value]="opt.value">{{ opt.label }}</option>
@@ -127,7 +129,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of filteredTableData">
+            <tr *ngFor="let row of paginatedTableData">
               <td>{{ row.fullName }}</td>
               <td>{{ row.dni }}</td>
               <td>
@@ -142,6 +144,29 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="app-pagination" *ngIf="filteredTableData.length > 0">
+        <button type="button" (click)="prevPage()" [disabled]="currentPage === 1">
+          Previous
+        </button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Next
+        </button>
+      </div>
+
+      <div class="app-stats-bar tuitions__stats" *ngIf="filteredTableData.length > 0">
+        <div class="app-stat">
+          <span class="app-stat__label">Total students:</span>
+          <span class="app-stat__value">{{ tuitionData.students.length }}</span>
+        </div>
+        <div class="app-stat">
+          <span class="app-stat__label">Showing:</span>
+          <span class="app-stat__value">{{ paginatedTableData.length }} of {{ filteredTableData.length }}</span>
+        </div>
       </div>
     </section>
 
