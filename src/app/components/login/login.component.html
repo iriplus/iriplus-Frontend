@@ -37,10 +37,27 @@
         id="password"
         name="password"
         [(ngModel)]="password"
-        class="form-input"
+        class="form-input has-toggle"
         placeholder="••••••••"
         required
       />
+      <button
+        type="button"
+        class="password-toggle"
+        (click)="togglePasswordVisibility()"
+        [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+        [attr.aria-pressed]="showPassword"
+      >
+        <svg *ngIf="!showPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <svg *ngIf="showPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+          <line x1="4" y1="4" x2="20" y2="20"></line>
+        </svg>
+      </button>
     </div>
     <div *ngIf="passwordError" class="field-error">{{ passwordError }}</div>
   </div>

@@ -524,28 +524,66 @@
       <div class="profile__form">
         <div class="profile__field">
           <label class="profile__label" for="profilePassword">Current Password</label>
-          <input
-            id="profilePassword"
-            type="password"
-            class="app-input"
-            [(ngModel)]="profilePassword"
-            [ngModelOptions]="{ standalone: true }"
-            (input)="confirmProfileError = ''"
-            placeholder="Enter your current password"
-          />
+          <div class="profile__input-wrap profile__input-wrap--toggle">
+            <input
+              [type]="showProfilePassword ? 'text' : 'password'"
+              id="profilePassword"
+              class="app-input app-input--toggle"
+              [(ngModel)]="profilePassword"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="confirmProfileError = ''"
+              placeholder="Enter your current password"
+            />
+            <button
+              type="button"
+              class="profile__password-toggle"
+              (click)="toggleProfilePasswordVisibility()"
+              [attr.aria-label]="showProfilePassword ? 'Hide password' : 'Show password'"
+              [attr.aria-pressed]="showProfilePassword"
+            >
+              <svg *ngIf="!showProfilePassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg *ngIf="showProfilePassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                <line x1="4" y1="4" x2="20" y2="20"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="profile__field">
           <label class="profile__label" for="profilePasswordConfirm">Confirm Current Password</label>
-          <input
-            id="profilePasswordConfirm"
-            type="password"
-            class="app-input"
-            [(ngModel)]="profilePasswordConfirm"
-            [ngModelOptions]="{ standalone: true }"
-            (input)="confirmProfileError = ''"
-            placeholder="Re-enter your current password"
-          />
+          <div class="profile__input-wrap profile__input-wrap--toggle">
+            <input
+              [type]="showProfilePasswordConfirm ? 'text' : 'password'"
+              id="profilePasswordConfirm"
+              class="app-input app-input--toggle"
+              [(ngModel)]="profilePasswordConfirm"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="confirmProfileError = ''"
+              placeholder="Re-enter your current password"
+            />
+            <button
+              type="button"
+              class="profile__password-toggle"
+              (click)="toggleProfilePasswordConfirmVisibility()"
+              [attr.aria-label]="showProfilePasswordConfirm ? 'Hide password' : 'Show password'"
+              [attr.aria-pressed]="showProfilePasswordConfirm"
+            >
+              <svg *ngIf="!showProfilePasswordConfirm" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg *ngIf="showProfilePasswordConfirm" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                <line x1="4" y1="4" x2="20" y2="20"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -609,41 +647,98 @@
       <div class="profile__form">
         <div class="profile__field">
           <label class="profile__label" for="currentPassword">Current Password</label>
-          <input
-            id="currentPassword"
-            type="password"
-            class="app-input"
-            [(ngModel)]="currentPassword"
-            [ngModelOptions]="{ standalone: true }"
-            (input)="changePasswordError = ''"
-            placeholder="Enter your current password"
-          />
+          <div class="profile__input-wrap profile__input-wrap--toggle">
+            <input
+              [type]="showCurrentPassword ? 'text' : 'password'"
+              id="currentPassword"
+              class="app-input app-input--toggle"
+              [(ngModel)]="currentPassword"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="changePasswordError = ''"
+              placeholder="Enter your current password"
+            />
+            <button
+              type="button"
+              class="profile__password-toggle"
+              (click)="toggleCurrentPasswordVisibility()"
+              [attr.aria-label]="showCurrentPassword ? 'Hide password' : 'Show password'"
+              [attr.aria-pressed]="showCurrentPassword"
+            >
+              <svg *ngIf="!showCurrentPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg *ngIf="showCurrentPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                <line x1="4" y1="4" x2="20" y2="20"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="profile__field">
           <label class="profile__label" for="newPassword">New Password</label>
-          <input
-            id="newPassword"
-            type="password"
-            class="app-input"
-            [(ngModel)]="newPassword"
-            [ngModelOptions]="{ standalone: true }"
-            (input)="changePasswordError = ''"
-            placeholder="Enter your new password"
-          />
+          <div class="profile__input-wrap profile__input-wrap--toggle">
+            <input
+              [type]="showNewPassword ? 'text' : 'password'"
+              id="newPassword"
+              class="app-input app-input--toggle"
+              [(ngModel)]="newPassword"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="changePasswordError = ''"
+              placeholder="Enter your new password"
+            />
+            <button
+              type="button"
+              class="profile__password-toggle"
+              (click)="toggleNewPasswordVisibility()"
+              [attr.aria-label]="showNewPassword ? 'Hide password' : 'Show password'"
+              [attr.aria-pressed]="showNewPassword"
+            >
+              <svg *ngIf="!showNewPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg *ngIf="showNewPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                <line x1="4" y1="4" x2="20" y2="20"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="profile__field">
           <label class="profile__label" for="repeatNewPassword">Repeat New Password</label>
-          <input
-            id="repeatNewPassword"
-            type="password"
-            class="app-input"
-            [(ngModel)]="repeatNewPassword"
-            [ngModelOptions]="{ standalone: true }"
-            (input)="changePasswordError = ''"
-            placeholder="Repeat your new password"
-          />
+          <div class="profile__input-wrap profile__input-wrap--toggle">
+            <input
+              [type]="showRepeatNewPassword ? 'text' : 'password'"
+              id="repeatNewPassword"
+              class="app-input app-input--toggle"
+              [(ngModel)]="repeatNewPassword"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="changePasswordError = ''"
+              placeholder="Repeat your new password"
+            />
+            <button
+              type="button"
+              class="profile__password-toggle"
+              (click)="toggleRepeatNewPasswordVisibility()"
+              [attr.aria-label]="showRepeatNewPassword ? 'Hide password' : 'Show password'"
+              [attr.aria-pressed]="showRepeatNewPassword"
+            >
+              <svg *ngIf="!showRepeatNewPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg *ngIf="showRepeatNewPassword" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                <line x1="4" y1="4" x2="20" y2="20"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

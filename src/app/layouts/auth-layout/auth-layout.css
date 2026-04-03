@@ -114,9 +114,17 @@
 }
 
 /******** Password toggle ********/
+.form-input.has-toggle {
+  padding-right: 2.6rem;
+}
+
 .password-toggle {
   position: absolute;
   right: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -129,6 +137,12 @@
 }
 .password-toggle:hover svg {
   opacity: 1;
+}
+
+/* Hide native password reveal (Edge/IE) */
+.auth-form input[type="password"]::-ms-reveal,
+.auth-form input[type="password"]::-ms-clear {
+  display: none;
 }
 
 /******** Options ********/
