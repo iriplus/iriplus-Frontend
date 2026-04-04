@@ -277,7 +277,7 @@
         </div>
         <div class="exams-stat-info">
           <span class="exams-stat-value">{{ totalExpGained }}</span>
-          <span class="exams-stat-label">Total EXP</span>
+          <span class="exams-stat-label">Total XP</span>
         </div>
       </div>
 
@@ -305,7 +305,7 @@
             <th *ngIf="isTeacher">Coordinator</th>
             <th>Date</th>
             <th *ngIf="isStudent">Score</th>
-            <th *ngIf="isStudent">EXP Gained</th>
+            <th *ngIf="isStudent">XP Gained</th>
             <th *ngIf="!isStudent">Status</th>
             <th>Actions</th>
           </tr>
@@ -363,7 +363,7 @@
 
             <td *ngIf="isStudent">
               <span class="exp-badge">
-                {{ exam.exp_gained != null ? '+' + exam.exp_gained + ' EXP' : '—' }}
+                {{ exam.exp_gained != null ? '+' + exam.exp_gained + ' XP' : '—' }}
               </span>
             </td>
 
