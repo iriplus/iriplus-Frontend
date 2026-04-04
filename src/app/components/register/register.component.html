@@ -103,10 +103,27 @@
         id="password"
         name="password"
         [(ngModel)]="passwd"
-        class="form-input"
+        class="form-input has-toggle"
         placeholder="At least 8 characters"
         required
       />
+      <button
+        type="button"
+        class="password-toggle"
+        (click)="togglePasswordVisibility()"
+        [attr.aria-label]="showPasswd ? 'Hide password' : 'Show password'"
+        [attr.aria-pressed]="showPasswd"
+      >
+        <svg *ngIf="!showPasswd" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <svg *ngIf="showPasswd" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+          <line x1="4" y1="4" x2="20" y2="20"></line>
+        </svg>
+      </button>
     </div>
     <div *ngIf="passwordError" class="field-error">{{ passwordError }}</div>
   </div>
@@ -124,10 +141,27 @@
         id="confirmPassword"
         name="confirmPassword"
         [(ngModel)]="confirmPassword"
-        class="form-input"
+        class="form-input has-toggle"
         placeholder="Repeat your password"
         required
       />
+      <button
+        type="button"
+        class="password-toggle"
+        (click)="toggleConfirmPasswordVisibility()"
+        [attr.aria-label]="showConfirmPasswd ? 'Hide password' : 'Show password'"
+        [attr.aria-pressed]="showConfirmPasswd"
+      >
+        <svg *ngIf="!showConfirmPasswd" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <svg *ngIf="showConfirmPasswd" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+          <line x1="4" y1="4" x2="20" y2="20"></line>
+        </svg>
+      </button>
     </div>
     <div *ngIf="confirmPasswordError" class="field-error">{{ confirmPasswordError }}</div>
   </div>

@@ -56,22 +56,6 @@
       </button>
     </div>
 
-    <!-- Stats -->
-    <div class="app-stats-bar levels__stats">
-      <div class="app-stat">
-        <span class="app-stat__label">Total levels:</span>
-        <span class="app-stat__value">{{ levels.length }}</span>
-      </div>
-      <div class="app-stat">
-        <span class="app-stat__label">Maximum XP:</span>
-        <span class="app-stat__value">{{ getMaxXP() }}</span>
-      </div>
-      <div class="app-stat">
-        <span class="app-stat__label">Results:</span>
-        <span class="app-stat__value">{{ filteredLevels.length }}</span>
-      </div>
-    </div>
-
     <!-- Levels Grid -->
     <div class="levels-grid" *ngIf="filteredLevels.length > 0">
       <div class="levels-card" *ngFor="let level of filteredLevels; let i = index">
@@ -150,6 +134,22 @@
         </svg>
         <span>New Level</span>
       </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="app-stats-bar levels__stats">
+      <div class="app-stat">
+        <span class="app-stat__label">Total levels:</span>
+        <span class="app-stat__value">{{ levels.length }}</span>
+      </div>
+      <div class="app-stat">
+        <span class="app-stat__label">Maximum XP:</span>
+        <span class="app-stat__value">{{ getMaxXP() }}</span>
+      </div>
+      <div class="app-stat">
+        <span class="app-stat__label">Showing:</span>
+        <span class="app-stat__value">{{ filteredLevels.length }} of {{ levels.length }}</span>
+      </div>
     </div>
 
     <!-- Create/Edit Modal -->

@@ -18,6 +18,9 @@ import { ConfirmDialogComponent } from '../ui/confirm-dialog/confirm-dialog.comp
 export class ExercisesComponent implements OnInit {
   exercises: Exercise[] = [];
   filteredExercises: Exercise[] = [];
+  paginatedExercises: Exercise[] = [];
+  currentPage = 1;
+  pageSize = 10;
 
   searchTerm = '';
 
@@ -70,20 +73,56 @@ export class ExercisesComponent implements OnInit {
 
     if (!term) {
       this.filteredExercises = [...this.exercises];
-      return;
+    } else {
+      this.filteredExercises = this.exercises.filter((exercise) => {
+        return (
+          exercise.id.toString().includes(term) ||
+          exercise.name.toLowerCase().includes(term)
+        );
+      });
     }
 
-    this.filteredExercises = this.exercises.filter((exercise) => {
-      return (
-        exercise.id.toString().includes(term) ||
-        exercise.name.toLowerCase().includes(term)
-      );
-    });
+    this.currentPage = 1;
+    this.updatePaginatedData();
   }
 
   clearSearch(): void {
     this.searchTerm = '';
     this.filterExercises();
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredExercises.length / this.pageSize));
+  }
+
+  updatePaginatedData(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedExercises = this.filteredExercises.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePaginatedData();
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedData();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedData();
+    }
   }
 
   openCreateModal(): void {

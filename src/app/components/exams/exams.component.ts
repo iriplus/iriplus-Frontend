@@ -33,6 +33,9 @@ export class ExamsComponent implements OnInit {
 
   exams: ExamListItem[] = [];
   filteredExams: ExamListItem[] = [];
+  paginatedExams: ExamListItem[] = [];
+  currentPage = 1;
+  pageSize = 10;
   errorMessage = '';
 
   selectedStatus = 'ALL';
@@ -139,6 +142,10 @@ export class ExamsComponent implements OnInit {
     return 7;
   }
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredExams.length / this.pageSize));
+  }
+
   private normalizeUserType(value: unknown): UserType {
     const normalized = String(value ?? '').trim().toUpperCase();
 
@@ -191,8 +198,10 @@ export class ExamsComponent implements OnInit {
 
     this.exams = [];
     this.filteredExams = [];
+    this.paginatedExams = [];
     this.classes = [];
     this.errorMessage = 'Unsupported user type.';
+    this.currentPage = 1;
   }
 
   loadCoordinatorExams(): void {
@@ -337,6 +346,39 @@ export class ExamsComponent implements OnInit {
 
       return statusMatch && classMatch && searchMatch;
     });
+
+    this.currentPage = 1;
+    this.updatePaginatedData();
+  }
+
+  updatePaginatedData(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedExams = this.filteredExams.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePaginatedData();
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedData();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedData();
+    }
   }
 
   truncate(text: string | null | undefined, limit: number): string {

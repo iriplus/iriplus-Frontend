@@ -95,6 +95,45 @@
   position: relative;
 }
 
+.profile__input-wrap--toggle .app-input--toggle {
+  padding-right: 44px;
+}
+
+.profile__password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.profile__password-toggle svg {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.profile__password-toggle:hover svg {
+  opacity: 1;
+}
+
+.profile__password-toggle:focus-visible {
+  border-radius: 6px;
+  box-shadow: 0 0 0 3px rgba(var(--color-slate-rgb), 0.12);
+}
+
+.profile-modal input[type="password"]::-ms-reveal,
+.profile-modal input[type="password"]::-ms-clear {
+  display: none;
+}
+
 .profile__input-icon {
   position: absolute;
   left: 16px;
@@ -748,3 +787,4 @@
   flex-shrink: 0;
   background: transparent;
 }
+

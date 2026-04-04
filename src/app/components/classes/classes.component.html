@@ -85,7 +85,7 @@
             </td>
           </tr>
 
-          <tr *ngFor="let c of filteredClasses">
+          <tr *ngFor="let c of paginatedClasses">
             <td><span class="class-code">{{ c.class_code }}</span></td>
             <td><span class="class-description">{{ c.description }}</span></td>
             <td><span class="level-badge">{{ c.suggested_level }}</span></td>
@@ -156,14 +156,26 @@
       </table>
     </div>
 
-    <div class="app-stats-bar">
+    <div class="app-pagination" *ngIf="filteredClasses.length > 0">
+      <button type="button" (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+
+    <div class="app-stats-bar classes__stats">
       <div class="app-stat">
         <span class="app-stat__label">{{ totalClassesLabel }}</span>
         <span class="app-stat__value">{{ classes.length }}</span>
       </div>
       <div class="app-stat">
         <span class="app-stat__label">Showing:</span>
-        <span class="app-stat__value">{{ filteredClasses.length }}</span>
+        <span class="app-stat__value">{{ paginatedClasses.length }} of {{ filteredClasses.length }}</span>
       </div>
     </div>
   </div>

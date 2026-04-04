@@ -119,3 +119,8 @@
   justify-content: center;
   padding: 0.55rem 1rem;
 }
+
+.classes__stats.app-stats-bar {
+  justify-content: space-between;
+  gap: 16px;
+}

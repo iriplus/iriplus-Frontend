@@ -365,15 +365,15 @@ export class HomeComponent implements OnInit {
 
   get homeSubtitle(): string {
     if (this.isStudent) {
-      return 'Student overview with real platform analytics.'
+      return 'Student overview with real time platform analytics.'
     }
     
     if (this.isCoordinator) {
-      return 'Coordinator overview with real platform analytics.';
+      return 'Coordinator overview with real time platform analytics.';
     }
 
     if (this.isTeacher) {
-      return 'Teacher overview with real platform analytics.';
+      return 'Teacher overview with real time platform analytics.';
     }
 
     return 'Loading your dashboard...';

@@ -58,21 +58,6 @@
       </button>
     </div>
 
-    <div class="app-stats-bar exercises__stats">
-      <div class="app-stat">
-        <span class="app-stat__label">Total exercise types:</span>
-        <span class="app-stat__value">{{ exercises.length }}</span>
-      </div>
-      <div class="app-stat">
-        <span class="app-stat__label">Results:</span>
-        <span class="app-stat__value">{{ filteredExercises.length }}</span>
-      </div>
-      <div class="app-stat">
-        <span class="app-stat__label">Search active:</span>
-        <span class="app-stat__value">{{ searchTerm ? 'Yes' : 'No' }}</span>
-      </div>
-    </div>
-
     <div class="app-table-container" *ngIf="filteredExercises.length > 0">
       <table class="app-table app-table--wide exercises__table">
         <thead>
@@ -86,7 +71,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let exercise of filteredExercises; trackBy: trackByExerciseId">
+          <tr *ngFor="let exercise of paginatedExercises; trackBy: trackByExerciseId">
             <td>
               <span class="exercises__id-badge">#{{ exercise.id }}</span>
             </td>
@@ -144,6 +129,18 @@
       </table>
     </div>
 
+    <div class="app-pagination" *ngIf="filteredExercises.length > 0">
+      <button type="button" (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+
     <div class="exercises-empty" *ngIf="filteredExercises.length === 0">
       <div class="exercises-empty__icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -176,6 +173,17 @@
         </svg>
         <span>New Exercise Type</span>
       </button>
+    </div>
+
+    <div class="app-stats-bar exercises__stats">
+      <div class="app-stat">
+        <span class="app-stat__label">Total exercise types:</span>
+        <span class="app-stat__value">{{ exercises.length }}</span>
+      </div>
+      <div class="app-stat">
+        <span class="app-stat__label">Showing:</span>
+        <span class="app-stat__value">{{ paginatedExercises.length }} of {{ filteredExercises.length }}</span>
+      </div>
     </div>
 
     <div class="exercises-modal-overlay" *ngIf="showModal" (click)="closeModal()">

@@ -74,7 +74,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let teacher of filteredTeachers">
+          <tr *ngFor="let teacher of paginatedTeachers">
             <td>
               <div class="teachers__avatar" aria-hidden="true">
                 <span class="teachers__avatar-text">
@@ -132,6 +132,18 @@
       </table>
     </div>
 
+    <div class="app-pagination" *ngIf="filteredTeachers.length > 0">
+      <button type="button" (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+
     <!-- Stats -->
     <div class="app-stats-bar teachers__stats">
       <div class="teachers__stat">
@@ -140,7 +152,7 @@
       </div>
       <div class="teachers__stat">
         <span class="teachers__stat-label">Showing:</span>
-        <span class="teachers__stat-value">{{ filteredTeachers.length }}</span>
+        <span class="teachers__stat-value">{{ paginatedTeachers.length }} of {{ filteredTeachers.length }}</span>
       </div>
     </div>
 
