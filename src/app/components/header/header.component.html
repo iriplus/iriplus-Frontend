@@ -125,7 +125,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item" (click)="logout()">
+                <button type="button" class="dropdown-item" (click)="openLogoutConfirm()">
                   <i class="bi bi-box-arrow-right"></i>
                   <span>Log Out</span>
                 </button>
@@ -135,7 +135,16 @@
 
         </div>
       </div>
-
     </div>
   </nav>
 </header>
+<app-confirm-dialog
+  [open]="confirmDialog.open"
+  [title]="confirmDialog.title"
+  [message]="confirmDialog.message"
+  [confirmText]="confirmDialog.confirmText"
+  [cancelText]="confirmDialog.cancelText"
+  [variant]="confirmDialog.variant"
+  (confirmed)="handleConfirm()"
+  (cancelled)="closeConfirmDialog()"
+></app-confirm-dialog>

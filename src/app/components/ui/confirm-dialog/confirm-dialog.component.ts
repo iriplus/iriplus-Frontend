@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 
 export type ConfirmVariant = 'default' | 'danger';
-export type ConfirmAction = 'delete-draft' | 'discard-manual-edits' | 'leave-generate-exam' | null;
+export type ConfirmAction = 'delete-draft' | 'discard-manual-edits' | 'leave-generate-exam' | 'logout' | null;
 
 export interface ConfirmDialogState{
   open: boolean;
