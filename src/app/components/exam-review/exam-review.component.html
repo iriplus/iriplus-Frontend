@@ -15,7 +15,7 @@
 
       <!-- Top Bar -->
       <div class="exam-review__topbar">
-        <button class="btn-outline btn-rounded" (click)="openLater()" type="button">
+        <button class="btn-outline btn-rounded" (click)="openBackConfirm()" type="button">
           ← Back to exams
         </button>
 
@@ -331,3 +331,13 @@
     </ng-container>
   </div>
 </div>
+<app-confirm-dialog
+  [open]="confirmDialog.open"
+  [title]="confirmDialog.title"
+  [message]="confirmDialog.message"
+  [confirmText]="confirmDialog.confirmText"
+  [cancelText]="confirmDialog.cancelText"
+  [variant]="confirmDialog.variant"
+  (confirmed)="handleConfirm()"
+  (cancelled)="closeConfirmDialog()"
+></app-confirm-dialog>

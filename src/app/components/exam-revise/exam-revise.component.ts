@@ -120,7 +120,7 @@ export class ExamReviseComponent implements OnInit {
 
     this.confirmDialog = {
       open: true,
-      action: 'discard-manual-edits',
+      action: 'leave-exam-revise',
       title: 'Leave this page?',
       message: 'You have unsaved changes. If you go back now, those modifications will be lost.',
       confirmText: 'Leave page',
@@ -139,7 +139,7 @@ export class ExamReviseComponent implements OnInit {
 
   handleConfirm(): void {
     switch (this.confirmDialog.action) {
-      case 'discard-manual-edits':
+      case 'leave-exam-revise':
         this.closeConfirmDialog();
         this.navigateBackToExams();
         break;
