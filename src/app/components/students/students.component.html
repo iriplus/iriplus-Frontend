@@ -103,7 +103,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let student of filteredStudents; trackBy: trackByUserId">
+          <tr *ngFor="let student of paginatedStudents; trackBy: trackByUserId">
             <td>
               <div class="students__avatar">
                 <ng-container *ngIf="student.profile_picture && !isAvatarBroken(student.id); else avatarFallback">
@@ -162,8 +162,20 @@
       </table>
     </div>
 
+    <div class="app-pagination" *ngIf="filteredStudents.length > 0">
+      <button type="button" (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+
     <!-- Stats -->
-    <div class="app-stats-bar" *ngIf="!loading && !errorMessage">
+    <div class="app-stats-bar students__stats" *ngIf="!loading && !errorMessage">
       <div class="app-stat">
         <span class="app-stat__label">Total students:</span>
         <span class="app-stat__value">{{ students.length }}</span>
@@ -171,7 +183,7 @@
 
       <div class="app-stat">
         <span class="app-stat__label">Showing:</span>
-        <span class="app-stat__value">{{ filteredStudents.length }}</span>
+        <span class="app-stat__value">{{ paginatedStudents.length }} of {{ filteredStudents.length }}</span>
       </div>
     </div>
 

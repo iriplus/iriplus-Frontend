@@ -75,6 +75,11 @@
   font-weight: 800;
 }
 
+.students__stats.app-stats-bar {
+  justify-content: space-between;
+  gap: 16px;
+}
+
 @media (max-width: 768px) {
   .students__search {
     max-width: none;

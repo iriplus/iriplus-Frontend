@@ -111,26 +111,27 @@
                   <div class="resolve-exam__question-body">
                     <label class="resolve-exam__field-label">Question</label>
 
-                    <div class="resolve-exam__student-line">
-                      <span class="resolve-exam__line-text" *ngIf="item.promptBefore">
-                        {{ item.promptBefore }}
-                      </span>
-
-                      <input
-                        class="app-input resolve-exam__inline-blank"
-                        type="text"
-                        [(ngModel)]="item.studentAnswer"
-                        placeholder="Write your answer"
-                      />
-
-                      <span class="resolve-exam__line-text" *ngIf="item.promptAfter">
-                        {{ item.promptAfter }}
-                      </span>
-
+                    <div class="resolve-exam__question-prompt">
+                      <div class="resolve-exam__prompt-text">
+                        <span class="resolve-exam__line-text" *ngIf="item.promptBefore">
+                          {{ item.promptBefore }}
+                        </span>
+                        <span class="resolve-exam__line-text" *ngIf="item.promptAfter">
+                          <ng-container *ngIf="item.promptBefore">&nbsp;</ng-container>{{ item.promptAfter }}
+                        </span>
+                      </div>
                       <span class="resolve-exam__keyword" *ngIf="item.keyword">
                         {{ item.keyword }}
                       </span>
                     </div>
+
+                    <label class="resolve-exam__field-label resolve-exam__field-label--answer">Your answer</label>
+                    <input
+                      class="app-input resolve-exam__answer-input"
+                      type="text"
+                      [(ngModel)]="item.studentAnswer"
+                      placeholder="Write your answer"
+                    />
 
                     <div class="resolve-exam__options" *ngIf="item.options.length > 0">
                       <span

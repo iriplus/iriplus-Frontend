@@ -22,6 +22,9 @@ export class ClassesComponent implements OnInit, AfterViewInit {
   selectedClass: Class | null = null;
   classes: Class[] = [];
   filteredClasses: Class[] = [];
+  paginatedClasses: Class[] = [];
+  currentPage = 1;
+  pageSize = 10;
   isLoading = true;
   errorMessage = '';
   searchText = '';
@@ -84,6 +87,8 @@ export class ClassesComponent implements OnInit, AfterViewInit {
       next: (data: Class[]) => {
         this.classes = this.applyRolefilter(data);
         this.filteredClasses = [...this.classes];
+        this.currentPage = 1;
+        this.updatePaginatedData();
         this.isLoading = false;
         console.log(this.filteredClasses)
       },
@@ -206,19 +211,57 @@ export class ClassesComponent implements OnInit, AfterViewInit {
     const term = this.searchText.toLowerCase().trim();
     if (!term) {
       this.filteredClasses = this.classes;
-      return;
+    } else {
+      this.filteredClasses = this.classes.filter(c =>
+        c.class_code.toLowerCase().includes(term) ||
+        c.description.toLowerCase().includes(term) ||
+        c.suggested_level.toLowerCase().includes(term)
+      );
     }
 
-    this.filteredClasses = this.classes.filter(c =>
-      c.class_code.toLowerCase().includes(term) ||
-      c.description.toLowerCase().includes(term) ||
-      c.suggested_level.toLowerCase().includes(term)
-    );
+    this.currentPage = 1;
+    this.updatePaginatedData();
   }
 
   clearSearch(): void {
     this.searchText = '';
     this.filteredClasses = this.classes;
+    this.currentPage = 1;
+    this.updatePaginatedData();
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredClasses.length / this.pageSize));
+  }
+
+  updatePaginatedData(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedClasses = this.filteredClasses.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePaginatedData();
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedData();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedData();
+    }
   }
 
   private getDeleteErrorMessage(err: any): string {

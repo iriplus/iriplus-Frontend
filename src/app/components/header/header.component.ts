@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationStart, RouterModule } from '@angular/router';
 import { CommonModule, NgIf } from '@angular/common';
 import { Router } from "@angular/router";
 import { AuthService } from '../../services/auth.service';
 import { UserType } from '../../interfaces/user.interface';
+import { Subscription, filter } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogState } from '../ui/confirm-dialog/confirm-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 
@@ -14,7 +15,7 @@ import { NotificationService } from '../../services/notification.service';
   styleUrl: './header.component.css'
 })
 
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy {
   isLoading = false;
   errorMessage = "";
 
@@ -31,10 +32,23 @@ export class HeaderComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ) {}
 
+  ngOnInit(): void {
+    this.closeMobileMenu();
+    this.navigationSub = this.router.events
+      .pipe(filter((event) => event instanceof NavigationStart))
+      .subscribe(() => this.closeMobileMenu());
+  }
+
+  ngOnDestroy(): void {
+    this.navigationSub?.unsubscribe();
+    this.closeMobileMenu();
+  }
+
   goTo(path: string): void {
+    this.closeMobileMenu();
     this.router.navigate([path]);
   }
 
@@ -74,6 +88,7 @@ export class HeaderComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
+    this.closeMobileMenu();
     this.authService.logout().subscribe({
       next: () => {
         this.isLoading = false;
@@ -118,4 +133,35 @@ export class HeaderComponent {
     return this.authService.isAuthenticated();
   }
 
+  private closeMobileMenu(): void {
+    if (!this.isBrowser()) {
+      return;
+    }
+
+    const offcanvasEl = document.getElementById('offcanvasNavbar');
+    const bootstrap = (window as any).bootstrap;
+
+    if (offcanvasEl && bootstrap?.Offcanvas) {
+      const instance =
+        bootstrap.Offcanvas.getInstance(offcanvasEl) ??
+        bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+      instance.hide();
+    }
+
+    this.cleanupOffcanvasArtifacts();
+  }
+
+  private cleanupOffcanvasArtifacts(): void {
+    document.body.classList.remove('overflow-hidden');
+    document.documentElement.classList.remove('overflow-hidden');
+    document.body.style.paddingRight = '';
+
+    document.querySelectorAll('.offcanvas-backdrop').forEach((backdrop) => {
+      backdrop.remove();
+    });
+  }
+
+  private isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof document !== 'undefined';
+  }
 }

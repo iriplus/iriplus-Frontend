@@ -147,7 +147,7 @@
         </div>
         <div class="exams-stat-info">
           <span class="exams-stat-value">{{ pendingExams }}</span>
-          <span class="exams-stat-label">Pending</span>
+          <span class="exams-stat-label">Pending Review</span>
         </div>
       </div>
 
@@ -277,7 +277,7 @@
         </div>
         <div class="exams-stat-info">
           <span class="exams-stat-value">{{ totalExpGained }}</span>
-          <span class="exams-stat-label">Total EXP</span>
+          <span class="exams-stat-label">Total XP</span>
         </div>
       </div>
 
@@ -295,10 +295,6 @@
       </div>
     </div>
 
-    <div class="exams-results">
-      <span>Showing {{ filteredExams.length }} of {{ exams.length }} exams</span>
-    </div>
-
     <div class="app-table-container">
       <table class="app-table app-table--wide">
         <thead>
@@ -309,14 +305,14 @@
             <th *ngIf="isTeacher">Coordinator</th>
             <th>Date</th>
             <th *ngIf="isStudent">Score</th>
-            <th *ngIf="isStudent">EXP Gained</th>
+            <th *ngIf="isStudent">XP Gained</th>
             <th *ngIf="!isStudent">Status</th>
             <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let exam of filteredExams">
+          <tr *ngFor="let exam of paginatedExams">
             <td>
               <div class="exam-title-cell">
                 <span class="exam-title">{{ truncate(exam.context, 42) }}</span>
@@ -367,7 +363,7 @@
 
             <td *ngIf="isStudent">
               <span class="exp-badge">
-                {{ exam.exp_gained != null ? '+' + exam.exp_gained + ' EXP' : '—' }}
+                {{ exam.exp_gained != null ? '+' + exam.exp_gained + ' XP' : '—' }}
               </span>
             </td>
 
@@ -417,6 +413,25 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="app-pagination" *ngIf="filteredExams.length > 0">
+      <button type="button" (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+
+    <div class="app-stats-bar exams-results">
+      <div class="app-stat">
+        <span class="app-stat__label">Showing:</span>
+        <span class="app-stat__value">{{ paginatedExams.length }} of {{ filteredExams.length }}</span>
+      </div>
     </div>
 
   </div>

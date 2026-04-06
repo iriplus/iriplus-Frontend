@@ -104,8 +104,8 @@
 }
 
 /* Stats */
-.teachers__stats {
-  justify-content: flex-end;
+.teachers__stats.app-stats-bar {
+  justify-content: space-between;
   gap: 16px;
 }
 

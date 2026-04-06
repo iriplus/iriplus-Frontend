@@ -538,6 +538,59 @@ select.app-input {
 }
 
 /* =========================================================
+   PAGINATION (REUTILIZABLE)
+   ========================================================= */
+
+.app-pagination {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.app-pagination span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.app-pagination button {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-slate);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.app-pagination button:hover:not(:disabled) {
+  background: var(--color-slate);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(var(--color-slate-rgb), 0.25);
+}
+
+.app-pagination button:disabled {
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .app-pagination {
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
    ICON BUTTONS (ACCIONES EDIT/DELETE) + CLOSE
    ========================================================= */
 .app-actions-cell {

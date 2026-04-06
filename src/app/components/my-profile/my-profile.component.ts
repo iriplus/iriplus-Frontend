@@ -53,12 +53,17 @@ export class MyProfileComponent implements OnInit {
   profilePassword = '';
   profilePasswordConfirm = '';
   confirmProfileError = '';
+  showProfilePassword = false;
+  showProfilePasswordConfirm = false;
   
   showChangePasswordModal = false;
   currentPassword = '';
   newPassword = '';
   repeatNewPassword = '';
   changePasswordError = '';
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showRepeatNewPassword = false;
 
   constructor(
     private authService: AuthService,
@@ -231,6 +236,8 @@ export class MyProfileComponent implements OnInit {
     this.confirmProfileError = '';
     this.profilePassword = '';
     this.profilePasswordConfirm = '';
+    this.showProfilePassword = false;
+    this.showProfilePasswordConfirm = false;
     this.showProfileConfirmModal = true;
   }
 
@@ -239,6 +246,16 @@ export class MyProfileComponent implements OnInit {
     this.confirmProfileError = '';
     this.profilePassword = '';
     this.profilePasswordConfirm = '';
+    this.showProfilePassword = false;
+    this.showProfilePasswordConfirm = false;
+  }
+
+  toggleProfilePasswordVisibility(): void {
+    this.showProfilePassword = !this.showProfilePassword;
+  }
+
+  toggleProfilePasswordConfirmVisibility(): void {
+    this.showProfilePasswordConfirm = !this.showProfilePasswordConfirm;
   }
 
   enableEdit(): void {
@@ -362,6 +379,9 @@ export class MyProfileComponent implements OnInit {
     this.currentPassword = '';
     this.newPassword = '';
     this.repeatNewPassword = '';
+    this.showCurrentPassword = false;
+    this.showNewPassword = false;
+    this.showRepeatNewPassword = false;
     this.showChangePasswordModal = true;
   }
 
@@ -371,6 +391,21 @@ export class MyProfileComponent implements OnInit {
     this.currentPassword = '';
     this.newPassword = '';
     this.repeatNewPassword = '';
+    this.showCurrentPassword = false;
+    this.showNewPassword = false;
+    this.showRepeatNewPassword = false;
+  }
+
+  toggleCurrentPasswordVisibility(): void {
+    this.showCurrentPassword = !this.showCurrentPassword;
+  }
+
+  toggleNewPasswordVisibility(): void {
+    this.showNewPassword = !this.showNewPassword;
+  }
+
+  toggleRepeatNewPasswordVisibility(): void {
+    this.showRepeatNewPassword = !this.showRepeatNewPassword;
   }
   
   confirmChangePassword(): void {
