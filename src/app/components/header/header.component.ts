@@ -18,6 +18,7 @@ import { NotificationService } from '../../services/notification.service';
 export class HeaderComponent implements OnInit, OnDestroy {
   isLoading = false;
   errorMessage = "";
+  private navigationSub?: Subscription;
 
   confirmDialog: ConfirmDialogState = {
     open: false,
