@@ -28,6 +28,7 @@ export interface WeeklyXpPoint {
 
 export interface StudentProgress {
   currentLevel: number;
+  currentMinimumLevelXp: number;
   currentLevelName: string;
   currentXp: number;
   nextLevelXp: number;

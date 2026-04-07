@@ -197,7 +197,53 @@ export class ExamResolveComponent implements OnInit, PendingChangesComponent {
             response.new_level_id != null &&
             response.previous_level_id !== response.new_level_id
           );
-
+        let new_level_name = '';
+        switch (response.new_level_id) {
+          case 1:
+            new_level_name = 'Unranked';
+            break;
+          case 2:
+            new_level_name = 'Iron';
+            break;
+          case 3:
+            new_level_name = 'Bronze';
+            break;
+          case 4:
+            new_level_name = 'Silver';
+            break;
+          case 5:
+            new_level_name = 'Gold';
+            break;  
+          case 6:
+            new_level_name = 'Platinum';
+            break;
+          case 7:
+            new_level_name = 'Sapphire';
+            break;
+          case 8:
+            new_level_name = 'Ruby';
+            break;
+          case 9:
+            new_level_name = 'Emerald';
+            break;
+          case 10:
+            new_level_name = 'Amethyst';
+            break;
+          case 11:
+            new_level_name = 'Pearl';
+            break;
+          case 12:
+            new_level_name = 'Diamond';
+            break;
+          case 13:
+            new_level_name = 'Obsidian';
+            break;
+          case 14:
+            new_level_name = 'Master';
+            break;
+          default:
+            new_level_name = 'Unranked';
+        }
         this.notificationService.show({
           type: 'success',
           title: leveledUp ? 'Level up!' : 'Exam completed',

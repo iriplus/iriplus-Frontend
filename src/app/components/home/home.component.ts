@@ -61,6 +61,7 @@ export class HomeComponent implements OnInit {
   private readonly emptyStudentProgress: StudentProgress = {
     currentLevel: 1,
     currentLevelName: 'Unranked',
+    currentMinimumLevelXp: 0,
     currentXp: 0,
     nextLevelXp: 0,
     nextLevelName: 'Bronze'
@@ -459,7 +460,7 @@ export class HomeComponent implements OnInit {
     }
 
     return Math.min(
-      (this.studentProgress.currentXp / this.studentProgress.nextLevelXp) * 100,
+      (this.studentProgress.currentXp - this.studentProgress.currentMinimumLevelXp) / (this.studentProgress.nextLevelXp - this.studentProgress.currentMinimumLevelXp) * 100,
       100
     );
   }
