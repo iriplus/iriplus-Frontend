@@ -575,6 +575,7 @@ export class MyProfileComponent implements OnInit {
                 };
 
               this.refreshClassInfo(clazz.id);
+              this.refreshMe();
               this.closeChangeClassModal();
           },
           error: (err) => {
@@ -605,6 +606,15 @@ export class MyProfileComponent implements OnInit {
       },
       error: () => {
         this.currentClass = null;
+      }
+    });
+  }
+
+  refreshMe(): void {
+    this.authService.loadMe(true).subscribe(user => {
+      if (user) {
+        this.user = user;
+        this.saveOriginalData();
       }
     });
   }

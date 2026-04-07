@@ -298,25 +298,38 @@
   letter-spacing: 0.05em;
 }
 
-.resolve-exam__student-line {
+.resolve-exam__field-label--answer {
+  margin-top: 14px;
+}
+
+.resolve-exam__question-prompt {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
+}
+
+.resolve-exam__prompt-text {
+  width: 100%;
   line-height: 1.75;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .resolve-exam__line-text {
-  color: var(--color-text);
+  color: inherit;
 }
 
-.resolve-exam__inline-blank {
-  width: 220px;
-  min-width: 180px;
+.resolve-exam__answer-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
   background: #fff;
+  box-sizing: border-box;
 }
 
 .resolve-exam__keyword {
@@ -484,10 +497,5 @@
   .resolve-exam__question-index {
     width: 30px;
     height: 30px;
-  }
-
-  .resolve-exam__inline-blank {
-    width: 100%;
-    min-width: 0;
   }
 }

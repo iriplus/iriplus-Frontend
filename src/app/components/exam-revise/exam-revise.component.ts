@@ -4,10 +4,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExamDTO, Status } from '../../interfaces/exam.interface';
 import { ExamService } from '../../services/exam.service';
+import { ConfirmDialogComponent, ConfirmDialogState } from '../ui/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-exam-revise',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ConfirmDialogComponent],
   templateUrl: './exam-revise.component.html',
   styleUrl: './exam-revise.component.css'
 })
@@ -26,6 +27,16 @@ export class ExamReviseComponent implements OnInit {
   successMessage = '';
 
   readonly Status = Status;
+
+  confirmDialog: ConfirmDialogState = {
+    open: false,
+    action: null,
+    title: '',
+    message: '',
+    confirmText: 'Confirm',
+    cancelText: 'Cancel',
+    variant: 'default',
+  };
 
   changeRequest = new FormControl('', {
     nonNullable: true,
@@ -98,7 +109,44 @@ export class ExamReviseComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/exam'])
+    if (this.saving || this.refining) {
+      return;
+    }
+
+    if (!this.isEditable || !this.hasUnsavedChanges()) {
+      this.navigateBackToExams();
+      return;
+    }
+
+    this.confirmDialog = {
+      open: true,
+      action: 'leave-exam-revise',
+      title: 'Leave this page?',
+      message: 'You have unsaved changes. If you go back now, those modifications will be lost.',
+      confirmText: 'Leave page',
+      cancelText: 'Stay here',
+      variant: 'default',
+    };
+  }
+
+  closeConfirmDialog(): void {
+    this.confirmDialog = {
+      ...this.confirmDialog,
+      open: false,
+      action: null,
+    };
+  }
+
+  handleConfirm(): void {
+    switch (this.confirmDialog.action) {
+      case 'leave-exam-revise':
+        this.closeConfirmDialog();
+        this.navigateBackToExams();
+        break;
+      default:
+        this.closeConfirmDialog();
+        break;
+    }
   }
 
   discardChanges(): void {
@@ -319,6 +367,18 @@ export class ExamReviseComponent implements OnInit {
     }
 
     return true;
+  }
+
+  private hasUnsavedChanges(): boolean {
+    if (!this.exam || !this.originalExam) {
+      return false;
+    }
+
+    return JSON.stringify(this.exam) !== JSON.stringify(this.originalExam);
+  }
+
+  private navigateBackToExams(): void {
+    this.router.navigate(['/exam']);
   }
 
   private readEditableContent(event: Event): string {
